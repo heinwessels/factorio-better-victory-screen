@@ -1,0 +1,76 @@
+local lib = { }
+
+---@param amount any
+---@param append_suffix boolean?
+---@param decimals uint?
+---@return string
+function lib.format_number(amount, append_suffix, decimals)
+    local suffix = ""
+
+    if append_suffix then
+        local suffix_list = {
+            ["T"] = 1000000000000,
+            ["G"] = 1000000000,   -- `G` and not `B`!
+            ["M"] = 1000000,
+            ["k"] = 1000,
+            [""] = 1  -- Otherwise below 1k formats odd. Probably hack and not actual problems
+        }
+
+        for letter, limit in pairs (suffix_list) do
+            if math.abs(amount) >= limit then
+                amount = math.floor(amount/(limit/10))/10
+                suffix = letter
+                break
+            end
+        end
+    end
+
+    if decimals then
+        amount = tonumber(string.format("%."..decimals.."f", amount))
+    end
+
+    return amount .. " " .. suffix
+end
+
+function lib.format_power(amount)
+    return lib.format_number(amount, true, 3).."W"
+end
+
+function lib.format_distance(amount)
+    local suffix = ""
+
+    if amount > 1000 then
+        local suffix_list = {
+            ["k"] = 1000,
+            [""] = 1  -- Otherwise below 1k formats odd. Probably hack and not actual problemssa
+        }
+
+        for letter, limit in pairs (suffix_list) do
+            if math.abs(amount) >= limit then
+                amount = math.floor(amount/(limit/10))/10
+                suffix = letter
+                break
+            end
+        end
+    end
+
+    -- Trim some decimals
+    if amount >= 1000 then
+        amount = math.floor(amount)
+    end
+
+    return amount .. " " .. suffix .. "m"
+end
+
+---@param ticks uint
+function lib.format_time(ticks)
+    local seconds = ticks / 60
+    local minutes = math.floor(seconds / 60)
+    local hours = math.floor(minutes / 60)
+    seconds = math.floor(seconds - 60 * minutes)
+    minutes = math.floor(minutes - 60 * hours)
+    return string.format("%02d:%02d:%02d", hours, minutes, seconds)
+end
+
+
+return lib
