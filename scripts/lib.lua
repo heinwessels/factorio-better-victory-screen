@@ -62,6 +62,20 @@ function lib.format_distance(amount)
     return amount .. " " .. suffix .. "m"
 end
 
+function lib.format_area(amount)
+
+    -- Always convert to km2
+    amount = amount / (1000 * 1000)
+
+    if amount < 1000 then
+        amount = lib.format_number(amount, false, 3)
+    else
+        amount = math.floor(amount)
+    end
+
+    return amount .. " km2"
+end
+
 ---@param ticks uint
 function lib.format_time(ticks)
     local seconds = ticks / 60

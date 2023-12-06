@@ -60,14 +60,17 @@ local function get_total_belt_length(force)
         local belts = surface.count_entities_filtered{type = "transport-belt", force = force}
         distance = distance + belts
 
-        -- Assume each splitter has a distance of 2m. 
+        -- Assume each splitter has a distance of 2m.
         local splitters = surface.count_entities_filtered{type = "splitter", force = force}
         distance = distance + (splitters * 2)
 
-        -- Assume each underground belt has a distance of 4. 
-        -- TODO: This is a very bad assumption! Be better!
-        local undergroundies = surface.count_entities_filtered{type = "underground-belt", force = force}
-        distance = distance + (undergroundies * 4)
+        -- Assume an average extend length of 50% of the maximum distance
+        for prototype_name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "underground-belt"}}) do
+            local amount = surface.count_entities_filtered{name=prototype_name, force=force}
+            -- Remember to take into a account we loop over single entities, and not pairs of undergroundies
+            local average_length_per_single_underground = prototype.max_underground_distance / 2 / 2
+            distance = distance + amount + (amount * average_length_per_single_underground)
+        end
 
         ::continue::
     end
@@ -183,24 +186,27 @@ local function get_peak_power_generation(force)
                     table.insert(prototypes, prototype)
                 end
 
-                -- Now go through all the brackets    
-                for _, bracket in pairs(FLOW_PRECISION_BRACKETS) do
-                    -- Calculate the peak at each timestep
-                    -- Note: This can be smarter, don't need samples covered by previous bracket
-                    for index = 1,300 do
-                        local sum = 0
-                        -- By summing together all prototype values
-                        for _, prototype in pairs(prototypes) do
-                            sum = sum + flow.get_flow_count{
-                                name = prototype,
-                                input = false,
-                                precision_index = bracket,
-                                sample_index = index,
-                            }
-                        end
+                -- Now go through all the brackets to look for the peak
+                -- But only if there actually power generated.
+                if #prototypes > 0 then
+                    for _, bracket in pairs(FLOW_PRECISION_BRACKETS) do
+                        -- Calculate the peak at each timestep
+                        -- Note: This can be smarter, don't need samples covered by previous bracket
+                        for index = 1,300 do
+                            local sum = 0
+                            -- By summing together all prototype values
+                            for _, prototype in pairs(prototypes) do
+                                sum = sum + flow.get_flow_count{
+                                    name = prototype,
+                                    input = false,
+                                    precision_index = bracket,
+                                    sample_index = index,
+                                }
+                            end
 
-                        if sum > peak then
-                            peak = sum
+                            if sum > peak then
+                                peak = sum
+                            end
                         end
                     end
                 end
@@ -253,7 +259,28 @@ local function get_total_kills_by_train(force)
     return count
 end
 
+---@param force LuaForce
+---@return integer
+local function get_total_area_explored(force)
+    local chunks_charted = 0
 
+    -- This is very inefficient. This will currently be run for each force,
+    -- which is unnecesary chunk iterations. But this is the structure we have
+    -- now, so it's good enough. For vanilla-ish playthroughs this is fine anyway.
+    for _, surface in pairs(game.surfaces) do
+        if surface_blacklist[surface.name] then goto continue end
+
+        for chunk in surface.get_chunks() do
+            if force.is_chunk_charted(surface, chunk) then
+                chunks_charted = chunks_charted + 1
+            end
+        end
+
+        ::continue::
+    end
+
+    return chunks_charted * ( 16 * 16)
+end
 
 ---@param force LuaForce
 ---@return table containing statistics
@@ -280,6 +307,7 @@ function statistics.for_force(force)
     stats["Miscellaneous"] = stats["Miscellaneous"] or { }
     stats["Miscellaneous"].stats = {
         {name = "Total kills by train", value = get_total_kills_by_train(force)},
+        {name = "Area explored", value = lib.format_area(get_total_area_explored(force))},
     }
 
     return stats
