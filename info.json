@@ -2,7 +2,7 @@
   "name": "better-victory-screen",
   "version": "0.1.0",
   "title": "Better Victory Screen",
-  "description": "A better victory screen that places the focus on automation, and not combat.",
+  "description": "A better victory screen that places the focus on automation, and not combat. Likely not compatable with most overhaul mods.",
   "author": "stringweasel",
   "factorio_version": "1.1",
   "dependencies": [ 

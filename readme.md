@@ -1,8 +1,13 @@
 # Better Victory Screen
 
-A better victory screen that places the focus on automation, and not combat.  If you believe this should be part part of vanilla you can mention it on the [forums](https://forums.factorio.com/88601).
+A better victory screen that places the focus on automation, and not combat.
 
 [![Support me on kofi](https://www.ko-fi.com/img/githubbutton_sm.svg)](https://ko-fi.com/stringweasel)
+
+### Caveats:
+- Some statistics (like "distance walked") will only be accurate if mod is added at game start.
+- Most overhaul mods are not supported.
+- Finish button is not functional due to modding API limitations.
 
 # Credits
 -  [_CodeGreen](https://mods.factorio.com/user/_CodeGreen) for creating the foundation this mod is built upon.
