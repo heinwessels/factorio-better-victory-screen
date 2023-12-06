@@ -6,8 +6,8 @@ local gui = {}
 local handlers = {}
 local e = defines.events
 
-local name_column_width = 137
-local value_column_width = 82   -- Keeps the golden ration used by vanilla gui
+local name_column_width = 30
+local value_column_width = 35   -- Keeps the golden ration used by vanilla gui
 
 ---@param player LuaPlayer
 ---@param categories StatisticCategories
@@ -22,35 +22,18 @@ function gui.create(player, categories)
         children = {{
             args = {type = "frame", direction = "vertical", style = "window_content_frame_packed"},
             children = {{
-                args = {type = "frame", style = "finished_game_subheader_frame"},
-                style_mods = {horizontally_stretchable = true},
-                children = {{
-                    args = {type = "label", caption = {"gui-game-finished.victory"}},
-                }}
-            }, {
                 args = {type = "scroll-pane", name = "statistics", style = "scroll_pane_under_subheader"},
                 style_mods = {horizontally_squashable = true},
                 children = {{
                     args = {type = "table", column_count = 2, style = "finished_game_table"}, -- can't get rid of inner borders on the style yet
-                    children = {{
-                        args = {type = "flow"},
-                        children = {{
-                            args = {type = "label", caption = {"gui-game-finished.time-played"}, style = "caption_label"},
-                        }, {
-                            args = {type = "empty-widget"},
-                            style_mods = {minimal_width = name_column_width, horizontally_stretchable = true},
-                        }}
-                    }, {
-                        args = {type = "label", caption = lib.format_time(game.tick)},
-                        style_mods = {minimal_width = value_column_width, horizontal_align = "right"}, -- width required because can't sync table column widths yet
-                    }}
+                    children = { }
                 }}
             }}
         }, {
             args = {type = "flow", direction = "horizontal", style = "dialog_buttons_horizontal_flow"},
             children = {{
                 args = {type = "button", caption = {"gui-game-finished.finish"}, style = "red_back_button", 
-                        enabled=false, tooltip = "Modded GUIs cannot exit the game. It is still possible to 'Continue' and exit manually."},
+                        tooltip = "Modded GUIs cannot exit the game. It is still possible to 'Continue' and exit manually."},
                 handlers = {[e.on_gui_click] = handlers.finish}
             }, {
                 args = {type = "empty-widget"},
