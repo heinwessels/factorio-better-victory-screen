@@ -35,16 +35,15 @@ local function on_rocket_launched(event)
     show_victory_screen()
 end
 
----@param event EventData.on_console_command
-local function handle_command(event)
-    if event.command == "show-victory-screen" then
+
+function trigger.add_commands()
+    commands.add_command("show-victory-screen", nil, function(command)
         show_victory_screen()
-    end
+    end)
 end
 
 trigger.events = {
     [defines.events.on_rocket_launched] = on_rocket_launched,
-    [defines.events.on_console_command] = handle_command,
 }
 
 function trigger.on_init(event)

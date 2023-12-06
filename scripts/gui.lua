@@ -6,6 +6,9 @@ local gui = {}
 local handlers = {}
 local e = defines.events
 
+local name_column_width = 137
+local value_column_width = 82   -- Keeps the golden ration used by vanilla gui
+
 ---@param player LuaPlayer
 ---@param categories StatisticCategories
 function gui.create(player, categories)
@@ -35,18 +38,19 @@ function gui.create(player, categories)
                             args = {type = "label", caption = {"gui-game-finished.time-played"}, style = "caption_label"},
                         }, {
                             args = {type = "empty-widget"},
-                            style_mods = {minimal_width = 64, horizontally_stretchable = true},
+                            style_mods = {minimal_width = name_column_width, horizontally_stretchable = true},
                         }}
                     }, {
                         args = {type = "label", caption = lib.format_time(game.tick)},
-                        style_mods = {minimal_width = 54, horizontal_align = "right"}, -- width required because can't sync table column widths yet
+                        style_mods = {minimal_width = value_column_width, horizontal_align = "right"}, -- width required because can't sync table column widths yet
                     }}
                 }}
             }}
         }, {
             args = {type = "flow", direction = "horizontal", style = "dialog_buttons_horizontal_flow"},
             children = {{
-                args = {type = "button", caption = {"gui-game-finished.finish"}, style = "red_back_button"},
+                args = {type = "button", caption = {"gui-game-finished.finish"}, style = "red_back_button", 
+                        enabled=false, tooltip = "Modded GUIs cannot exit the game. It is still possible to 'Continue' and exit manually."},
                 handlers = {[e.on_gui_click] = handlers.finish}
             }, {
                 args = {type = "empty-widget"},
@@ -70,7 +74,7 @@ function gui.create(player, categories)
                 style_mods = {horizontally_stretchable = true},
             }, {
                 args = {type = "empty-widget"},
-                style_mods = {minimal_width = 54, horizontal_align = "right"}, -- width required because can't sync table column widths yet
+                style_mods = {minimal_width = value_column_width, horizontal_align = "right"}, -- width required because can't sync table column widths yet
             }}
         }
         if category.value then
