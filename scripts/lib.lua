@@ -57,6 +57,8 @@ function lib.format_distance(amount)
     -- Trim some decimals
     if amount >= 1000 then
         amount = math.floor(amount)
+    else
+        amount = lib.format_number(amount, false, 1)
     end
 
     return amount .. " " .. suffix .. "m"
