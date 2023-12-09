@@ -111,8 +111,13 @@ local function get_total_pipe_length(force)
         local pipe = surface.count_entities_filtered{type = "pipe", force = force}
         distance = distance + pipe
 
-        local ground = surface.count_entities_filtered{type = "pipe-to-ground", force = force}
-        distance = distance + (ground * 10) -- Bad assumption
+        -- Assume an average extend length of 50% of the maximum distance
+        for prototype_name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "pipe-to-ground"}}) do
+            local amount = surface.count_entities_filtered{name=prototype_name, force=force}
+            -- Remember to take into a account we loop over single entities, and not pairs of undergroundies
+            local average_length_per_single_underground = prototype.max_underground_distance / 2 / 2
+            distance = distance + amount + (amount * average_length_per_single_underground)
+        end
 
         ::continue::
     end
