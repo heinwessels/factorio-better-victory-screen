@@ -13,10 +13,20 @@ local value_column_width = 82   -- Keeps the golden ration used by vanilla gui
 ---@param categories StatisticCategories
 function gui.create(player, categories)
     player.play_sound{path = "utility/game_won"}
-
     ---@diagnostic disable: missing-fields
+
+    --- Create the semi-transparent backdrop that prevents other GUIs from being clickable
+    local resolution = player.display_resolution
+    local scale = player.display_scale
+    glib.add(player.gui.screen, {
+        args = {type = "frame", name = "bvs_backdrop", style = "bvs_frame_semitransparent", position = {0, 0}},
+        style_mods = {minimal_width=resolution.width / scale, minimal_height=resolution.height / scale},
+        handlers = {[e.on_gui_click] = handlers.backdrop}
+    })
+
+    --- Create the actual GUI
     local frame, refs = glib.add(player.gui.screen, {
-        args = {type = "frame", name = "game_finished", direction = "vertical", caption = {"gui-game-finished.title"}},
+        args = {type = "frame", name = "bvs_game_finished", direction = "vertical", caption = {"gui-game-finished.title"}},
         style_mods = {maximal_height = 930},
         handlers = {[e.on_gui_closed] = handlers.continue},
         children = {{
@@ -51,7 +61,6 @@ function gui.create(player, categories)
             children = {{
                 args = {type = "button", caption = {"gui-game-finished.finish"}, style = "red_back_button", 
                         enabled=false, tooltip = "Modded GUIs cannot exit the game. It is still possible to 'Continue' and exit manually."},
-                handlers = {[e.on_gui_click] = handlers.finish}
             }, {
                 args = {type = "empty-widget"},
                 style_mods = {horizontally_stretchable = true},
@@ -91,15 +100,15 @@ function gui.create(player, categories)
     ---@diagnostic enable: missing-fields
 end
 
-function handlers.finish(event)
+function handlers.backdrop(event)
     local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
-    player.gui.screen.game_finished.destroy()
-    error("[color=#00ff00]There isn't a way for a mod to return to the main menu with a button, so this is as good as it gets[/color]")
+    player.gui.screen.bvs_game_finished.bring_to_front()
 end
 
 function handlers.continue(event)
     local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
-    player.gui.screen.game_finished.destroy()
+    player.gui.screen.bvs_backdrop.destroy()
+    player.gui.screen.bvs_game_finished.destroy()
     game.tick_paused = false
 end
 
