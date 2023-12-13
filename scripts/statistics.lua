@@ -294,22 +294,22 @@ function statistics.for_force(force)
 
     stats["infrastructure"] = {stats = {
         ["machines"] =          {value = get_total_machines(force)},
-        ["transport-belts"] =   {value = lib.format_distance(get_total_belt_length(force))},
-        ["rails"] =             {value = lib.format_distance(get_total_rail_length(force))},
-        ["pipes"] =             {value = lib.format_distance(get_total_pipe_length(force))},
+        ["transport-belts"] =   {value = get_total_belt_length(force), unit="distance"},
+        ["rails"] =             {value = get_total_rail_length(force), unit="distance"},
+        ["pipes"] =             {value = get_total_pipe_length(force), unit="distance"},
         ["trains"] =            {value = get_total_trains(force)},
         ["train-stations"] =    {value = get_total_train_stations(force)},
     }}
 
     stats["production"] = {stats = {
-        ["peak-power"] =        {value = lib.format_power(get_peak_power_generation(force))},
-        ["items-produced"] =    {value = lib.format_number(get_items_produced(force), true, 1)},
-        ["science-consumed"] =  {value = lib.format_number(get_total_science_packs_consumed(force), true, 1)},
+        ["peak-power"] =        {value = get_peak_power_generation(force), unit="power"},
+        ["items-produced"] =    {value = get_items_produced(force)},
+        ["science-consumed"] =  {value = get_total_science_packs_consumed(force)},
     }}
 
     stats["miscellaneous"] = {stats = {
         ["total-train-kills"] = {value = get_total_kills_by_train(force)},
-        ["area-explored"] =     {value = lib.format_area(get_total_area_explored(force))},
+        ["area-explored"] =     {value = get_total_area_explored(force), unit="area"},
     }}
 
     return stats
@@ -324,9 +324,9 @@ function statistics.for_player(player)
     stats["player"] = {stats = {
         ["deaths"] =            {value = player_data.deaths},
         ["kills"] =             {value = player_data.kills},
-        ["distance-walked"] =   {value = lib.format_distance(player_data.distance_walked)},
-        ["distance-drove"] =    {value = lib.format_distance(player_data.distance_drove)},
-        ["handcrafting-time"] = {value = lib.format_time(player_data.ticks_crafted)},
+        ["distance-walked"] =   {value = player_data.distance_walked,   unit="distance"},
+        ["distance-drove"] =    {value = player_data.distance_drove,    unit="distance"},
+        ["handcrafting-time"] = {value = player_data.ticks_crafted,     unit="time"},
     }}
 
     return stats

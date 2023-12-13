@@ -9,6 +9,21 @@ local e = defines.events
 local name_column_width = 137
 local value_column_width = 82   -- Keeps the golden ration used by vanilla gui
 
+local format_handlers = {
+    ["number"] = function(number) return lib.format_number(number, true, 1) end,
+    ["distance"] = lib.format_distance,
+    ["area"] = lib.format_area,
+    ["time"] = lib.format_time,
+    ["power"] = lib.format_power,
+}
+
+local function format_statistic_value(value, unit)
+    unit = unit or "number"
+    if not format_handlers[unit] then unit = "number" end
+    local format_handler = format_handlers[unit]
+    return format_handler(value)
+end
+
 ---@param player LuaPlayer
 ---@param categories StatisticCategories
 function gui.create(player, categories)
@@ -95,7 +110,7 @@ function gui.create(player, categories)
                 caption = {"", {"bvs-stats."..stat_name}, ":"},
                 tooltip = {"?", {"bvs-stat-tooltip."..stat_name}, ""}
             }
-            category_table.add{type = "label", caption = stat.value}
+            category_table.add{type = "label", caption = format_statistic_value(stat.value, stat.unit)}
         end
     end
     ---@diagnostic enable: missing-fields
