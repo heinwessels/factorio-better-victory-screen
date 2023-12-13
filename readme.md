@@ -16,4 +16,5 @@ A better victory screen that places the focus on automation, and not combat.
 # Credits
 - [_CodeGreen](https://mods.factorio.com/user/_CodeGreen) for creating the foundation this mod is built upon.
 - [Therenas](https://mods.factorio.com/mod/factoryplanner) for the code to create a semi-transparent backdrop.
+- [Shadow_man](https://mods.factorio.com/user/Shadow_Man) for initial Russian translation. 
 - _justarandomgeek_ for the [Factorio Modding Toolkit](https://marketplace.visualstudio.com/items?itemName=justarandomgeek.factoriomod-debug), without which this mod would not have been possible.
