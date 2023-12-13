@@ -1,8 +1,10 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.2
-Date: ??.12.2023
+Date: 13.12.2023
+  Features:
+    - Add new statistic "Total Enemy Kills"
   Changes:
-    - (Interal) Add localization to all text so that it can be translated.
+    - (Internal) Add localization to all text so that it can be translated.
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.1
 Date: 10.12.2023

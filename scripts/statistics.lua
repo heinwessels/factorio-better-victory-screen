@@ -254,6 +254,21 @@ end
 
 ---@param force LuaForce
 ---@return integer
+local function get_total_enemy_kills(force)
+    local count = 0
+
+    local force_stats = force.kill_count_statistics
+    for enity_type, _ in pairs(game.get_filtered_entity_prototypes
+        {{filter = "type", type = {"unit", "unit-spawner"}}}
+    ) do
+        count = count + force_stats.get_input_count(enity_type)
+    end
+
+    return count
+end
+
+---@param force LuaForce
+---@return integer
 local function get_total_kills_by_train(force)
     local count = 0
 
@@ -308,6 +323,7 @@ function statistics.for_force(force)
     }}
 
     stats["miscellaneous"] = {stats = {
+        ["total-enemy-kills"] = {value = get_total_enemy_kills(force)},
         ["total-train-kills"] = {value = get_total_kills_by_train(force)},
         ["area-explored"] =     {value = get_total_area_explored(force), unit="area"},
     }}
