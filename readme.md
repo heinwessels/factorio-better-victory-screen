@@ -1,5 +1,7 @@
 # Better Victory Screen
 
+[![shield](https://img.shields.io/badge/dynamic/json?color=orange&label=Factorio&query=downloads_count&suffix=%20downloads&url=https%3A%2F%2Fmods.factorio.com%2Fapi%2Fmods%2Fbetter-victory-screen)](https://mods.factorio.com/mod/better-victory-screen)
+
 A better victory screen that places the focus on automation, and not combat.
 
 **Note:**  You can view the victory screen at any time by typing the command `/show-victory-screen`.

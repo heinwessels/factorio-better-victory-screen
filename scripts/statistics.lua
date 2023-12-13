@@ -292,28 +292,25 @@ end
 function statistics.for_force(force)
     local stats = {}
 
-    stats["Infrastructure"] = stats["Infrastructure"] or { }
-    stats["Infrastructure"].stats = {
-        {name = "Machines", value = get_total_machines(force)},
-        {name = "Transport belts", value = lib.format_distance(get_total_belt_length(force))},
-        {name = "Rails", value = lib.format_distance(get_total_rail_length(force))},
-        {name = "Pipes", value = lib.format_distance(get_total_pipe_length(force))},
-        {name = "Trains", value = get_total_trains(force)},
-        {name = "Train Stations", value = get_total_train_stations(force)},
-    }
+    stats["infrastructure"] = {stats = {
+        ["machines"] =          {value = get_total_machines(force)},
+        ["transport-belts"] =   {value = lib.format_distance(get_total_belt_length(force))},
+        ["rails"] =             {value = lib.format_distance(get_total_rail_length(force))},
+        ["pipes"] =             {value = lib.format_distance(get_total_pipe_length(force))},
+        ["trains"] =            {value = get_total_trains(force)},
+        ["train-stations"] =    {value = get_total_train_stations(force)},
+    }}
 
-    stats["Production"] = stats["Production"] or { }
-    stats["Production"].stats = {
-        {name = "Peak Power Generation", value = lib.format_power(get_peak_power_generation(force))},
-        {name = "Items Produced", value = lib.format_number(get_items_produced(force), true, 1)},
-        {name = "Science Packs Consumed", value = lib.format_number(get_total_science_packs_consumed(force), true, 1)},
-    }
+    stats["production"] = {stats = {
+        ["peak-power"] =        {value = lib.format_power(get_peak_power_generation(force))},
+        ["items-produced"] =    {value = lib.format_number(get_items_produced(force), true, 1)},
+        ["science-consumed"] =  {value = lib.format_number(get_total_science_packs_consumed(force), true, 1)},
+    }}
 
-    stats["Miscellaneous"] = stats["Miscellaneous"] or { }
-    stats["Miscellaneous"].stats = {
-        {name = "Total kills by train", value = get_total_kills_by_train(force)},
-        {name = "Area explored", value = lib.format_area(get_total_area_explored(force))},
-    }
+    stats["miscellaneous"] = {stats = {
+        ["total-train-kills"] = {value = get_total_kills_by_train(force)},
+        ["area-explored"] =     {value = lib.format_area(get_total_area_explored(force))},
+    }}
 
     return stats
 end
@@ -324,14 +321,13 @@ function statistics.for_player(player)
     local stats = {}
     local player_data = global.statistics.players[player.index] --[[@as StatisticsPlayerData]]
 
-    stats["Player"] = stats["Player"] or { }
-    stats["Player"].stats = {
-        {name = "Deaths", value = player_data.deaths},
-        {name = "Kills", value = player_data.kills},
-        {name = "Distance Walked", value = lib.format_distance(player_data.distance_walked)},
-        {name = "Distance Drove", value = lib.format_distance(player_data.distance_drove)},
-        {name = "Time spent handcrafting", value = lib.format_time(player_data.ticks_crafted)},
-    }
+    stats["player"] = {stats = {
+        ["deaths"] =            {value = player_data.deaths},
+        ["kills"] =             {value = player_data.kills},
+        ["distance-walked"] =   {value = lib.format_distance(player_data.distance_walked)},
+        ["distance-drove"] =    {value = lib.format_distance(player_data.distance_drove)},
+        ["handcrafting-time"] = {value = lib.format_time(player_data.ticks_crafted)},
+    }}
 
     return stats
 end

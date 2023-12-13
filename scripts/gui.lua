@@ -59,7 +59,7 @@ function gui.create(player, categories)
         }, {
             args = {type = "flow", direction = "horizontal", style = "dialog_buttons_horizontal_flow"},
             children = {{
-                args = {type = "button", caption = {"gui-game-finished.finish"}, style = "red_back_button", 
+                args = {type = "button", caption = {"gui-game-finished.finish"}, style = "red_back_button",
                         enabled=false, tooltip = "Modded GUIs cannot exit the game. It is still possible to 'Continue' and exit manually."},
             }, {
                 args = {type = "empty-widget"},
@@ -75,25 +75,26 @@ function gui.create(player, categories)
 
     local stats_gui = refs.statistics
 
-    for name, category in pairs(categories) do
+    for category_name, category in pairs(categories) do
         local def = {
             args = {type = "table", column_count = 2, style = "finished_game_table"},
             children = {{
-                args = {type = "label", caption = name, style = "caption_label"},
+                args = {type = "label", caption = {"bvs-categories."..category_name}, style = "caption_label"},
                 style_mods = {horizontally_stretchable = true},
             }, {
                 args = {type = "empty-widget"},
                 style_mods = {minimal_width = value_column_width, horizontal_align = "right"}, -- width required because can't sync table column widths yet
             }}
         }
-        if category.value then
-            def.children[2].args = {type = "label", caption = category.value}
-        end
 
         local category_table = glib.add(stats_gui, def)
 
-        for _, stat in pairs(category.stats or {}) do
-            category_table.add{type = "label", caption = {"", stat.name, ":"}}
+        for stat_name, stat in pairs(category.stats or {}) do
+            category_table.add{
+                type = "label", 
+                caption = {"", {"bvs-stats."..stat_name}, ":"},
+                tooltip = {"?", {"bvs-stat-tooltip."..stat_name}, ""}
+            }
             category_table.add{type = "label", caption = stat.value}
         end
     end
