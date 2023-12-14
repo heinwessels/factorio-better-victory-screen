@@ -10,7 +10,7 @@ A better victory screen that places the focus on automation, and not combat.
 
 ### Caveats:
 - Some statistics (like "distance walked") will only be accurate if mod is added at the start of a save file.
-- Most overhaul mods are not supported.
+- Overhaul mods that change the vanilla victory condition is not supported.
 - Finish button is not functional due to modding API limitations.
 
 # Credits
