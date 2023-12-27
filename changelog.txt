@@ -4,6 +4,7 @@ Date: ??.12.2023
   Features:
     - Add support for other mods to add custom entries to the GUI.
   Bugfixes:
+    - Fix Player Kills not being tracked properly.
     - Fix typo "Distance Drove" to "Distance Driver". (Thank SpeckledFleebeedoo!)
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.3

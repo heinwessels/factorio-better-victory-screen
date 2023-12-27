@@ -349,7 +349,7 @@ function statistics.for_player(player)
 end
 
 ---@param event EventData.on_entity_died
-local function on_entity_killed(event)
+local function on_entity_died(event)
     local cause = event.cause
     if not cause then return end
     if cause.type ~= "character" then return end
@@ -404,6 +404,7 @@ statistics.on_nth_tick = {
 
 statistics.events = {
     [defines.events.on_player_changed_position] = on_player_changed_position,
+    [defines.events.on_entity_died] = on_entity_died,
 
     [defines.events.on_player_died] = function(event)
         global.statistics.players[event.player_index].deaths
