@@ -1,6 +1,8 @@
 ---------------------------------------------------------------------------------------------------
-Version: 0.1.4
+Version: 0.2.0
 Date: ??.12.2023
+  Features:
+    - Add support for other mods to add custom entries to the GUI.
   Bugfixes:
     - Fix typo "Distance Drove" to "Distance Driver". (Thank SpeckledFleebeedoo!)
 ---------------------------------------------------------------------------------------------------

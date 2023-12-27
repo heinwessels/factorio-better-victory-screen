@@ -24,6 +24,17 @@ local function format_statistic_value(value, unit)
     return format_handler(value)
 end
 
+local function ordered_keys(t)
+    local sorted_keys = { }
+    for key, _ in pairs(t) do table.insert(sorted_keys, key) end
+    table.sort(sorted_keys, function(a, b)
+        local a_order = t[a].order or "m"
+        local b_order = t[b].order or "m"
+        return a_order < b_order
+    end)
+    return sorted_keys
+end
+
 ---@param player LuaPlayer
 ---@param categories StatisticCategories
 function gui.create(player, categories)
@@ -90,7 +101,10 @@ function gui.create(player, categories)
 
     local stats_gui = refs.statistics
 
-    for category_name, category in pairs(categories) do
+    for _, category_name in pairs(ordered_keys(categories)) do
+        local category = categories[category_name]
+        if category.ignore then goto continue_category end
+
         local def = {
             args = {type = "table", column_count = 2, style = "finished_game_table"},
             children = {{
@@ -104,14 +118,21 @@ function gui.create(player, categories)
 
         local category_table = glib.add(stats_gui, def)
 
-        for stat_name, stat in pairs(category.stats or {}) do
+        for _, stat_name in pairs(ordered_keys(category.stats)) do
+            local stat = category.stats[stat_name]
+            if stat.ignore then goto continue_stat end
+
             category_table.add{
                 type = "label", 
                 caption = {"", {"bvs-stats."..stat_name}, ":"},
                 tooltip = {"?", {"bvs-stat-tooltip."..stat_name}, ""}
             }
             category_table.add{type = "label", caption = format_statistic_value(stat.value, stat.unit)}
+
+            ::continue_stat::
         end
+
+        ::continue_category::
     end
     ---@diagnostic enable: missing-fields
 end

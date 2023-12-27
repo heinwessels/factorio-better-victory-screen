@@ -307,22 +307,22 @@ end
 function statistics.for_force(force)
     local stats = {}
 
-    stats["infrastructure"] = {stats = {
-        ["machines"] =          {value = get_total_machines(force)},
-        ["transport-belts"] =   {value = get_total_belt_length(force), unit="distance"},
-        ["rails"] =             {value = get_total_rail_length(force), unit="distance"},
-        ["pipes"] =             {value = get_total_pipe_length(force), unit="distance"},
-        ["trains"] =            {value = get_total_trains(force)},
-        ["train-stations"] =    {value = get_total_train_stations(force)},
+    stats["infrastructure"] = {order = "e", stats = {
+        ["machines"] =          {value = get_total_machines(force),                         order="a"},
+        ["transport-belts"] =   {value = get_total_belt_length(force), unit="distance",     order="b"},
+        ["rails"] =             {value = get_total_rail_length(force), unit="distance",     order="c"},
+        ["pipes"] =             {value = get_total_pipe_length(force), unit="distance",     order="d"},
+        ["trains"] =            {value = get_total_trains(force),                           order="e"},
+        ["train-stations"] =    {value = get_total_train_stations(force),                   order="f"},
     }}
 
-    stats["production"] = {stats = {
+    stats["production"] = {order = "f", stats = {
         ["peak-power"] =        {value = get_peak_power_generation(force), unit="power"},
         ["items-produced"] =    {value = get_items_produced(force)},
         ["science-consumed"] =  {value = get_total_science_packs_consumed(force)},
     }}
 
-    stats["miscellaneous"] = {stats = {
+    stats["miscellaneous"] = {order = "g", stats = {
         ["total-enemy-kills"] = {value = get_total_enemy_kills(force)},
         ["total-train-kills"] = {value = get_total_kills_by_train(force)},
         ["area-explored"] =     {value = get_total_area_explored(force), unit="area"},
@@ -337,12 +337,12 @@ function statistics.for_player(player)
     local stats = {}
     local player_data = global.statistics.players[player.index] --[[@as StatisticsPlayerData]]
 
-    stats["player"] = {stats = {
-        ["deaths"] =            {value = player_data.deaths},
-        ["kills"] =             {value = player_data.kills},
-        ["distance-walked"] =   {value = player_data.distance_walked,   unit="distance"},
-        ["distance-drove"] =    {value = player_data.distance_drove,    unit="distance"},
-        ["handcrafting-time"] = {value = player_data.ticks_crafted,     unit="time"},
+    stats["player"] = {order = "d", stats = {
+        ["deaths"] =            {value = player_data.deaths,                                order="a"},
+        ["kills"] =             {value = player_data.kills,                                 order="b"},
+        ["distance-walked"] =   {value = player_data.distance_walked,   unit="distance",    order="c"},
+        ["distance-drove"] =    {value = player_data.distance_drove,    unit="distance",    order="d"},
+        ["handcrafting-time"] = {value = player_data.ticks_crafted,     unit="time",        order="e"},
     }}
 
     return stats
