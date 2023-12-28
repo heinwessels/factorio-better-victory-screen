@@ -24,6 +24,20 @@ local function format_statistic_value(value, unit)
     return format_handler(value)
 end
 
+local tooltip_units = {
+    ["distance"] = "m",
+    ["area"] = "km2",
+    ["power"] = "W",
+}
+
+local function format_tooltip(value, unit)
+    if unit == "time" then return "" end
+    local unit_str = tooltip_units[unit]
+    local decimals = (unit ~= "area") and 2 or 3
+    value = lib.format_number(value, false, decimals)
+    return value .. ( unit_str and (" "..unit_str) or "")
+end
+
 local function ordered_keys(t)
     local sorted_keys = { }
     for key, _ in pairs(t) do table.insert(sorted_keys, key) end
@@ -127,7 +141,12 @@ function gui.create(player, categories)
                 caption = {"", {"bvs-stats."..stat_name}, ":"},
                 tooltip = {"?", {"bvs-stat-tooltip."..stat_name}, ""}
             }
-            category_table.add{type = "label", caption = format_statistic_value(stat.value, stat.unit)}
+
+            category_table.add{
+                type = "label",
+                caption = format_statistic_value(stat.value, stat.unit),
+                tooltip = format_tooltip(stat.value, stat.unit),
+            }
 
             ::continue_stat::
         end

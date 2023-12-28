@@ -66,9 +66,6 @@ end
 
 function lib.format_area(amount)
 
-    -- Always convert to km2
-    amount = amount / (1000 * 1000)
-
     if amount < 1000 then
         amount = lib.format_number(amount, false, 3)
     else

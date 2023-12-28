@@ -302,7 +302,8 @@ local function get_total_area_explored(force)
         ::continue::
     end
 
-    return chunks_charted * ( 16 * 16)
+    -- Convert chunks to km2
+    return chunks_charted * ( 16 * 16) / (1000 * 1000)
 end
 
 ---@param force LuaForce
