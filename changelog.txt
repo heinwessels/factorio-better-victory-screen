@@ -1,6 +1,11 @@
 ---------------------------------------------------------------------------------------------------
-Version: 0.2.0
+Version: 0.2.1
 Date: ??.12.2023
+  Changes:
+    - Storage Tanks are now taken into account for the total pipeline length.
+---------------------------------------------------------------------------------------------------
+Version: 0.2.0
+Date: 27.12.2023
   Features:
     - Add support for other mods to add custom entries to the GUI.
   Bugfixes:

@@ -111,6 +111,9 @@ local function get_total_pipe_length(force)
         local pipe = surface.count_entities_filtered{type = "pipe", force = force}
         distance = distance + pipe
 
+        local tanks = surface.count_entities_filtered{type = "storage-tank", force = force}
+        distance = distance + (tanks * 3) -- Let's say a tank adds 3m of pipeline
+
         -- Assume an average extend length of 50% of the maximum distance
         for prototype_name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "pipe-to-ground"}}) do
             local amount = surface.count_entities_filtered{name=prototype_name, force=force}

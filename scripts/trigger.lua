@@ -10,7 +10,6 @@ local function gather_statistics()
     for interface, functions in pairs(remote.interfaces) do
         if functions[gather_function_name] then
             local received_statistics = remote.call(interface, gather_function_name) --[[@as table]]
-            -- TODO Sanitation  
             statistics = util.merge{statistics, received_statistics}
         end
     end
@@ -30,10 +29,11 @@ local function show_victory_screen()
         for _, player in pairs(force.connected_players) do
             local other_player_statistics = other_statistics.by_player[player.index] or { }
             gui.create(player, util.merge{
-                trigger.statistics.for_player(player),
-                other_player_statistics,
+                -- Order is important. Later will override previous
                 force_statistics,
+                trigger.statistics.for_player(player),
                 other_force_statistics,
+                other_player_statistics,
             })
         end
 
