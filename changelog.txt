@@ -5,6 +5,7 @@ Date: ??.12.2023
     - All values now have the full untruncated value in the tooltip.
   Changes:
     - Storage Tanks are now taken into account for the total pipeline length.
+    - Clear player cursor before showing the GUI.
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.0
 Date: 27.12.2023

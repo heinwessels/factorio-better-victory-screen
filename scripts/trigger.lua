@@ -27,6 +27,10 @@ local function show_victory_screen()
         local other_force_statistics = other_statistics.by_force[force.name] or { }
 
         for _, player in pairs(force.connected_players) do
+
+            -- Clear the cursor because it's annoying if it's still there
+            player.clear_cursor()
+
             local other_player_statistics = other_statistics.by_player[player.index] or { }
             gui.create(player, util.merge{
                 -- Order is important. Later will override previous
