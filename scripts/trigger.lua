@@ -5,20 +5,22 @@ local trigger = { }
 local gather_function_name = "better-victory-screen-statistics"
 
 --- Gather statistics from other mods
-local function gather_statistics()
+---@param winning_force LuaForce
+local function gather_statistics(winning_force)
     local statistics = { by_force = { }, by_player = { } }
     for interface, functions in pairs(remote.interfaces) do
         if functions[gather_function_name] then
-            local received_statistics = remote.call(interface, gather_function_name) --[[@as table]]
+            local received_statistics = remote.call(interface, gather_function_name, winning_force) --[[@as table]]
             statistics = util.merge{statistics, received_statistics}
         end
     end
     return statistics
 end
 
-local function show_victory_screen()
+---@param winning_force LuaForce
+local function show_victory_screen(winning_force)
 
-    local other_statistics = gather_statistics()
+    local other_statistics = gather_statistics(winning_force)
 
     for _, force in pairs(game.forces) do
         if trigger.statistics.is_force_blacklisted(force.name) then goto continue end
@@ -55,7 +57,7 @@ local function trigger_victory(force)
     if global.finished[force.name] then return end
     global.finished[force.name] = true
 
-    show_victory_screen()
+    show_victory_screen(force)
 end
 
 ---@param event EventData.on_rocket_launched

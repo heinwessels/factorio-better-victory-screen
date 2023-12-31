@@ -1,6 +1,6 @@
 {
   "name": "better-victory-screen",
-  "version": "0.2.0",
+  "version": "0.2.1",
   "title": "Better Victory Screen",
   "description": "A better victory screen that places the focus on automation, and not combat. Likely not compatible with mods that change the vanilla victory condition.",
   "author": "stringweasel",
