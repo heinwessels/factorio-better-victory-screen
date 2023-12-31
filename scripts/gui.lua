@@ -132,7 +132,7 @@ function gui.create(player, categories)
 
         local category_table = glib.add(stats_gui, def)
 
-        for _, stat_name in pairs(ordered_keys(category.stats)) do
+        for _, stat_name in pairs(ordered_keys(category.stats or { })) do
             local stat = category.stats[stat_name]
             if stat.ignore then goto continue_stat end
 

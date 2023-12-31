@@ -12,6 +12,7 @@ A better victory screen that places the focus on automation, and not combat.
 - Some statistics (like "distance walked") will only be accurate if mod is added at the start of a save file.
 - Overhaul mods that change the vanilla victory condition is not supported.
 - Finish button is not functional due to modding API limitations.
+- Technically the game engine will never be notified that the game actually completes, and which might prevent some achievements.
 
 # Credits
 - [_CodeGreen](https://mods.factorio.com/user/_CodeGreen) for creating the foundation this mod is built upon.

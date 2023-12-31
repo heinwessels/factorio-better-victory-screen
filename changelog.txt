@@ -6,6 +6,7 @@ Date: ??.12.2023
   Changes:
     - Storage Tanks are now taken into account for the total pipeline length.
     - Clear player cursor before showing the GUI.
+    - Remove hard mod compatabilities.
   Bugfixes:
     - Fix area explored not being calculated correctly.
 ---------------------------------------------------------------------------------------------------
