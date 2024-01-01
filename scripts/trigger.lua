@@ -87,7 +87,7 @@ end
 
 function trigger.add_commands()
     commands.add_command("show-victory-screen", nil, function(command)
-        show_victory_screen()
+        show_victory_screen(game.forces.player)
     end)
 end
 
