@@ -11,4 +11,5 @@ handler.add_libraries({
     trigger,
     statistics,
     migrations,
+    require("scripts.tracker")
 })
