@@ -18,7 +18,6 @@ Any mods that change the game's victory condition will require explicit compatib
 # Caveats:
 - Some statistics (like "distance walked") will only be accurate if mod is added at the start of a save file.
 - Finish button is not functional due to modding API limitations.
-- Prevents some achievements, because technically the game engine will never be notified that the game actually completes.
 
 # Credits
 - [_CodeGreen](https://mods.factorio.com/user/_CodeGreen) for creating the foundation this mod is built upon.

@@ -57,6 +57,12 @@ local function trigger_victory(force)
     if global.finished[force.name] then return end
     global.finished[force.name] = true
 
+    -- Set the game state to victory without setting game_finished.
+    -- This will trigger the achievements without showing the vanilla GUI.
+    -- Thanks Rseding!
+    game.set_game_state({ player_won = true, victorious_force = force })
+
+    -- Show our GUI
     show_victory_screen(force)
 end
 
@@ -76,6 +82,7 @@ trigger.add_remote_interface = function()
 		--- @param no_victory boolean true to ignore vanilla victory conditions
 		set_no_victory = function(no_victory)
             global.disable_vanilla_victory = no_victory
+            remote.call("silo_script", "set_no_victory", true) -- Make sure it's disabled
 		end,
 
         --- @param force LuaForce
