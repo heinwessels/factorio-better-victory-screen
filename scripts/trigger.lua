@@ -1,5 +1,7 @@
 local gui = require("scripts.gui")
 local util = require("util")
+local blacklist = require("scripts.blacklist")
+local statistics = require("scripts.statistics")
 
 local trigger = { }
 local gather_function_name = "better-victory-screen-statistics"
@@ -7,14 +9,14 @@ local gather_function_name = "better-victory-screen-statistics"
 --- Gather statistics from other mods
 ---@param winning_force LuaForce
 local function gather_statistics(winning_force)
-    local statistics = { by_force = { }, by_player = { } }
+    local gathered_statistics = { by_force = { }, by_player = { } }
     for interface, functions in pairs(remote.interfaces) do
         if functions[gather_function_name] then
             local received_statistics = remote.call(interface, gather_function_name, winning_force) --[[@as table]]
-            statistics = util.merge{statistics, received_statistics}
+            gathered_statistics = util.merge{gathered_statistics, received_statistics}
         end
     end
-    return statistics
+    return gathered_statistics
 end
 
 ---@param winning_force LuaForce
@@ -23,9 +25,10 @@ local function show_victory_screen(winning_force)
     local other_statistics = gather_statistics(winning_force)
 
     for _, force in pairs(game.forces) do
-        if trigger.statistics.is_force_blacklisted(force.name) then goto continue end
+        if #force.connected_players == 0 then goto continue end
+        if blacklist.force(force.name) then goto continue end
 
-        local force_statistics = trigger.statistics.for_force(force)
+        local force_statistics = statistics.for_force(force)
         local other_force_statistics = other_statistics.by_force[force.name] or { }
 
         for _, player in pairs(force.connected_players) do
@@ -37,7 +40,7 @@ local function show_victory_screen(winning_force)
             gui.create(player, util.merge{
                 -- Order is important. Later will override previous
                 force_statistics,
-                trigger.statistics.for_player(player),
+                statistics.for_player(player),
                 other_force_statistics,
                 other_player_statistics,
             })
@@ -105,10 +108,8 @@ trigger.events = {
 function trigger.on_init(event)
     remote.call("silo_script", "set_no_victory", true)
 
-    global.finished = {}
-
-    ---@type table<string, table> Stats for every force
-    global.statistics = {}
+    -- Keep track of the forces who finished
+    global.finished = { }
 end
 
 return trigger

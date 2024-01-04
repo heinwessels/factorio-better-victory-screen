@@ -1,4 +1,15 @@
-local lib = { }
+local lib = { table = { } }
+
+---Removes all keys from a table that passes a filter
+---@param t         table
+---@param filter    fun(key: Any) : boolean should return true if should delete the key-value
+function lib.table.remove_keys_filtered(t, filter)
+    local keys_to_remove = { }
+    for key, _ in pairs(t) do
+        if filter(key) then table.insert(keys_to_remove, key) end
+    end
+    for _, key in pairs(keys_to_remove) do t[key] = nil end
+end
 
 ---@param amount any
 ---@param append_suffix boolean?

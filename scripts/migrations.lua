@@ -2,12 +2,14 @@
 
 local handler = { }
 
+local statistics = require("scripts.statistics")
+
 local migrations = {
     ["0.1.0"] = function()
         -- When this mod is added to an existing save then existing
         -- players need to be added to the tables
         for _, player in pairs(game.players) do
-            handler.statistics.setup_player(player)
+            statistics.setup_player(player)
         end
     end,
 }

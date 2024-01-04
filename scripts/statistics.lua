@@ -1,102 +1,70 @@
-local lib = require("scripts.lib")
-local util = require("util")
+local blacklist = require("scripts.blacklist")
+local tracker = require("scripts.tracker")
 
 local statistics = { }
 
-local surface_blacklist = {}
-
-local force_blacklist = util.list_to_map{
-    "enemy", "neutral",
+local all_machines = {
+    "assembling-machine",
+    "furnace",
+    "lab",
+    "boiler",
+    "generator",
+    "burner-generator",
+    "reactor",
+    "heat-interface",
+    "mining-drill",
+    "roboport",
+    "beacon",
+    "radar",
+    "rocket-silo",
 }
----@param force_name string
----@return boolean
-function statistics.is_force_blacklisted(force_name)
-    if force_blacklist[force_name] then return true end
-    if force_name:find("EE_TESTFORCE_") then return true end
-    return false
-end
 
 --- The amount of machines/buildings
 ---@param force LuaForce calculate statistics for
 ---@return integer
 local function get_total_machines(force)
-    local count = 0
-    for _, surface in pairs(game.surfaces) do
-        if surface_blacklist[surface.name] then goto continue end
-
-        count = count + surface.count_entities_filtered{
-            force = force,
-            type = {
-                "assembling-machine",
-                "lab",
-                "boiler",
-                "generator",
-                "burner-generator",
-                "reactor",
-                "heat-interface",
-                "mining-drill",
-                "roboport",
-                "beacon",
-                "radar",
-                "rocket-silo",
-            }
-        }
-
-        ::continue::
-    end
-
-    return count
+    return tracker.get_entity_count_by_type(force.name --[[@as ForceName]], all_machines)
 end
 
 ---@param force LuaForce calculate statistics for
 ---@return uint32 in m
 local function get_total_belt_length(force)
     local distance = 0
-    for _, surface in pairs(game.surfaces) do
-        if surface_blacklist[surface.name] then goto continue end
 
-        -- Assume each belt has a distance of 1m.
-        -- This isn't really true for corners, but meh. 
-        local belts = surface.count_entities_filtered{type = "transport-belt", force = force}
-        distance = distance + belts
+    -- Assume each belt has a distance of 1m.
+    -- This isn't really true for corners, but meh. 
+    local belts = tracker.get_entity_count_by_type(force.name --[[@as ForceName]], "transport-belt")
+    distance = distance + belts
 
-        -- Assume each splitter has a distance of 2m.
-        local splitters = surface.count_entities_filtered{type = "splitter", force = force}
-        distance = distance + (splitters * 2)
+    -- Assume each splitter has a distance of 2m.
+    local splitters = tracker.get_entity_count_by_type(force.name --[[@as ForceName]], "splitter")
+    distance = distance + (splitters * 2)
 
-        -- Assume an average extend length of 50% of the maximum distance
-        for prototype_name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "underground-belt"}}) do
-            local amount = surface.count_entities_filtered{name=prototype_name, force=force}
-            -- Remember to take into a account we loop over single entities, and not pairs of undergroundies
-            local average_length_per_single_underground = prototype.max_underground_distance / 2 / 2
-            distance = distance + amount + (amount * average_length_per_single_underground)
-        end
-
-        ::continue::
+    -- Assume the undergroundies have an average extend length of 50% of the maximum distance
+    for prototype_name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "underground-belt"}}) do
+        local amount = tracker.get_entity_count_by_name(force.name --[[@as ForceName]], prototype_name)
+        -- Remember to take into a account we loop over single entities, and not pairs of undergroundies
+        local average_length_per_single_underground = prototype.max_underground_distance / 2 / 2
+        distance = distance + amount + (amount * average_length_per_single_underground)
     end
 
-    return math.floor(distance)
+    return math.floor(distance) -- Flooring to the nearest meter
 end
 
 ---@param force LuaForce calculate statistics for
 ---@return uint32 in m
 local function get_total_rail_length(force)
     local distance = 0
-    for _, surface in pairs(game.surfaces) do
-        if surface_blacklist[surface.name] then goto continue end
 
-        -- Assume each belt has a distance of 2m.
-        -- This isn't really true for diagonal pieces but meh
-        local straight = surface.count_entities_filtered{type = "straight-rail", force = force}
-        distance = distance + (straight * 2)
+    -- Assume each belt has a distance of 2m.
+    -- This isn't really true for diagonal pieces but meh
+    local straight = tracker.get_entity_count_by_name(force.name --[[@as ForceName]], "straight-rail")
+    distance = distance + (straight * 2)
 
-        -- Assume each curved rail has a length of 8m.
-        -- TODO This can be estimated better! 
-        local curved = surface.count_entities_filtered{type = "curved-rail", force = force}
-        distance = distance + (curved * 8)
-
-        ::continue::
-    end
+    -- Assume each curved rail has a length of 8m.
+    -- TODO This can be estimated better! 
+    local curved = tracker.get_entity_count_by_name(force.name --[[@as ForceName]], "curved-rail")
+    distance = distance + (curved * 8)
 
     return math.floor(distance)
 end
@@ -105,24 +73,23 @@ end
 ---@return uint32 in m
 local function get_total_pipe_length(force)
     local distance = 0
-    for _, surface in pairs(game.surfaces) do
-        if surface_blacklist[surface.name] then goto continue end
 
-        local pipe = surface.count_entities_filtered{type = "pipe", force = force}
-        distance = distance + pipe
+    -- Assume all pipes have a size of 1m. TODO is this true for Fluid Must Flow?
+    local pipe = tracker.get_entity_count_by_type(force.name --[[@as ForceName]], "pipe")
+    distance = distance + pipe
 
-        local tanks = surface.count_entities_filtered{type = "storage-tank", force = force}
-        distance = distance + (tanks * 3) -- Let's say a tank adds 3m of pipeline
+    -- Let's say a tank adds 3m of pipeline. TODO This is a bad assumption for non vanilla!
+    local tanks = tracker.get_entity_count_by_type(force.name --[[@as ForceName]], "storage-tank")
+    distance = distance + (tanks * 3)
 
-        -- Assume an average extend length of 50% of the maximum distance
-        for prototype_name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "pipe-to-ground"}}) do
-            local amount = surface.count_entities_filtered{name=prototype_name, force=force}
-            -- Remember to take into a account we loop over single entities, and not pairs of undergroundies
-            local average_length_per_single_underground = prototype.max_underground_distance / 2 / 2
-            distance = distance + amount + (amount * average_length_per_single_underground)
-        end
+    -- TODO take pumps into account?
 
-        ::continue::
+    -- Assume an average extend length of 50% of the maximum distance
+    for prototype_name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "pipe-to-ground"}}) do
+        local amount = tracker.get_entity_count_by_name(force.name --[[@as ForceName]], prototype_name)
+        -- Remember to take into a account we loop over single entities, and not pairs of undergroundies
+        local average_length_per_single_underground = prototype.max_underground_distance / 2 / 2
+        distance = distance + amount + (amount * average_length_per_single_underground)
     end
 
     return math.floor(distance)
@@ -137,16 +104,7 @@ end
 ---@param force LuaForce calculate statistics for
 ---@return integer
 local function get_total_train_stations(force)
-    local count = 0
-    for _, surface in pairs(game.surfaces) do
-        if surface_blacklist[surface.name] then goto continue end
-
-        count = count + surface.count_entities_filtered{type = "train-stop", force = force}
-
-        ::continue::
-    end
-
-    return count
+    return tracker.get_entity_count_by_name(force.name --[[@as ForceName]], {"train-stop"})
 end
 
 
@@ -172,7 +130,7 @@ local function get_peak_power_generation(force)
 
     local found_networks = { }
     for _, surface in pairs(game.surfaces) do
-        if surface_blacklist[surface.name] then goto continue end
+        if blacklist.surface(surface.name) then goto continue end
 
         for _, pole in pairs(surface.find_entities_filtered{type = "electric-pole", force = force}) do
             local network_id = pole.electric_network_id
@@ -291,7 +249,7 @@ local function get_total_area_explored(force)
     -- which is unnecesary chunk iterations. But this is the structure we have
     -- now, so it's good enough. For vanilla-ish playthroughs this is fine anyway.
     for _, surface in pairs(game.surfaces) do
-        if surface_blacklist[surface.name] then goto continue end
+        if blacklist.surface(surface.name) then goto continue end
 
         for chunk in surface.get_chunks() do
             if force.is_chunk_charted(surface, chunk) then
@@ -458,9 +416,29 @@ function statistics.setup_player(player)
     }
 end
 
+-- We will offload as much processing as possible to be done while the game loads
+-- so that it doesn't all happen when the GUI is trying to draw
+local function setup_trackers()
+    tracker.track_entity_count_by_type(all_machines)
+
+    tracker.track_entity_count_by_type{"transport-belt", "splitter"}
+    for prototype_name, _ in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "underground-belt"}}) do
+        tracker.track_entity_count_by_name{prototype_name}
+    end
+
+    tracker.track_entity_count_by_name{"straight-rail", "curved-rail"}
+
+    tracker.track_entity_count_by_type{"pipe", "storage-tank"}
+    for prototype_name, _ in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "pipe-to-ground"}}) do
+        tracker.track_entity_count_by_name{prototype_name}
+    end
+
+    tracker.track_entity_count_by_name{"train-stop"}
+end
+
 ---@param force LuaForce
 function statistics.setup_force(force)
-    if statistics.is_force_blacklisted(force.name) then return end
+    if blacklist.force(force.name) then return end
     ---@type StatisticsForceData
     global.statistics.forces[force.index] = { }
 end
@@ -472,6 +450,13 @@ function statistics.on_init (event)
         ---@type table<uint, StatisticsPlayerData>
         players = { },
     }
+
+    setup_trackers()
+end
+
+---@param event ConfigurationChangedData
+function statistics.on_configuration_changed(event)
+    setup_trackers()
 end
 
 return statistics
