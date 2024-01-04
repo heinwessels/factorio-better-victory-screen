@@ -269,6 +269,9 @@ end
 function statistics.for_force(force)
     local stats = {}
 
+    log("[BVS] Calculating statistics for force: `"..force.name.."'")
+    local profiler = game.create_profiler(false)
+
     stats["infrastructure"] = {order = "e", stats = {
         ["machines"] =          {value = get_total_machines(force),                         order="a"},
         ["transport-belts"] =   {value = get_total_belt_length(force), unit="distance",     order="b"},
@@ -277,17 +280,26 @@ function statistics.for_force(force)
         ["trains"] =            {value = get_total_trains(force),                           order="e"},
         ["train-stations"] =    {value = get_total_train_stations(force),                   order="f"},
     }}
+    log({"", "[BVS] Entity counts: ", profiler})
+
+    profiler.reset()
+    local peak_power_generation = get_peak_power_generation(force)
+    log({"", "[BVS] Peak Power: ", profiler})
 
     stats["production"] = {order = "f", stats = {
-        ["peak-power"] =        {value = get_peak_power_generation(force), unit="power"},
+        ["peak-power"] =        {value = peak_power_generation, unit="power"},
         ["items-produced"] =    {value = get_items_produced(force)},
         ["science-consumed"] =  {value = get_total_science_packs_consumed(force)},
     }}
 
+    profiler.reset()
+    local area_explored = get_total_area_explored(force)
+    log({"", "[BVS] Area Explored: ", profiler})
+
     stats["miscellaneous"] = {order = "g", stats = {
         ["total-enemy-kills"] = {value = get_total_enemy_kills(force)},
         ["total-train-kills"] = {value = get_total_kills_by_train(force)},
-        ["area-explored"] =     {value = get_total_area_explored(force), unit="area"},
+        ["area-explored"] =     {value = area_explored, unit="area"},
     }}
 
     return stats
