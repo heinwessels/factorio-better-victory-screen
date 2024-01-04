@@ -112,7 +112,6 @@ function gui.create(player, categories)
     })
     frame.force_auto_center()
     player.opened = frame
-    frame.bring_to_front()
 
     local stats_gui = refs.statistics
 
@@ -167,11 +166,6 @@ function handlers.continue(event)
     player.gui.screen.bvs_backdrop.destroy()
     player.gui.screen.bvs_game_finished.destroy()
     game.tick_paused = false
-
-    -- We will show the actual victory screen here. It's weird. You will have to click
-    -- on "Finish" twice, and hear the iconic victory tune twice. But I really want     
-    -- game.set_game_state{game_finished=true, player_won=true,
-    --         can_continue=true, victorious_force=game.forces.player}
 end
 
 glib.add_handlers(handlers)
