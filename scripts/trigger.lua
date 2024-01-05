@@ -53,7 +53,11 @@ end
 
 --- Trigger the victory screen
 ---@param force LuaForce
-local function trigger_victory(force)
+local function attempt_trigger_victory(force)
+    -- Do not trigger if the game already been finished
+    if game.finished or game.finished_but_continuing then return end
+
+    -- Check if this force already won according to our own cache
     if global.finished[force.name] then return end
     global.finished[force.name] = true
 
@@ -73,7 +77,7 @@ local function on_rocket_launched(event)
     local rocket = event.rocket
     if not (rocket and rocket.valid) then return end
 
-    trigger_victory(rocket.force --[[@as LuaForce]])
+    attempt_trigger_victory(rocket.force --[[@as LuaForce]])
 end
 
 trigger.add_remote_interface = function()
@@ -87,7 +91,7 @@ trigger.add_remote_interface = function()
 
         --- @param force LuaForce
         trigger_victory = function(force)
-            trigger_victory(force)
+            attempt_trigger_victory(force)
         end
     })
 end
