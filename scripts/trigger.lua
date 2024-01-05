@@ -1,5 +1,7 @@
 local gui = require("scripts.gui")
 local util = require("util")
+local blacklist = require("scripts.blacklist")
+local statistics = require("scripts.statistics")
 
 local trigger = { }
 local gather_function_name = "better-victory-screen-statistics"
@@ -10,7 +12,7 @@ local function get_forces_to_show()
     local forces_to_show = { }
     for _, force in pairs(game.forces) do
         if #force.connected_players == 0 then goto continue end
-        if trigger.statistics.is_force_blacklisted(force.name) then goto continue end
+        if blacklist.force(force.name) then goto continue end
         table.insert(forces_to_show, force)
         ::continue::
     end
@@ -21,26 +23,39 @@ end
 ---@param winning_force LuaForce
 ---@param forces LuaForce   list of forces that the GUI will be shown to
 local function gather_statistics(winning_force, forces)
-    local statistics = { by_force = { }, by_player = { } }
+    local gathered_statistics = { by_force = { }, by_player = { } }
     for interface, functions in pairs(remote.interfaces) do
         if functions[gather_function_name] then
             local received_statistics = remote.call(interface, gather_function_name, winning_force, forces) --[[@as table]]
-            statistics = util.merge{statistics, received_statistics}
+            gathered_statistics = util.merge{gathered_statistics, received_statistics}
         end
     end
-    return statistics
+    return gathered_statistics
 end
 
 ---@param winning_force LuaForce
 local function show_victory_screen(winning_force)
 
-    -- First determine for which forces we will show the screen
+    ---@type table<string, LuaProfiler>
+    local profilers = nil
+    if true then -- Keep this to false for releases
+        profilers = {
+            gather          = game.create_profiler(true),
+            infrastructure  = game.create_profiler(true),
+            peak_power      = game.create_profiler(true),
+            chunk_counter   = game.create_profiler(true),
+            total           = game.create_profiler(false), -- Start this profiler
+        }
+    end
+
     local forces_to_show = get_forces_to_show()
 
+    if profilers then profilers.gather.reset() end
     local other_statistics = gather_statistics(winning_force, forces_to_show)
+    if profilers then profilers.gather.stop() end
 
     for _, force in pairs(forces_to_show) do
-        local force_statistics = trigger.statistics.for_force(force)
+        local force_statistics = statistics.for_force(force, profilers)
         local other_force_statistics = other_statistics.by_force[force.name] or { }
         for _, player in pairs(force.connected_players) do
 
@@ -51,12 +66,24 @@ local function show_victory_screen(winning_force)
             gui.create(player, util.merge{
                 -- Order is important. Later will override previous
                 force_statistics,
-                trigger.statistics.for_player(player),
+                statistics.for_player(player, profilers),
                 other_force_statistics,
                 other_player_statistics,
             })
-
         end
+    end
+
+    if profilers then
+        profilers.total.stop()
+
+        log({"",
+            "Better Victory Screen Statistics collection:\n",
+            "\tOther mods: ", profilers.gather, "\n",
+            "\tInfrastructure: ", profilers.infrastructure, "\n",
+            "\tPeak Power: ", profilers.peak_power, "\n",
+            "\tChunk counter: ", profilers.chunk_counter, "\n",
+            "\tTOTAL: ", profilers.total, "\n",
+        })
     end
 
     if not game.is_multiplayer() then
@@ -64,7 +91,8 @@ local function show_victory_screen(winning_force)
     end
 end
 
---- Trigger the victory screen
+--- Trigger the game's victory condition and then
+--- show our custom victory screen 
 ---@param force LuaForce
 local function attempt_trigger_victory(force)
     -- Do not trigger if the game already been finished
@@ -110,7 +138,19 @@ trigger.add_remote_interface = function()
 end
 
 function trigger.add_commands()
+
+    ---@param command CustomCommandData
     commands.add_command("show-victory-screen", nil, function(command)
+        if script.active_mods["debugadapter"] then
+            -- Add additional option to trigger the actual victory, but
+            -- only while the debugger is active.
+            if command.parameter == "victory" then
+                trigger_victory(game.forces.player)
+                return
+            end
+        end
+
+        -- Normal operation
         show_victory_screen(game.forces.player)
     end)
 end
@@ -122,10 +162,8 @@ trigger.events = {
 function trigger.on_init(event)
     remote.call("silo_script", "set_no_victory", true)
 
-    global.finished = {}
-
-    ---@type table<string, table> Stats for every force
-    global.statistics = {}
+    -- Keep track of the forces who finished
+    global.finished = { }
 end
 
 return trigger

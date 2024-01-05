@@ -1,4 +1,22 @@
-local lib = { }
+local lib = { table = { } }
+
+---Removes all keys from a table that passes a filter
+---@param t         table
+---@param filter    fun(key: Any) : boolean should return true if should delete the key-value
+function lib.table.remove_keys_filtered(t, filter)
+    local keys_to_remove = { }
+    for key, _ in pairs(t) do
+        if filter(key) then table.insert(keys_to_remove, key) end
+    end
+    for _, key in pairs(keys_to_remove) do t[key] = nil end
+end
+
+---@param str string to trim
+---@return string that was trimmed
+local function trim_string(str)
+---@diagnostic disable-next-line: redundant-return-value
+    return str:gsub("^%s*(.-)%s*$", "%1")
+end
 
 ---@param amount any
 ---@param append_suffix boolean?
@@ -18,7 +36,7 @@ function lib.format_number(amount, append_suffix, decimals)
 
         for letter, limit in pairs (suffix_list) do
             if math.abs(amount) >= limit then
-                amount = math.floor(amount/(limit/10))/10
+                amount = math.floor(amount/(limit/1000000))/1000000
                 suffix = letter
                 break
             end
@@ -56,7 +74,7 @@ function lib.format_distance(amount)
 
     -- Trim some decimals
     if amount >= 1000 then
-        amount = math.floor(amount)
+        amount = math.floor(amount+0.5)
     else
         amount = lib.format_number(amount, false, 1)
     end
@@ -69,7 +87,7 @@ function lib.format_area(amount)
     if amount < 1000 then
         amount = lib.format_number(amount, false, 3)
     else
-        amount = math.floor(amount)
+        amount = math.floor(amount + 0.5)
     end
 
     return amount .. " km2"
