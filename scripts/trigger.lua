@@ -4,13 +4,27 @@ local util = require("util")
 local trigger = { }
 local gather_function_name = "better-victory-screen-statistics"
 
+---A list of forces to show the victory screen to
+---@return LuaForce[]
+local function get_forces_to_show()
+    local forces_to_show = { }
+    for _, force in pairs(game.forces) do
+        if #force.connected_players == 0 then goto continue end
+        if trigger.statistics.is_force_blacklisted(force.name) then goto continue end
+        table.insert(forces_to_show, force)
+        ::continue::
+    end
+    return forces_to_show
+end
+
 --- Gather statistics from other mods
 ---@param winning_force LuaForce
-local function gather_statistics(winning_force)
+---@param forces LuaForce   list of forces that the GUI will be shown to
+local function gather_statistics(winning_force, forces)
     local statistics = { by_force = { }, by_player = { } }
     for interface, functions in pairs(remote.interfaces) do
         if functions[gather_function_name] then
-            local received_statistics = remote.call(interface, gather_function_name, winning_force) --[[@as table]]
+            local received_statistics = remote.call(interface, gather_function_name, winning_force, forces) --[[@as table]]
             statistics = util.merge{statistics, received_statistics}
         end
     end
@@ -20,14 +34,14 @@ end
 ---@param winning_force LuaForce
 local function show_victory_screen(winning_force)
 
-    local other_statistics = gather_statistics(winning_force)
+    -- First determine for which forces we will show the screen
+    local forces_to_show = get_forces_to_show()
 
-    for _, force in pairs(game.forces) do
-        if trigger.statistics.is_force_blacklisted(force.name) then goto continue end
+    local other_statistics = gather_statistics(winning_force, forces_to_show)
 
+    for _, force in pairs(forces_to_show) do
         local force_statistics = trigger.statistics.for_force(force)
         local other_force_statistics = other_statistics.by_force[force.name] or { }
-
         for _, player in pairs(force.connected_players) do
 
             -- Clear the cursor because it's annoying if it's still there
@@ -41,9 +55,8 @@ local function show_victory_screen(winning_force)
                 other_force_statistics,
                 other_player_statistics,
             })
-        end
 
-        ::continue::
+        end
     end
 
     if not game.is_multiplayer() then

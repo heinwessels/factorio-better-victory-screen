@@ -56,7 +56,8 @@ It's possible to add or remove any custom entries to the victory GUI. This is do
 ```lua
 remote.add_interface("your-mod-name-but-doesn't-matter", {
     ---@param winning_force LuaForce
-    ["better-victory-screen-statistics"] = function(winning_force)
+    ---@param forces LuaForce[] list of forces that GUI will be show to
+    ["better-victory-screen-statistics"] = function(winning_force, forces)
         return table_containing_custom_statistics -- Will explain this now
     end
 })
