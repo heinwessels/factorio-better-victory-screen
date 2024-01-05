@@ -265,13 +265,12 @@ local function get_total_area_explored(force)
 end
 
 ---@param force LuaForce
+---@param profilers table<string, LuaProfiler>?
 ---@return table containing statistics
-function statistics.for_force(force)
+function statistics.for_force(force, profilers)
     local stats = {}
 
-    log("[BVS] Calculating statistics for force: `"..force.name.."'")
-    local profiler = game.create_profiler(false)
-
+    if profilers then profilers.infrastructure.reset() end
     stats["infrastructure"] = {order = "e", stats = {
         ["machines"] =          {value = get_total_machines(force),                         order="a"},
         ["transport-belts"] =   {value = get_total_belt_length(force), unit="distance",     order="b"},
@@ -280,11 +279,11 @@ function statistics.for_force(force)
         ["trains"] =            {value = get_total_trains(force),                           order="e"},
         ["train-stations"] =    {value = get_total_train_stations(force),                   order="f"},
     }}
-    log({"", "[BVS] Entity counts: ", profiler})
+    if profilers then profilers.infrastructure.stop() end
 
-    profiler.reset()
+    if profilers then profilers.peak_power.reset() end
     local peak_power_generation = get_peak_power_generation(force)
-    log({"", "[BVS] Peak Power: ", profiler})
+    if profilers then profilers.peak_power.stop() end
 
     stats["production"] = {order = "f", stats = {
         ["peak-power"] =        {value = peak_power_generation, unit="power"},
@@ -292,9 +291,9 @@ function statistics.for_force(force)
         ["science-consumed"] =  {value = get_total_science_packs_consumed(force)},
     }}
 
-    profiler.reset()
+    if profilers then profilers.chunk_counter.reset() end
     local area_explored = get_total_area_explored(force)
-    log({"", "[BVS] Area Explored: ", profiler})
+    if profilers then profilers.chunk_counter.stop() end
 
     stats["miscellaneous"] = {order = "g", stats = {
         ["total-enemy-kills"] = {value = get_total_enemy_kills(force)},
@@ -306,8 +305,9 @@ function statistics.for_force(force)
 end
 
 ---@param player LuaPlayer
+---@param profilers table<string, LuaProfiler>?
 ---@return table containing statistics
-function statistics.for_player(player)
+function statistics.for_player(player, profilers)
     local stats = {}
     local player_data = global.statistics.players[player.index] --[[@as StatisticsPlayerData]]
 

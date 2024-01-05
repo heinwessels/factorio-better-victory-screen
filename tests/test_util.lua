@@ -22,6 +22,14 @@ function test_util.assert_equal(a, b)
     if a ~= b then error(pre .. a .. " ~= " .. b) end
 end
 
+function test_util.assert_string_equal(a, b)
+    test_util.assert_not_nil(a)
+    test_util.assert_not_nil(b)
+    if type(a) ~= "string" then a = tostring(a) end
+    if type(b) ~= "string" then b = tostring(b) end
+    if a ~= b then error(pre .. "'" .. a .. "'" .. " ~= " .. "'" .. b .. "'") end
+end
+
 ---@param entity LuaEntity?
 function test_util.assert_valid_entity(entity)
     if not entity then

@@ -22,13 +22,27 @@ end
 ---@param winning_force LuaForce
 local function show_victory_screen(winning_force)
 
+    ---@type table<string, LuaProfiler>
+    local profilers = nil
+    if true then -- Keep this to false for releases
+        profilers = {
+            gather          = game.create_profiler(true),
+            infrastructure  = game.create_profiler(true),
+            peak_power      = game.create_profiler(true),
+            chunk_counter   = game.create_profiler(true),
+            total           = game.create_profiler(false),
+        }
+    end
+
+    if profilers then profilers.gather.reset() end
     local other_statistics = gather_statistics(winning_force)
+    if profilers then profilers.gather.stop() end
 
     for _, force in pairs(game.forces) do
         if #force.connected_players == 0 then goto continue end
         if blacklist.force(force.name) then goto continue end
 
-        local force_statistics = statistics.for_force(force)
+        local force_statistics = statistics.for_force(force, profilers)
         local other_force_statistics = other_statistics.by_force[force.name] or { }
 
         for _, player in pairs(force.connected_players) do
@@ -40,7 +54,7 @@ local function show_victory_screen(winning_force)
             gui.create(player, util.merge{
                 -- Order is important. Later will override previous
                 force_statistics,
-                statistics.for_player(player),
+                statistics.for_player(player, profilers),
                 other_force_statistics,
                 other_player_statistics,
             })
@@ -49,12 +63,26 @@ local function show_victory_screen(winning_force)
         ::continue::
     end
 
+    if profilers then
+        profilers.total.stop()
+
+        log({"",
+            "Better Victory Screen Statistics collection:\n",
+            "\tOther mods: ", profilers.gather, "\n",
+            "\tInfrastructure: ", profilers.gather, "\n",
+            "\tPeak Power: ", profilers.peak_power, "\n",
+            "\tChunk counter: ", profilers.chunk_counter, "\n",
+            "\tTOTAL: ", profilers.total, "\n",
+        })
+    end
+
     if not game.is_multiplayer() then
         game.tick_paused = true
     end
 end
 
---- Trigger the victory screen
+--- Trigger the game's victory condition and then
+--- show our custom victory screen 
 ---@param force LuaForce
 local function trigger_victory(force)
     if global.finished[force.name] then return end
@@ -96,7 +124,19 @@ trigger.add_remote_interface = function()
 end
 
 function trigger.add_commands()
+
+    ---@param command CustomCommandData
     commands.add_command("show-victory-screen", nil, function(command)
+        if script.active_mods["debugadapter"] then
+            -- Add additional option to trigger the actual victory, but
+            -- only while the debugger is active.
+            if command.parameter == "victory" then
+                trigger_victory(game.forces.player)
+                return
+            end
+        end
+
+        -- Normal operation
         show_victory_screen(game.forces.player)
     end)
 end

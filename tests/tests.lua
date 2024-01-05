@@ -10,6 +10,7 @@ local test_lib = { }
 local test_suites = {
     ["tracker"]     = require("tests.tracker"),
     ["blacklist"]   = require("tests.blacklist"),
+    -- ["formatting"]  = require("tests.formatting"), -- Needs some love
 }
 
 function test_lib.add_commands()

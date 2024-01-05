@@ -44,8 +44,6 @@ local data_key = "_bvs_tracker_cache"
 local TRACKER_TYPE = {
 	ENTITY_BY_NAME  = 0,
 	ENTITY_BY_TYPE  = 1,
-    TILE_BY_NAME    = 2,
-    CHUNKS          = 3,
 }
 
 ---@class Filter        : string
@@ -79,7 +77,6 @@ local data = {
     trackers = {
         [TRACKER_TYPE.ENTITY_BY_NAME]   = create_tracker(TRACKER_TYPE.ENTITY_BY_NAME),
         [TRACKER_TYPE.ENTITY_BY_TYPE]   = create_tracker(TRACKER_TYPE.ENTITY_BY_TYPE),
-        [TRACKER_TYPE.CHUNKS]           = create_tracker(TRACKER_TYPE.CHUNKS),
     },
     tracked_forces = { ["player"] = true },
 }
@@ -93,9 +90,6 @@ local is_valid_filter_functions = {
     [TRACKER_TYPE.ENTITY_BY_TYPE] = function (filter)
         return defines.prototypes['entity'][filter] ~= nil
     end,
-
-    [TRACKER_TYPE.TILE_BY_NAME]     = function (filter) return true end,
-    [TRACKER_TYPE.CHUNKS]           = function (filter) return true end,
 }
 
 ---Functions to recount each tracker type. Thiese functions will not be called often,
@@ -129,19 +123,6 @@ local recounting_functions = {
         end
         return count
     end,
-
-    [TRACKER_TYPE.TILE_BY_NAME] = function (filter, force_name)
-        error("Not implemented")
-        return 0
-    end,
-
-    [TRACKER_TYPE.CHUNKS] = function (filter, force_name)
-        -- Currently only counts charted squares. We can later use filter to count something else too
-        debug_assert(filter == "charted", "Only currently supporting counting charted chunks")
-        -- TODO Will this even work?
-        -- We will need some cache to the previously charted chunks, because a chunk can be recharted
-        return 0
-    end,
 }
 
 ---Removes outdated filters that no longer exist due to mods
@@ -173,7 +154,8 @@ end
 ---@param tracker               TrackerClass
 ---@param filter_to_recount     Filter? ensure a counters for this filter exists 
 local function refresh_tracker(tracker, filter_to_recount)
-    local filters
+    ---@type table<Filter, boolean>
+    local filters -- The filters that we will recount
     if filter_to_recount then
         tracker.tracking[filter_to_recount] = true -- Ensure it exists
         filters = { [filter_to_recount] = true}
@@ -184,7 +166,7 @@ local function refresh_tracker(tracker, filter_to_recount)
     local tick = game.tick
 
     for force_name, _ in pairs(data.tracked_forces) do
-        for filter, _ in pairs(filters) do --[[@cast filter Filter]]
+        for filter, _ in pairs(filters) do
 
             local force_counters = tracker.counters[force_name]
             if not force_counters then
@@ -217,7 +199,7 @@ local function reset_trackers()
     -- we changed a blacklist in the meantime.
     lib.table.remove_keys_filtered(
         data.tracked_forces,
-        function(force_name) return 
+        function(force_name) return
             game.forces[force_name] == nil
             or blacklist.force(force_name --[[@as ForceName]])
         end
@@ -285,6 +267,20 @@ local function get_tracker_count(tracker_type, force_name, filters)
     end
 
     return count
+end
+
+---Retreive a list of the forces being tracked by this tracker
+---This could be useful when calculating statistics when the
+-- victory screen is triggered.
+---@return string[]
+function tracker_lib.get_tracked_forces()
+    -- Make a copy of the table, and turn it into an array.
+    -- Don't want to give away a reference to an internal field
+    local tracked_forces = { }
+    for force_name, _ in pairs(data.tracked_forces) do
+      table.insert(tracked_forces, force_name)
+    end
+    return tracked_forces
 end
 
 --- Start tracking an specifc entity (or array of entities) by name
