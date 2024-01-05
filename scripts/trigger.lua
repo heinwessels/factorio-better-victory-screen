@@ -145,7 +145,7 @@ function trigger.add_commands()
             -- Add additional option to trigger the actual victory, but
             -- only while the debugger is active.
             if command.parameter == "victory" then
-                trigger_victory(game.forces.player)
+                attempt_trigger_victory(game.forces.player)
                 return
             end
         end
