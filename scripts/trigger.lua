@@ -12,7 +12,7 @@ local function get_forces_to_show()
     local forces_to_show = { }
     for _, force in pairs(game.forces) do
         if #force.connected_players == 0 then goto continue end
-        if trigger.statistics.is_force_blacklisted(force.name) then goto continue end
+        if blacklist.force(force.name) then goto continue end
         table.insert(forces_to_show, force)
         ::continue::
     end
@@ -27,7 +27,7 @@ local function gather_statistics(winning_force, forces)
     for interface, functions in pairs(remote.interfaces) do
         if functions[gather_function_name] then
             local received_statistics = remote.call(interface, gather_function_name, winning_force, forces) --[[@as table]]
-            statistics = util.merge{gathered_statistics, received_statistics}
+            gathered_statistics = util.merge{gathered_statistics, received_statistics}
         end
     end
     return gathered_statistics
@@ -79,7 +79,7 @@ local function show_victory_screen(winning_force)
         log({"",
             "Better Victory Screen Statistics collection:\n",
             "\tOther mods: ", profilers.gather, "\n",
-            "\tInfrastructure: ", profilers.gather, "\n",
+            "\tInfrastructure: ", profilers.infrastructure, "\n",
             "\tPeak Power: ", profilers.peak_power, "\n",
             "\tChunk counter: ", profilers.chunk_counter, "\n",
             "\tTOTAL: ", profilers.total, "\n",
