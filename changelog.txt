@@ -9,6 +9,7 @@ Date: 05.01.2024
   Bugfixes:
     - Prevent trigger victory when victory has been achieved before this mod was added.
     - Fixed furnaces-type entities not being part of the total machine count.
+    - Fix crash after starting a multiplayer game (Thanks Maeximus!).
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.2
 Date: 03.01.2024

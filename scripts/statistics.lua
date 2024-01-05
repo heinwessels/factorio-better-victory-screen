@@ -338,6 +338,14 @@ local function on_player_changed_position(event)
     local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
     local player_data = global.statistics.players[event.player_index]
 
+    if not player_data then
+        -- This should never happen, right? Then why did it?
+        -- I'll take this small UPS cost for now.
+        -- It only happens in multiplayer.
+        -- TODO: What is up with this?
+        statistics.setup_player(player)
+        player_data = global.statistics.players[event.player_index]
+    end
 
     -- Only measure distance when character controller.
     if player.controller_type ~= defines.controllers.character then
@@ -416,6 +424,7 @@ statistics.events = {
 ---@param player LuaPlayer
 function statistics.setup_player(player)
     ---@type StatisticsPlayerData
+    if global.statistics.players[player.index] then return end
     global.statistics.players[player.index] = {
         deaths = 0,
         kills = 0,
