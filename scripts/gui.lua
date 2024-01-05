@@ -15,6 +15,7 @@ local format_handlers = {
     ["area"] = lib.format_area,
     ["time"] = lib.format_time,
     ["power"] = lib.format_power,
+    ["percentage"] = lib.format_percentage,
 }
 
 local function format_statistic_value(value, unit)
@@ -28,6 +29,7 @@ local tooltip_units = {
     ["distance"] = "m",
     ["area"] = "km2",
     ["power"] = "W",
+    ["percentage"] = "%",
 }
 
 local function format_tooltip(value, unit)

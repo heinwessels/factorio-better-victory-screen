@@ -103,5 +103,18 @@ function lib.format_time(ticks)
     return string.format("%02d:%02d:%02d", hours, minutes, seconds)
 end
 
+function lib.format_percentage(amount)
+
+    if amount < 0.1 then
+        amount = lib.format_number(amount, false, 3)
+    elseif amount == 1 then
+        amount = lib.format_number(amount, false, 1)
+    else
+        amount = lib.format_number(amount, false, 2)
+    end
+
+    return amount .. " %"
+end
+
 
 return lib

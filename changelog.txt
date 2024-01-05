@@ -1,4 +1,13 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.3
+Date: ??.01.2024
+  Features:
+    - Support the percentage unit type for statistics.
+  Changes:
+    - Provide list of forces GUI will be shown to remote interfaces while gathering statistics.
+  Bugfixes:
+    - Prevent trigger victory when victory has been achieved before this mod was added.
+---------------------------------------------------------------------------------------------------
 Version: 0.2.2
 Date: 03.01.2024
   Bugfixes:

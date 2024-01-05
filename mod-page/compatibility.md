@@ -56,7 +56,8 @@ It's possible to add or remove any custom entries to the victory GUI. This is do
 ```lua
 remote.add_interface("your-mod-name-but-doesn't-matter", {
     ---@param winning_force LuaForce
-    ["better-victory-screen-statistics"] = function(winning_force)
+    ---@param forces LuaForce[] list of forces that GUI will be show to
+    ["better-victory-screen-statistics"] = function(winning_force, forces)
         return table_containing_custom_statistics -- Will explain this now
     end
 })
@@ -114,6 +115,7 @@ There is a bit of information here, which is:
     - `area` in km2
     - `time` in ticks
     - `power` in Watt
+    - `percentage` as a value between 0 and 1.
 - `order` (_optional_): Order the categories/statistics. Defaults to `m`
 
 This localization for this is done using normal localization where the key-name is the the localization key. For the snippet above the `locale/en/en.cfg` might look like:
@@ -127,6 +129,12 @@ gymnastics=Gymnastics
 breweries=Breweries Built
 asphalt=Asphalt Roads
 highest-jump=Highest Jump
+```
+
+You can also add an optional tooltip that will be shown be hovering over the statistic's name as follows:
+```
+[bvs-stat-tooltip]
+highest-jump=The highest the player could jump during gymnastics class.
 ```
 
 ## Hiding existing categories or statistics
