@@ -114,6 +114,7 @@ There is a bit of information here, which is:
     - `area` in km2
     - `time` in ticks
     - `power` in Watt
+    - `percentage` as a value between 0 and 1.
 - `order` (_optional_): Order the categories/statistics. Defaults to `m`
 
 This localization for this is done using normal localization where the key-name is the the localization key. For the snippet above the `locale/en/en.cfg` might look like:
@@ -127,6 +128,12 @@ gymnastics=Gymnastics
 breweries=Breweries Built
 asphalt=Asphalt Roads
 highest-jump=Highest Jump
+```
+
+You can also add an optional tooltip that will be shown be hovering over the statistic's name as follows:
+```
+[bvs-stat-tooltip]
+highest-jump=The highest the player could jump during gymnastics class.
 ```
 
 ## Hiding existing categories or statistics
