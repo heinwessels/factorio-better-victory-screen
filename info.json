@@ -1,6 +1,6 @@
 {
   "name": "better-victory-screen",
-  "version": "0.2.3",
+  "version": "0.2.4",
   "title": "Better Victory Screen",
   "description": "A better victory screen that places the focus on automation and not combat. Upon victory it shows various interesting game statistics, like the total amount of time you spent hand crafting and your peak power production.",
   "author": "stringweasel",

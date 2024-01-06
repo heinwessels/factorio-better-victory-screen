@@ -215,7 +215,7 @@ local function reset_trackers()
 end
 
 tracker_lib.on_init = initialize_data
-tracker_lib.on_load = initialize_data
+tracker_lib.on_load = function() data = global[data_key] or data end
 tracker_lib.on_configuration_changed = reset_trackers
 
 ---@param tracker_to_update     TrackerClass

@@ -102,7 +102,7 @@ local function reset_cache()
 end
 
 blacklist.on_init = initialize_cache
-blacklist.on_load = initialize_cache
+blacklist.on_load = function() data = global[data_key] or data end
 blacklist.on_configuration_changed = reset_cache
 
 return blacklist
