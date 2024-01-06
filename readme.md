@@ -12,6 +12,7 @@ Any mods that change the game's victory condition will require explicit compatib
 
 - [Ultracube: Age of Cube](https://mods.factorio.com/mod/Ultracube)
 - [Nullius](https://mods.factorio.com/mod/nullius)
+- [Bob's](https://mods.factorio.com/user/Bobingabout) and [Angel's](https://mods.factorio.com/user/Arch666Angel), and [SeaBlock](https://mods.factorio.com/mod/SeaBlock). **Note:** [SpaceX](https://mods.factorio.com/mod/SpaceMod) is not yet supported!
 
 **Note to mod developers:** If you want to add compatibility to your mod you can read how to [here](https://github.com/heinwessels/factorio-better-victory-screen/blob/main/mod-page/compatibility.md). 
 
