@@ -17,8 +17,8 @@ Normally this is done during `on_init`, but in order to support existing save ga
 
 ```lua
 local function better_victory_screen_support() do
-  for interface, functions in pairs(remote.interfaces) do
-    if (functions["set_no_victory"] ~= nil) then
+  for _, interface in pairs{"silo_script", "better-victory-screen"} do
+    if remote.interfaces[interface] and remote.interfaces[interface]["set_no_victory"] then
       remote.call(interface, "set_no_victory", true)
     end
   end
