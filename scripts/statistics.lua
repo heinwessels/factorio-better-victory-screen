@@ -107,67 +107,86 @@ local function get_total_train_stations(force)
     return tracker.get_entity_count_by_name(force.name --[[@as ForceName]], {"train-stop"})
 end
 
-
+---A table showing the different brackets, and for each bracket it shows some data. This contains
+-- the duration of the previous bracket in ticks of this bracket to know if we've played long enough to check this bracket.
+-- This is kinda weird, but removes one `if` from the loop. Meh
+-- It also contains the starting index we have to start checking at (out of 300) to not check data
+-- covered by the previous bracket
+---@type table<defines.flow_precision_index, uint32[]> Array is {previous-bracket-size, this-bracket-size} 
 local FLOW_PRECISION_BRACKETS = {
-    defines.flow_precision_index.one_thousand_hours,
-    defines.flow_precision_index.two_hundred_fifty_hours,
-    defines.flow_precision_index.fifty_hours,
-    defines.flow_precision_index.ten_hours,
-    defines.flow_precision_index.one_hour,
-    defines.flow_precision_index.ten_minutes,
-    defines.flow_precision_index.one_minute,
-    defines.flow_precision_index.five_seconds,
+    [defines.flow_precision_index.ten_minutes]              = { prev_size =                   0, starting_index = 1  },
+    [defines.flow_precision_index.one_hour]                 = { prev_size =        10 * 60 * 60, starting_index = 50 },
+    [defines.flow_precision_index.ten_hours]                = { prev_size =    1 * 60 * 60 * 60, starting_index = 30 },
+    [defines.flow_precision_index.fifty_hours]              = { prev_size =   10 * 60 * 60 * 60, starting_index = 60 },
+    [defines.flow_precision_index.two_hundred_fifty_hours]  = { prev_size =   50 * 60 * 60 * 60, starting_index = 60 },
+    [defines.flow_precision_index.one_thousand_hours]       = { prev_size =  250 * 60 * 60 * 60, starting_index = 75 },
 }
 
 ---@param force LuaForce
 ---@return integer
 local function get_peak_power_generation(force)
     -- TODO Ahhh, this will be soooo slow! There is no robust event-driven way to do this!
-    -- Or at least I can't think of one
+    -- Or at least I can't think of one. This method isn't even really robust, because
+    -- if a old network had the highest peak, but has since been deconstructed, then
+    -- it's impossible to know about it. We should do some runtime checking.
     -- https://forums.factorio.com/viewtopic.php?p=588649#p588649
 
     local peak = 0
+    local tick = game.tick      -- Basically the current playtime
+    local found_networks = { }  -- Cache of networks we already checked
 
-    local found_networks = { }
+    -- Some caching
+    local table_insert = table.insert
+    local get_flow_args = { input = false --[[ producers ]] }  -- To not create table every time
+
     for _, surface in pairs(game.surfaces) do
         if blacklist.surface(surface.name) then goto continue end
 
         for _, pole in pairs(surface.find_entities_filtered{type = "electric-pole", force = force}) do
             local network_id = pole.electric_network_id
             if network_id and not found_networks[network_id] then
-                -- This is a new network
+                -- This is a new network! We need to if this network had a higher peak power.
                 local flow = pole.electric_network_statistics
+                local get_flow_count = flow.get_flow_count
 
                 -- We will just find the peak in all brackets. There's probably
                 -- some averaging done in longer brackets with less accuracy, with
-                -- older peaks probably being be lower than due to averaging. Bleh,
-                -- this is a proof of concept mod.
+                -- older peaks probably being be lower than due to averaging. I'm
+                -- willing to live with that.
 
                 -- For each bracket we have to count it all for every entity!?
                 -- That's rediculous, but I want this in the mod!
+                -- Thus we will count the producers, which is significantly less
+                -- than the consumers.
 
                 -- First create a list of all the prototypes tracked in this flow
                 local prototypes = { }
+                local found_prototypes = false
                 for prototype, _ in pairs(flow.output_counts) do
-                    table.insert(prototypes, prototype)
+                    found_prototypes = true
+                    table_insert(prototypes, prototype)
                 end
 
                 -- Now go through all the brackets to look for the peak
-                -- But only if there actually power generated.
-                if #prototypes > 0 then
-                    for _, bracket in pairs(FLOW_PRECISION_BRACKETS) do
+                -- But only if there is actually power generated.
+                if found_prototypes then
+                    for bracket, bracket_data in pairs(FLOW_PRECISION_BRACKETS) do
+                        get_flow_args.precision_index = bracket
+
+                        -- The player didn't play longer than the previous bracket's duration,
+                        -- so there will be no useful data in this bracket, or any further brackets.
+                        if tick < bracket_data.prev_size then break end
+
                         -- Calculate the peak at each timestep
-                        -- Note: This can be smarter, don't need samples covered by previous bracket
-                        for index = 1,300 do
+                        for index = bracket_data.starting_index, 300 do
+                            get_flow_args.sample_index = index
+
                             local sum = 0
                             -- By summing together all prototype values
-                            for _, prototype in pairs(prototypes) do
-                                sum = sum + flow.get_flow_count{
-                                    name = prototype,
-                                    input = false,
-                                    precision_index = bracket,
-                                    sample_index = index,
-                                }
+                            for _, prototype_name in pairs(prototypes) do
+                                get_flow_args.name = prototype_name
+
+                                sum = sum + get_flow_count(get_flow_args)
                             end
 
                             if sum > peak then
@@ -177,6 +196,7 @@ local function get_peak_power_generation(force)
                     end
                 end
 
+                -- Make sure we don't check this network again
                 found_networks[network_id] = true
             end
         end
