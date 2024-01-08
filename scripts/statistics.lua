@@ -407,7 +407,8 @@ statistics.events = {
         statistics.setup_player(player)
     end,
     script.on_event(defines.events.on_player_removed, function(event)
-        global.players[event.player_index] = nil
+        if not global.statistics then return end -- Should not happen? Don't care though
+        global.statistics.players[event.player_index] = nil
     end)
 }
 
@@ -424,6 +425,7 @@ statistics.events = {
 ---@param player LuaPlayer
 function statistics.setup_player(player)
     ---@type StatisticsPlayerData
+    initialize_data()
     if global.statistics.players[player.index] then return end
     global.statistics.players[player.index] = {
         deaths = 0,
@@ -464,14 +466,18 @@ function statistics.setup_force(force)
     global.statistics.forces[force.index] = { }
 end
 
-function statistics.on_init (event)
+function initialize_data()
+    if global.statistics then return end -- Already set up
     global.statistics = {
         forces = { },
 
         ---@type table<uint, StatisticsPlayerData>
         players = { },
     }
+end
 
+function statistics.on_init (event)
+    initialize_data()
     setup_trackers()
 end
 

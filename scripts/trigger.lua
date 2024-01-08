@@ -127,7 +127,6 @@ trigger.add_remote_interface = function()
 		--- @param no_victory boolean true to ignore vanilla victory conditions
 		set_no_victory = function(no_victory)
             global.disable_vanilla_victory = no_victory
-            remote.call("silo_script", "set_no_victory", true) -- Make sure it's disabled
 		end,
 
         --- @param force LuaForce
@@ -160,7 +159,9 @@ trigger.events = {
 }
 
 function trigger.on_init(event)
-    remote.call("silo_script", "set_no_victory", true)
+    if remote.interfaces["silo_script"] then
+        remote.call("silo_script", "set_no_victory", true)
+    end
 
     -- Keep track of the forces who finished
     global.finished = { }
