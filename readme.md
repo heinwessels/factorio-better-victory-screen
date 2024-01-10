@@ -10,14 +10,26 @@ You can view the victory screen at any time by typing the command `/show-victory
 
 Any mods that change the game's victory condition will require explicit compatibility. The following overhaul mods is currently compatible (that I know of):
 
-- [Ultracube: Age of Cube](https://mods.factorio.com/mod/Ultracube)
-- [Nullius](https://mods.factorio.com/mod/nullius)
-- [Exotic Industries](https://mods.factorio.com/mod/exotic-industries)
+- [248k](https://mods.factorio.com/mod/248k)
 - [Bob's](https://mods.factorio.com/user/Bobingabout), [Angel's](https://mods.factorio.com/user/Arch666Angel), and [SeaBlock](https://mods.factorio.com/mod/SeaBlock). **But(!):** [SpaceX](https://mods.factorio.com/mod/SpaceMod) is not yet supported.
+- [Exotic Industries](https://mods.factorio.com/mod/exotic-industries)
+- [Freight Forwarding](https://mods.factorio.com/mod/FreightForwarding)
+- [Industrial Revolution 3](https://mods.factorio.com/mod/IndustrialRevolution3)
+- [Nullius](https://mods.factorio.com/mod/nullius)
+- [Ultracube: Age of Cube](https://mods.factorio.com/mod/Ultracube)
 
 **Note:** If the mod is in this list, but is combined with another overhaul that's unsupported, then the shown victory screen might still be unchanged.
 
-**Note to mod developers:** If you want to add compatibility to your mod you can read how to [here](https://github.com/heinwessels/factorio-better-victory-screen/blob/main/mod-page/compatibility.md). 
+**Note to mod developers:** If you want to add compatibility to your mod you can read how to [here](https://github.com/heinwessels/factorio-better-victory-screen/blob/main/mod-page/compatibility.md). It also allows you add your own statistics to the GUI, or remove existing entries.
+
+# Incomplete list of incompatible mods:
+
+This is an **incomplete** list of popular mods that are not yet supported! Playing with these mods might cause premature victories.
+
+- [Krastorio 2](https://mods.factorio.com/mod/Krastorio2)
+- [Pyanodons](https://mods.factorio.com/user/pyanodon)
+- [Space Exploration](https://mods.factorio.com/mod/space-exploration)
+- [SpaceX](https://mods.factorio.com/mod/SpaceMod)
 
 # Caveats:
 - Some statistics (like "distance walked") will only be accurate if mod is added at the start of a save file.

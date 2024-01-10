@@ -290,7 +290,7 @@ end
 function statistics.for_force(force, profilers)
     local stats = {}
 
-    if profilers then profilers.infrastructure.reset() end
+    if profilers then profilers.infrastructure.restart() end
     stats["infrastructure"] = {order = "e", stats = {
         ["machines"] =          {value = get_total_machines(force),                         order="a"},
         ["transport-belts"] =   {value = get_total_belt_length(force), unit="distance",     order="b"},
@@ -301,7 +301,7 @@ function statistics.for_force(force, profilers)
     }}
     if profilers then profilers.infrastructure.stop() end
 
-    if profilers then profilers.peak_power.reset() end
+    if profilers then profilers.peak_power.restart() end
     local peak_power_generation = get_peak_power_generation(force)
     if profilers then profilers.peak_power.stop() end
 
@@ -311,7 +311,7 @@ function statistics.for_force(force, profilers)
         ["science-consumed"] =  {value = get_total_science_packs_consumed(force)},
     }}
 
-    if profilers then profilers.chunk_counter.reset() end
+    if profilers then profilers.chunk_counter.restart() end
     local area_explored = get_total_area_explored(force)
     if profilers then profilers.chunk_counter.stop() end
 

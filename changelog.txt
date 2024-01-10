@@ -1,6 +1,13 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.6
-Date: ??.01.2024
+Date: 10.01.2024
+  Features:
+    - Better compatibility with mods that add compatibility after BVS is added. BVS should now detect
+      this automatically.
+    - Added command `/reset-victory-condition` to reset a victory logged by BVS in case something goes
+      wrong. This command can only be used by admins.
+    - Added command `/is-victory-pending` to deterrmine if a victory condition is still pending, and
+      what type of victory condition (vanilla or custom). Usable by all players and makes no changes.
   Changes:
     - Optimize Peak Power Production calculation. 
 ---------------------------------------------------------------------------------------------------
