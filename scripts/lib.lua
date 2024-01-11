@@ -105,6 +105,8 @@ end
 
 function lib.format_percentage(amount)
 
+    amount = amount * 100
+
     if amount < 0.1 then
         amount = lib.format_number(amount, false, 3)
     elseif amount == 1 then
