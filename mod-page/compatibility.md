@@ -59,6 +59,8 @@ if game.finished or game.finished_but_continuing or global.finished then return 
 global.finished = true
 ```
 
+Only real effect of not adding this code, except for possibly confusing your mod logic, is that if Better Victory Screen is removed _after_ victory is reached, then your mod might trigger it again.
+
 ## Adding custom entries to the victory GUI
 
 It's possible to add or remove any custom entries to the victory GUI. This is done by adding a remote interface to your mod that can supply the extra victory statistics. This is done by
