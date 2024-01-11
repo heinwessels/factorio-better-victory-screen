@@ -58,6 +58,13 @@ end
 ---@type table<string, boolean>
 local force_names_hardcoded = util.list_to_map{
     "enemy",
+
+    "conquest",             -- Space Exploration
+    "ignore",               -- Space Exploration
+    "capture",              -- Space Exploration
+    "friendly",             -- Space Exploration
+
+    "kr-internal-turrets",  -- Krastorio 2
 }
 
 --- List of patterns of blacklisted force names
