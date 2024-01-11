@@ -49,6 +49,16 @@ When you deem the player to be victorious you will have to to replace the regula
     end
 ```
 
+**IMPORTANT:** Triggering a victory through this remote interface does not set `game.finished` or `game.finished_but_continuing`, which is what allows showing a custom GUI. This might confuse some of your mod's logic, even though BVS keeps track internally of victories and won't show the victory screen twice. The recommended way to circumvent this is:
+
+```lua
+-- In the function where the victory is triggered, where you (likely) first check
+-- if it hasn't been reached already
+
+if game.finished or game.finished_but_continuing or global.finished then return end
+global.finished = true
+```
+
 ## Adding custom entries to the victory GUI
 
 It's possible to add or remove any custom entries to the victory GUI. This is done by adding a remote interface to your mod that can supply the extra victory statistics. This is done by
