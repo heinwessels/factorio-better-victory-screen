@@ -8,6 +8,8 @@ handler.add_libraries({
     require("scripts.migrations"),  -- This should happen _after_ other things
 })
 
+require("scripts.compatibility").initialize(handler)
+
 if script.active_mods["debugadapter"] then
     handler.add_lib(require("tests.tests"))
 end

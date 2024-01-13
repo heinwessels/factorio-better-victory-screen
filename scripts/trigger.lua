@@ -2,6 +2,7 @@ local gui = require("scripts.gui")
 local util = require("util")
 local blacklist = require("scripts.blacklist")
 local statistics = require("scripts.statistics")
+local compatibility = require("scripts.compatibility")
 
 local trigger = { }
 local gather_function_name = "better-victory-screen-statistics"
@@ -59,19 +60,28 @@ local function show_victory_screen(winning_force)
     local other_statistics = gather_statistics(winning_force, forces_to_show)
     if profilers then profilers.gather.stop() end
 
+    local compatibility_stats = compatibility.gather(forces_to_show)
+
     for _, force in pairs(forces_to_show) do
         local force_statistics = statistics.for_force(force, profilers)
+        local compatibility_force_statistics = compatibility_stats.by_force[force.name] or { }
         local other_force_statistics = other_statistics.by_force[force.name] or { }
         for _, player in pairs(force.connected_players) do
 
             -- Clear the cursor because it's annoying if it's still there
             player.clear_cursor()
 
+            local compat_player_statistics = compatibility_stats.by_player[player.index] or { }
             local other_player_statistics = other_statistics.by_player[player.index] or { }
+
             gui.create(player, util.merge{
                 -- Order is important. Later will override previous
                 force_statistics,
                 statistics.for_player(player, profilers),
+
+                compatibility_force_statistics,
+                compat_player_statistics,
+
                 other_force_statistics,
                 other_player_statistics,
             })
