@@ -12,6 +12,12 @@ local migrations = {
             statistics.setup_player(player)
         end
     end,
+    ["0.2.8"] = function()
+        -- We're changing to only store if victory has been reached. Not by who
+        if global.finished and type(global.finished) == "table" then
+            global.finished = next(global.finished) ~= nil
+        end
+    end,
 }
 
 local function handle_migrations(event)
@@ -21,6 +27,7 @@ local function handle_migrations(event)
 
     for migration_name, migration in pairs(migrations) do
         if not global.migrations[migration_name] then
+            log("Running migration: '"..migration_name.."'")
             migration()
             global.migrations[migration_name] = true
         end

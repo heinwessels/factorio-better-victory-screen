@@ -33,6 +33,7 @@ local function gather_statistics(winning_force, forces)
     return gathered_statistics
 end
 
+---Show the victory screen for all connected players
 ---@param winning_force LuaForce
 local function show_victory_screen(winning_force)
 
@@ -97,25 +98,30 @@ end
 
 --- Trigger the game's victory condition and then
 --- show our custom victory screen 
----@param force LuaForce
-local function attempt_trigger_victory(force)
-    -- Do not trigger if another mod already triggered a normal victory
-    -- condition. Note: This will not prevent BVS from triggering twice,
-    -- because we don't set the `finished` game state, meaning these two
-    -- values will never be true for a BVS triggered victory.
-    if game.finished or game.finished_but_continuing then return end
+---@param winning_force LuaForce
+---@param override boolean? true if victory should be triggered regardless of it being triggered before
+local function attempt_trigger_victory(winning_force, override)
 
-    -- Check if this force already won according to our own cache
-    if global.finished[force.name] then return end
-    global.finished[force.name] = true
+    if not override then
+        -- Do not trigger if another mod already triggered a normal victory
+        -- condition. Note: This will not prevent BVS from triggering twice,
+        -- because we don't set the `finished` game state, meaning these two
+        -- values will never be true for a BVS triggered victory.
+        if game.finished or game.finished_but_continuing then return end
+
+        -- Check if this a force has already finished cache
+        if global.finished then return end
+    end
+
+    global.finished = true
 
     -- Set the game state to victory without setting game_finished.
     -- This will trigger the achievements without showing the vanilla GUI.
     -- Thanks Rseding!
-    game.set_game_state({ player_won = true, victorious_force = force })
+    game.set_game_state({ player_won = true, victorious_force = winning_force })
 
     -- Show our GUI
-    show_victory_screen(force)
+    show_victory_screen(winning_force)
 end
 
 ---@param event EventData.on_rocket_launched
@@ -137,23 +143,24 @@ trigger.add_remote_interface = function()
             -- First handle some possible migration issues
             if not global.disable_vanilla_victory                                   -- Previously assumed vanilla victory condition
                 and no_victory                                                      -- Now we should wait for remote trigger
-                and next(global.finished)                                           -- We already did trigger the screen though
+                and global.finished                                                 -- We already did trigger the screen though
                 and not (game.finished or game.finished_but_continuing) then        -- And the other mod hasn't triggered actual victory
                 -- This is the first time that the vanilla victory condition is disabled
                 -- but we've already triggered a victory condition. And the vanilla
                 -- victory condition has never been reached. This can only happen when
                 -- a mod didn't have support, but was added mid-run.
                 game.print("[Better Victory Screen] Detected newly added support while victory was erroneously shown previously. Reseting victory state. No further action required.")
-                global.finished = { }
+                global.finished = false
             end
 
             global.disable_vanilla_victory = no_victory
 		end,
 
-        --- This remote is called by other mods when victory is achieved 
-        --- @param force LuaForce
-        trigger_victory = function(force)
-            attempt_trigger_victory(force)
+        ---This remote is called by other mods when victory is achieved 
+        ---@param winning_force LuaForce
+        ---@param override boolean? True if then victory GUI will be shown regardless of if it has been shown before
+        trigger_victory = function(winning_force, override)
+            attempt_trigger_victory(winning_force, override)
         end
     })
 end
@@ -169,10 +176,15 @@ function trigger.add_commands()
         ---@param command CustomCommandData
     commands.add_command("show-victory-screen", show_victory_help_message, function(command)
         if script.active_mods["debugadapter"] and command.parameter == "victory" then
+            local player = game.get_player(command.player_index)
+            if not player then return end       -- Should never happen.
+            if not player.admin then return end -- Some kind of safety net
+
             -- Add additional option to trigger the actual victory, but
             -- only while the debugger is active. In normal game play it
             -- should not be possible, that would be bad.
-            attempt_trigger_victory(game.forces.player)
+            game.print("[Better Victory Screen] Forcing an actual victory.")
+            attempt_trigger_victory(game.forces.player, true)
             return
         end
 
@@ -198,12 +210,12 @@ function trigger.add_commands()
             return
         end
 
-        if not next(global.finished) then
+        if not global.finished then
             player.print("A custom victory has not been reached. Nothing to do")
             return
         end
 
-        global.finished = { } -- So that a force can win again
+        global.finished = false -- So that a force can win again
         game.print("Victory tracked by Better Victory Screen has been reset.")
 
         -- We can't set the internal game state again to haven't won. But
@@ -227,7 +239,7 @@ function trigger.add_commands()
         local player = game.get_player(command.player_index)
         if not player then return end -- Should never happen.
         local pending_type = global.disable_vanilla_victory and "Custom" or "Vanilla"
-        if next(global.finished) then
+        if global.finished then
             player.print("No. Better Victory Screen has already created a victory condition [Type: " .. pending_type .. "]. Use '/reset-victory-condition` to revert.")
         elseif game.finished or game.finished_but_continuing then
             player.print("No. Vanilla victory condition has already been reached without Better Victory Screen.")
@@ -245,9 +257,6 @@ function trigger.on_init(event)
     if remote.interfaces["silo_script"] then
         remote.call("silo_script", "set_no_victory", true)
     end
-
-    -- Keep track of the forces who finished
-    global.finished = { }
 end
 
 return trigger

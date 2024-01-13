@@ -2,6 +2,7 @@
 Version: 0.2.8
 Date: ??.01.2024
   Changes:
+    - Compatible mods can now force the victory, even if it has been reached before.
     - More consistent and safer formatting of numbers. Now with working unit tests.
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.7
