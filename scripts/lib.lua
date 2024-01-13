@@ -1,4 +1,4 @@
-local lib = { table = { } }
+local lib = { table = { }, math = { } }
 
 ---Removes all keys from a table that passes a filter
 ---@param t         table
@@ -11,111 +11,47 @@ function lib.table.remove_keys_filtered(t, filter)
     for _, key in pairs(keys_to_remove) do t[key] = nil end
 end
 
----@param str string to trim
----@return string that was trimmed
-local function trim_string(str)
----@diagnostic disable-next-line: redundant-return-value
-    return str:gsub("^%s*(.-)%s*$", "%1")
+---Return the keys ordered to the order value
+---@param t table
+---@return any[]
+function lib.table.ordered_keys(t)
+    local sorted_keys = { }
+    for key, _ in pairs(t) do table.insert(sorted_keys, key) end
+    table.sort(sorted_keys, function(a, b)
+        local a_order = t[a].order or "m"
+        local b_order = t[b].order or "m"
+        return a_order < b_order
+    end)
+    return sorted_keys
 end
 
----@param amount any
----@param append_suffix boolean?
----@param decimals uint?
----@return string
-function lib.format_number(amount, append_suffix, decimals)
-    local suffix = ""
-
-    if append_suffix then
-        local suffix_list = {
-            ["T"] = 1000000000000,
-            ["G"] = 1000000000,   -- `G` and not `B`!
-            ["M"] = 1000000,
-            ["k"] = 1000,
-            [""] = 1  -- Otherwise below 1k formats odd. Probably hack and not actual problems
-        }
-
-        for letter, limit in pairs (suffix_list) do
-            if math.abs(amount) >= limit then
-                amount = math.floor(amount/(limit/1000000))/1000000
-                suffix = letter
-                break
-            end
-        end
-    end
-
-    if decimals then
-        amount = tonumber(string.format("%."..decimals.."f", amount))
-    end
-
-    return amount .. " " .. suffix
+---@param number number
+---@return number
+function lib.math.sign(number)
+    return number > 0 and 1 or (number == 0 and 0 or -1)
 end
 
-function lib.format_power(amount)
-    return lib.format_number(amount, true, 3).."W"
+---The magnitude of a number, f.i. 100 -> 2
+---@param number number
+---@return number
+function lib.math.magnitude(number)
+    return math.floor(math.log(math.abs(number), 10))
 end
 
-function lib.format_distance(amount)
-    local suffix = ""
-
-    if amount > 1000 then
-        local suffix_list = {
-            ["k"] = 1000,
-            [""] = 1  -- Otherwise below 1k formats odd. Probably hack and not actual problemssa
-        }
-
-        for letter, limit in pairs (suffix_list) do
-            if math.abs(amount) >= limit then
-                amount = math.floor(amount/(limit/10))/10
-                suffix = letter
-                break
-            end
-        end
-    end
-
-    -- Trim some decimals
-    if amount >= 1000 then
-        amount = math.floor(amount+0.5)
-    else
-        amount = lib.format_number(amount, false, 1)
-    end
-
-    return amount .. " " .. suffix .. "m"
+---@param number number
+---@param decimals integer? defaults to 0
+---@return number
+function lib.math.round(number, decimals)
+    if not decimals then decimals = 0 end
+    rounded_number = tonumber(string.format("%."..decimals.."f", number))
+    if not rounded_number then error("Can't round '"..number .."'") end
+    return rounded_number
 end
 
-function lib.format_area(amount)
-
-    if amount < 1000 then
-        amount = lib.format_number(amount, false, 3)
-    else
-        amount = math.floor(amount + 0.5)
-    end
-
-    return amount .. " km2"
-end
-
----@param ticks uint
-function lib.format_time(ticks)
-    local seconds = ticks / 60
-    local minutes = math.floor(seconds / 60)
-    local hours = math.floor(minutes / 60)
-    seconds = math.floor(seconds - 60 * minutes)
-    minutes = math.floor(minutes - 60 * hours)
-    return string.format("%02d:%02d:%02d", hours, minutes, seconds)
-end
-
-function lib.format_percentage(amount)
-
-    amount = amount * 100
-
-    if amount < 0.1 then
-        amount = lib.format_number(amount, false, 3)
-    elseif amount == 1 then
-        amount = lib.format_number(amount, false, 1)
-    else
-        amount = lib.format_number(amount, false, 2)
-    end
-
-    return amount .. " %"
+---@param number number
+---@return boolean 
+function lib.math.has_decimals(number)
+    return math.floor(number) ~= number
 end
 
 

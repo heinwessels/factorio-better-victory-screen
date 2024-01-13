@@ -1,5 +1,7 @@
 local glib = require("scripts.glib")
 local lib = require("scripts.lib")
+local formatter = require("scripts.formatter")
+local debug = require("scripts.debug")
 
 local gui = {}
 
@@ -8,48 +10,6 @@ local e = defines.events
 
 local name_column_width = 137
 local value_column_width = 82   -- Keeps the golden ration used by vanilla gui
-
-local format_handlers = {
-    ["number"] = function(number) return lib.format_number(number, true, 1) end,
-    ["distance"] = lib.format_distance,
-    ["area"] = lib.format_area,
-    ["time"] = lib.format_time,
-    ["power"] = lib.format_power,
-    ["percentage"] = lib.format_percentage,
-}
-
-local function format_statistic_value(value, unit)
-    unit = unit or "number"
-    if not format_handlers[unit] then unit = "number" end
-    local format_handler = format_handlers[unit]
-    return format_handler(value)
-end
-
-local tooltip_units = {
-    ["distance"] = "m",
-    ["area"] = "km2",
-    ["power"] = "W",
-    ["percentage"] = "%",
-}
-
-local function format_tooltip(value, unit)
-    if unit == "time" then return "" end
-    local unit_str = tooltip_units[unit]
-    local decimals = (unit ~= "area") and 2 or 3
-    value = lib.format_number(value, false, decimals)
-    return value .. ( unit_str and (" "..unit_str) or "")
-end
-
-local function ordered_keys(t)
-    local sorted_keys = { }
-    for key, _ in pairs(t) do table.insert(sorted_keys, key) end
-    table.sort(sorted_keys, function(a, b)
-        local a_order = t[a].order or "m"
-        local b_order = t[b].order or "m"
-        return a_order < b_order
-    end)
-    return sorted_keys
-end
 
 ---@param player LuaPlayer
 ---@param categories StatisticCategories
@@ -93,7 +53,7 @@ function gui.create(player, categories)
                             style_mods = {minimal_width = name_column_width, horizontally_stretchable = true},
                         }}
                     }, {
-                        args = {type = "label", caption = lib.format_time(game.tick)},
+                        args = {type = "label", caption = formatter.format_time(game.tick)},
                         style_mods = {minimal_width = value_column_width, horizontal_align = "right"}, -- width required because can't sync table column widths yet
                     }}
                 }}
@@ -117,7 +77,7 @@ function gui.create(player, categories)
 
     local stats_gui = refs.statistics
 
-    for _, category_name in pairs(ordered_keys(categories)) do
+    for _, category_name in pairs(lib.table.ordered_keys(categories)) do
         local category = categories[category_name]
         if category.ignore then goto continue_category end
 
@@ -134,9 +94,19 @@ function gui.create(player, categories)
 
         local category_table = glib.add(stats_gui, def)
 
-        for _, stat_name in pairs(ordered_keys(category.stats or { })) do
+        for _, stat_name in pairs(lib.table.ordered_keys(category.stats or { })) do
             local stat = category.stats[stat_name]
             if stat.ignore then goto continue_stat end
+
+            -- Safely format the value, and ignore it if the formatting crashes
+            local formatted_value
+            local formatted_tooltip
+            local success, error_message = pcall(function()
+                formatted_value = formatter.format(stat.value, stat.unit)
+                formatted_tooltip = formatter.format_tooltip(stat.value, stat.unit)
+            end)
+            debug.debug_assert(success, error_message)
+            if not success then goto continue_stat end
 
             category_table.add{
                 type = "label", 
@@ -146,8 +116,8 @@ function gui.create(player, categories)
 
             category_table.add{
                 type = "label",
-                caption = format_statistic_value(stat.value, stat.unit),
-                tooltip = format_tooltip(stat.value, stat.unit),
+                caption = formatted_value,
+                tooltip = formatted_tooltip,
             }
 
             ::continue_stat::

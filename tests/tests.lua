@@ -10,11 +10,13 @@ local test_lib = { }
 local test_suites = {
     ["tracker"]     = require("tests.tracker"),
     ["blacklist"]   = require("tests.blacklist"),
-    -- ["formatting"]  = require("tests.formatting"), -- Needs some love
+    ["formatting"]  = require("tests.formatting"),
 }
 
 function test_lib.add_commands()
     commands.add_command("bvs-test", nil, function(command)
+        game.reload_script()
+
         local suite_count = 0
         local count = 0
         for test_suite_name, test_suite in pairs(test_suites) do

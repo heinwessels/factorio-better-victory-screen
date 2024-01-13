@@ -1,6 +1,7 @@
 ---@diagnostic disable: different-requires
 local blacklist = require("__better-victory-screen__.scripts.blacklist")
 local lib = require("__better-victory-screen__.scripts.lib")
+local debug = require("__better-victory-screen__.scripts.debug")
 
 local tracker_lib = { }
 
@@ -23,20 +24,6 @@ local tracker_lib = { }
     NOTE: If you're requiring this file into your mod remember to hook up the plumbing
     to blacklist.lua to ensure the cache is invalidated when it should be.
 ]]
-
-local debugger_active = script.active_mods["debugadapter"] ~= nil
----A assertion that will only be asserted while the debugger is active
----If the debugger isn't active it will only log the error as a warning 
----@param condition any
----@param message any
-local function debug_assert(condition, message)
-    if condition then return end
-    if not debugger_active then
-        log("Warning: "..message)
-    else
-        error(message)
-    end
-end
 
 local data_key = "_bvs_tracker_cache"
 
@@ -98,7 +85,7 @@ local is_valid_filter_functions = {
 local recounting_functions = {
     [TRACKER_TYPE.ENTITY_BY_NAME] = function (filter, force_name)
         local entity_name_exists = is_valid_filter_functions[TRACKER_TYPE.ENTITY_BY_NAME](filter)
-        debug_assert(entity_name_exists, "Invalid entity name '"..filter.."'")
+        debug.debug_assert(entity_name_exists, "Invalid entity name '"..filter.."'")
         if not entity_name_exists then return 0 end -- Important, otherwise the search would crash
 
         local count = 0
@@ -112,7 +99,7 @@ local recounting_functions = {
 
     [TRACKER_TYPE.ENTITY_BY_TYPE] = function (filter, force_name)
         local prototype_type_exists = is_valid_filter_functions[TRACKER_TYPE.ENTITY_BY_TYPE](filter)
-        debug_assert(prototype_type_exists ~= nil, "Invalid prototype type '"..filter.."'")
+        debug.debug_assert(prototype_type_exists ~= nil, "Invalid prototype type '"..filter.."'")
         if not prototype_type_exists then return 0 end -- Important, otherwise the search would crash
 
         local count = 0
@@ -204,11 +191,11 @@ local function reset_trackers()
             or blacklist.force(force_name --[[@as ForceName]])
         end
     )
-    debug_assert(next(data.tracked_forces) ~= nil, "No forces being tracked!")
+    debug.debug_assert(next(data.tracked_forces) ~= nil, "No forces being tracked!")
 
     -- Now sanitize the actual trackers
     for tracker_type, tracker in pairs(data.trackers) do
-        debug_assert(tracker_type == tracker.type, "Oops. Mismatch in tracker types!")
+        debug.debug_assert(tracker_type == tracker.type, "Oops. Mismatch in tracker types!")
         sanitize_tracker(tracker)
         refresh_tracker(tracker)
     end
@@ -258,8 +245,8 @@ local function get_tracker_count(tracker_type, force_name, filters)
 
     local count = 0
     for _, filter in pairs(filters) do
-        debug_assert(tracker.tracking[filter], "No type "..tracker_type.." tracking for filter '"..filter.."'")
-        debug_assert(counters[filter] and counters[filter].count, "Counter doesn't exist")
+        debug.debug_assert(tracker.tracking[filter], "No type "..tracker_type.." tracking for filter '"..filter.."'")
+        debug.debug_assert(counters[filter] and counters[filter].count, "Counter doesn't exist")
 
         if counters[filter] and counters[filter].count then
             count = count + counters[filter].count
@@ -290,7 +277,7 @@ function tracker_lib.track_entity_count_by_name(entity_names)
     initialize_data() -- So that no dependency on this mod is requried
     if type(entity_names) == "string" then entity_names = { entity_names } end
     for _, entity_name in pairs(entity_names) do
-        debug_assert(
+        debug.debug_assert(
             is_valid_filter_functions[TRACKER_TYPE.ENTITY_BY_NAME](entity_name --[[@as Filter]]), 
             "Invalid entity name '"..entity_name.."'")
         refresh_tracker(data.trackers[TRACKER_TYPE.ENTITY_BY_NAME], entity_name --[[@as Filter]])
@@ -304,7 +291,7 @@ function tracker_lib.track_entity_count_by_type(entity_types)
     initialize_data() -- So that no dependency on this mod is requried
     if type(entity_types) == "string" then entity_types = { entity_types } end
     for _, entity_type in pairs(entity_types) do
-        debug_assert(
+        debug.debug_assert(
             is_valid_filter_functions[TRACKER_TYPE.ENTITY_BY_TYPE](entity_type --[[@as Filter]]),
             "Invalid prototype type '"..entity_type.."'")
         refresh_tracker(data.trackers[TRACKER_TYPE.ENTITY_BY_TYPE], entity_type --[[@as Filter]])
@@ -316,11 +303,11 @@ end
 ---@param entity_names  string|string[]
 ---@return integer
 function tracker_lib.get_entity_count_by_name(force_name, entity_names)
-    debug_assert(data.tracked_forces[force_name] ~= nil, "Untracked force counter requested `"..force_name.."'")
+    debug.debug_assert(data.tracked_forces[force_name] ~= nil, "Untracked force counter requested `"..force_name.."'")
     if not data.tracked_forces[force_name] then return 0 end
     if type(entity_names) == "string" then entity_names = { entity_names } end
-    if debugger_active then for _, entity_name in pairs(entity_names) do
-        debug_assert(
+    if debug.debugger_active then for _, entity_name in pairs(entity_names) do
+        debug.debug_assert(
             is_valid_filter_functions[TRACKER_TYPE.ENTITY_BY_NAME](entity_name --[[@as Filter]]), 
             "Invalid entity name '"..entity_name.."'")
     end end
@@ -332,11 +319,11 @@ end
 ---@param entity_types  string|string[]
 ---@return integer
 function tracker_lib.get_entity_count_by_type(force_name, entity_types)
-    debug_assert(data.tracked_forces[force_name] ~= nil, "Untracked force counter requested `"..force_name.."'")
+    debug.debug_assert(data.tracked_forces[force_name] ~= nil, "Untracked force counter requested `"..force_name.."'")
     if not data.tracked_forces[force_name] then return 0 end
     if type(entity_types) == "string" then entity_types = { entity_types } end
-    if debugger_active then for _, entity_type in pairs(entity_types) do
-        debug_assert(
+    if debug.debugger_active then for _, entity_type in pairs(entity_types) do
+        debug.debug_assert(
             is_valid_filter_functions[TRACKER_TYPE.ENTITY_BY_TYPE](entity_type --[[@as Filter]]), 
             "Invalid prototype type'"..entity_type.."'")
     end end
