@@ -13,7 +13,7 @@ Any mods that change the game's victory condition will require explicit compatib
 **List of compatible overhauls (might be incomplete)**:
 
 - [248k](https://mods.factorio.com/mod/248k)
-- [Bob's](https://mods.factorio.com/user/Bobingabout), [Angel's](https://mods.factorio.com/user/Arch666Angel), and [SeaBlock](https://mods.factorio.com/mod/SeaBlock). **But(!):** [SpaceX](https://mods.factorio.com/mod/SpaceMod) is not yet supported.
+- [Bob's](https://mods.factorio.com/user/Bobingabout), [Angel's](https://mods.factorio.com/user/Arch666Angel), and [SeaBlock](https://mods.factorio.com/mod/SeaBlock). **But(!):** [SpaceMod](https://mods.factorio.com/mod/SpaceMod) is not yet supported! This [fork](https://mods.factorio.com/mod/SpaceModFeorasFork) by Feoras is supported.
 - [Exotic Industries](https://mods.factorio.com/mod/exotic-industries)
 - [Freight Forwarding](https://mods.factorio.com/mod/FreightForwarding)
 - [Industrial Revolution 3](https://mods.factorio.com/mod/IndustrialRevolution3)
@@ -26,7 +26,7 @@ Any mods that change the game's victory condition will require explicit compatib
 - [Krastorio 2](https://mods.factorio.com/mod/Krastorio2)
 - [Pyanodons](https://mods.factorio.com/user/pyanodon)
 - [Space Exploration](https://mods.factorio.com/mod/space-exploration)
-- [SpaceX](https://mods.factorio.com/mod/SpaceMod)
+- [Space Extension Mod](https://mods.factorio.com/mod/SpaceMod)
 
 
 If the mod is marked compatible, but is combined with another overhaul that's incompatible, then the shown victory screen might still be unchanged, or the custom victory screen will be shown on the first rocket launch by accident. However, it should not prevent you from finishing the game normally as well.
