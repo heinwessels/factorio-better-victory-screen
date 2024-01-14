@@ -2,6 +2,7 @@ local gui = require("scripts.gui")
 local util = require("util")
 local statistics = require("scripts.statistics")
 local compatibility = require("scripts.compatibility")
+local debug = require("scripts.debug")
 
 local trigger = { }
 local gather_function_name = "better-victory-screen-statistics"
@@ -25,8 +26,13 @@ local function gather_statistics(winning_force, forces)
     local gathered_statistics = { by_force = { }, by_player = { } }
     for interface, functions in pairs(remote.interfaces) do
         if functions[gather_function_name] then
-            local received_statistics = remote.call(interface, gather_function_name, winning_force, forces) --[[@as table]]
-            gathered_statistics = util.merge{gathered_statistics, received_statistics}
+            -- Wrap calling other mod's remote in a pcall so that if something breaks there then it won't prevent
+            -- the GUI from showing. Instead we will ignore that 
+            local success, returned_value = pcall(remote.call, interface, gather_function_name, winning_force, forces)
+            debug.debug_assert(success, "Gathering statistics from interface '".. interface .. "' failed! Suppressed, and continuing. Here is the error:\n\n" .. serpent.block(returned_value))
+            if success then
+                gathered_statistics = util.merge{gathered_statistics, returned_value --[[@as table]]}
+            end
         end
     end
     return gathered_statistics

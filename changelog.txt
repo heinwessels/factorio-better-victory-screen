@@ -6,6 +6,7 @@ Date: ??.01.2024
     - Mods can now specify a custom victory message. This message can optionally be different for winners and losers.
   Changes:
     - More consistent and safer formatting of numbers. Now with working unit tests.
+    - Safer gathering of statistics from other mods by suppressing any crashes.
     - Add some Cargo Ships statistics.
   Bugfixes:
     - Always show Victory Screen to all players (even when in f.i. Editor Extensions lab).
