@@ -13,7 +13,6 @@ local function get_forces_to_show()
     local forces_to_show = { }
     for _, force in pairs(game.forces) do
         if #force.connected_players == 0 then goto continue end
-        if blacklist.force(force.name) then goto continue end
         table.insert(forces_to_show, force)
         ::continue::
     end

@@ -5,6 +5,8 @@ Date: ??.01.2024
     - Compatible mods can now force the victory, even if it has been reached before.
     - More consistent and safer formatting of numbers. Now with working unit tests.
     - Add some Cargo Ships statistics.
+  Bugfixes:
+    - Always show Victory Screen to all players (even when in f.i. Editor Extensions lab).
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.7
 Date: 11.01.2024
