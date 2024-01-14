@@ -49,10 +49,13 @@ When you deem the player to be victorious you will have to to replace the regula
     end
 ```
 
-If the `remote.call` is made twice then it will not trigger the victory screen the second time, just like in vanilla. However, it's possible to override this behaviour to always trigger victory by setting override to true like this:
-
+If the `remote.call` is has some additional parameters to better suit your needs. Here is the function header for some more information:
 ```lua
-remote.call("better-victory-screen", "trigger_victory", force, true)
+---This remote is called by other mods when victory has been achieved.
+---@param winning_force LuaForce
+---@param override boolean? True if then victory GUI will be shown regardless of if it has been shown before
+---@param winning_message string|LocalisedString ? to show instead of the default message
+---@param losing_message string|LocalisedString ? if provided will be shown to forces that's not the winning force.
 ```
 
 **IMPORTANT:** Triggering a victory through this remote interface does not set `game.finished` or `game.finished_but_continuing`, which is what allows showing a custom GUI. This might confuse some of your mod's logic, even though BVS keeps track internally of victories and won't show the victory screen twice. The recommended way to circumvent this is:

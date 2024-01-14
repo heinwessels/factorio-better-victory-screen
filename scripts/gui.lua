@@ -13,7 +13,8 @@ local value_column_width = 82   -- Keeps the golden ration used by vanilla gui
 
 ---@param player LuaPlayer
 ---@param categories StatisticCategories
-function gui.create(player, categories)
+---@param message string|LocalisedString ? to show instead of default victory message
+function gui.create(player, categories, message)
     player.play_sound{path = "utility/game_won"}
     ---@diagnostic disable: missing-fields
 
@@ -37,7 +38,7 @@ function gui.create(player, categories)
                 args = {type = "frame", style = "finished_game_subheader_frame"},
                 style_mods = {horizontally_stretchable = true},
                 children = {{
-                    args = {type = "label", caption = {"gui-game-finished.victory"}},
+                    args = {type = "label", caption = message or {"gui-game-finished.victory"}},
                 }}
             }, {
                 args = {type = "scroll-pane", name = "statistics", style = "scroll_pane_under_subheader"},

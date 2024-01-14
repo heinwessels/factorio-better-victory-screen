@@ -1,6 +1,5 @@
 local gui = require("scripts.gui")
 local util = require("util")
-local blacklist = require("scripts.blacklist")
 local statistics = require("scripts.statistics")
 local compatibility = require("scripts.compatibility")
 
@@ -35,7 +34,9 @@ end
 
 ---Show the victory screen for all connected players
 ---@param winning_force LuaForce
-local function show_victory_screen(winning_force)
+---@param winning_message string|LocalisedString ? to show instead of the default victory message
+---@param losing_message string|LocalisedString ? if provided will be shown to forces that's not the winning force.
+local function show_victory_screen(winning_force, winning_message, losing_message)
 
     ---@type table<string, LuaProfiler>
     local profilers = nil
@@ -65,6 +66,17 @@ local function show_victory_screen(winning_force)
         local force_statistics = statistics.for_force(force, profilers)
         local compatibility_force_statistics = compatibility_stats.by_force[force.name] or { }
         local other_force_statistics = other_statistics.by_force[force.name] or { }
+
+        -- Determine message to show
+        local message   -- nil means the showing the default text
+        if winning_message then
+            if force == winning_force or not losing_message then
+                message = winning_message
+            else
+                message = losing_message
+            end
+        end
+
         for _, player in pairs(force.connected_players) do
 
             -- Clear the cursor because it's annoying if it's still there
@@ -83,7 +95,7 @@ local function show_victory_screen(winning_force)
 
                 other_force_statistics,
                 other_player_statistics,
-            })
+            }, message)
         end
     end
 
@@ -109,7 +121,9 @@ end
 --- show our custom victory screen 
 ---@param winning_force LuaForce
 ---@param override boolean? true if victory should be triggered regardless of it being triggered before
-local function attempt_trigger_victory(winning_force, override)
+---@param winning_message string|LocalisedString ? to show instead of the default message
+---@param losing_message string|LocalisedString ? if provided will be shown to forces that's not the winning force.
+local function attempt_trigger_victory(winning_force, override, winning_message, losing_message)
 
     if not override then
         -- Do not trigger if another mod already triggered a normal victory
@@ -130,7 +144,7 @@ local function attempt_trigger_victory(winning_force, override)
     game.set_game_state({ player_won = true, victorious_force = winning_force })
 
     -- Show our GUI
-    show_victory_screen(winning_force)
+    show_victory_screen(winning_force, winning_message, losing_message)
 end
 
 ---@param event EventData.on_rocket_launched
@@ -165,11 +179,13 @@ trigger.add_remote_interface = function()
             global.disable_vanilla_victory = no_victory
 		end,
 
-        ---This remote is called by other mods when victory is achieved 
+        ---This remote is called by other mods when victory has been achieved.
         ---@param winning_force LuaForce
         ---@param override boolean? True if then victory GUI will be shown regardless of if it has been shown before
-        trigger_victory = function(winning_force, override)
-            attempt_trigger_victory(winning_force, override)
+        ---@param winning_message string|LocalisedString ? to show instead of the default message
+        ---@param losing_message string|LocalisedString ? if provided will be shown to forces that's not the winning force.
+        trigger_victory = function(winning_force, override, winning_message, losing_message)
+            attempt_trigger_victory(winning_force, override, winning_message, losing_message)
         end
     })
 end
