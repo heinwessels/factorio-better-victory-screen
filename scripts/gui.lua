@@ -3,9 +3,8 @@ local lib = require("scripts.lib")
 local formatter = require("scripts.formatter")
 local debug = require("scripts.debug")
 
-local gui = {}
-
-local handlers = {}
+local gui = { handlers = { } }
+local handlers = gui.handlers
 local e = defines.events
 
 local name_column_width = 137
@@ -38,7 +37,7 @@ function gui.create(player, categories, message)
                 args = {type = "frame", style = "finished_game_subheader_frame"},
                 style_mods = {horizontally_stretchable = true},
                 children = {{
-                    args = {type = "label", caption = message or {"gui-game-finished.victory"}},
+                    args = {type = "label", name = "victory_label",  caption = {"gui-game-finished.victory"}},
                 }}
             }, {
                 args = {type = "scroll-pane", name = "statistics", style = "scroll_pane_under_subheader"},
@@ -76,8 +75,16 @@ function gui.create(player, categories, message)
     frame.force_auto_center()
     player.opened = frame
 
-    local stats_gui = refs.statistics
+    if message then
+        -- Attempt to add the victory (losing) message. We will do this in a safe way
+        -- so that if something goes wrong for some reason then we will ignore it
+        local success, error_message = pcall(function(caption)
+            refs.victory_label.caption = caption end, message)
+        debug.debug_assert(success, error_message)
+    end
 
+    -- Now start adding the statistics
+    local stats_gui = refs.statistics
     for _, category_name in pairs(lib.table.ordered_keys(categories)) do
         local category = categories[category_name]
         if category.ignore then goto continue_category end

@@ -4,6 +4,7 @@ local test_lib = { }
 
 ---@class TestSuite
 ---@field setup fun()? Optional function to call before each test
+---@field cleanup fun()? Optional function to call after each test
 ---@field tests table<string, Test>
 
 ---@type table<string, TestSuite>
@@ -12,6 +13,7 @@ local test_suites = {
     ["blacklist"]   = require("tests.blacklist"),
     ["trigger"]  = require("tests.trigger"),
     ["formatting"]  = require("tests.formatting"),
+    ["gui"]  = require("tests.gui"),
 }
 
 function test_lib.add_commands()
@@ -25,6 +27,7 @@ function test_lib.add_commands()
             for _, test in pairs(test_suite.tests) do
                 if test_suite.setup then test_suite.setup() end
                 test()
+                if test_suite.cleanup then test_suite.cleanup() end
                 suit_test_count = suit_test_count + 1
             end
             game.print("[TESTS] Finished "..suit_test_count.." tests in '"..test_suite_name.."' suite.")

@@ -163,17 +163,6 @@ local function on_rocket_launched(event)
     trigger.attempt_trigger_victory(rocket.force --[[@as LuaForce]])
 end
 
----Validates if a message can be parsed into into a GUI label
----@param message any
----@return boolean
-local function is_valid_message(message)
-    if message == nil then return false end
-    log("Logging message to ensure it's valid to be displayed")
-    local success, error_message = pcall(log, message)
-    debug.debug_assert(success, error_message)
-    return success
-end
-
 trigger.add_remote_interface = function()
 	remote.add_interface("better-victory-screen", {
 
@@ -203,15 +192,10 @@ trigger.add_remote_interface = function()
         ---@param losing_message string|LocalisedString ? if provided will be shown to forces that's not the winning force.
         trigger_victory = function(winning_force, override, winning_message, losing_message)
 
-            -- First validate that the possible victory messages are valid
-            -- If it's not valid it will be ignored. During debug sessions
-            -- it will throw an error. Check the logs if it's not working.
-            if is_valid_message(winning_message) then
-                winning_message = nil
-            end
-            if not winning_message or not is_valid_message(losing_message) then
-                losing_message = nil
-            end
+            -- We are not sanitizing the input messages, but when we display them
+            -- will will wrap them in a pcall. For a reason that I can't remember why
+            -- we will only allow a losing message if there is a winning message.
+            if not winning_message then losing_message = nil end
 
             trigger.attempt_trigger_victory(winning_force, override, winning_message, losing_message)
         end

@@ -25,6 +25,8 @@ end
 function test_util.assert_table_equal(a, b)
     test_util.assert_not_nil(a)
     test_util.assert_not_nil(b)
+    if type(a) ~= "table" then error(pre.. a .. " is not a table!") end
+    if type(b) ~= "table" then error(pre.. b .. " is not a table!") end
     if not util.table.compare(a, b) then
         error(pre .. "tables are not equal: "..serpent.block(a) .. " vs " .. serpent.block(b))
     end
