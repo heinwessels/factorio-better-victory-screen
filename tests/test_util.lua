@@ -22,6 +22,14 @@ function test_util.assert_equal(a, b)
     if a ~= b then error(pre .. a .. " ~= " .. b) end
 end
 
+function test_util.assert_table_equal(a, b)
+    test_util.assert_not_nil(a)
+    test_util.assert_not_nil(b)
+    if not util.table.compare(a, b) then
+        error(pre .. "tables are not equal: "..serpent.block(a) .. " vs " .. serpent.block(b))
+    end
+end
+
 function test_util.assert_string_equal(a, b)
     test_util.assert_not_nil(a)
     test_util.assert_not_nil(b)

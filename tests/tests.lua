@@ -10,6 +10,7 @@ local test_lib = { }
 local test_suites = {
     ["tracker"]     = require("tests.tracker"),
     ["blacklist"]   = require("tests.blacklist"),
+    ["trigger"]  = require("tests.trigger"),
     ["formatting"]  = require("tests.formatting"),
 }
 

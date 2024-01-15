@@ -129,7 +129,7 @@ end
 ---@param override boolean? true if victory should be triggered regardless of it being triggered before
 ---@param winning_message string|LocalisedString ? to show instead of the default message
 ---@param losing_message string|LocalisedString ? if provided will be shown to forces that's not the winning force.
-local function attempt_trigger_victory(winning_force, override, winning_message, losing_message)
+function trigger.attempt_trigger_victory(winning_force, override, winning_message, losing_message)
 
     if not override then
         -- Do not trigger if another mod already triggered a normal victory
@@ -160,7 +160,18 @@ local function on_rocket_launched(event)
     local rocket = event.rocket
     if not (rocket and rocket.valid) then return end
 
-    attempt_trigger_victory(rocket.force --[[@as LuaForce]])
+    trigger.attempt_trigger_victory(rocket.force --[[@as LuaForce]])
+end
+
+---Validates if a message can be parsed into into a GUI label
+---@param message any
+---@return boolean
+local function is_valid_message(message)
+    if message == nil then return false end
+    log("Logging message to ensure it's valid to be displayed")
+    local success, error_message = pcall(log, message)
+    debug.debug_assert(success, error_message)
+    return success
 end
 
 trigger.add_remote_interface = function()
@@ -191,7 +202,18 @@ trigger.add_remote_interface = function()
         ---@param winning_message string|LocalisedString ? to show instead of the default message
         ---@param losing_message string|LocalisedString ? if provided will be shown to forces that's not the winning force.
         trigger_victory = function(winning_force, override, winning_message, losing_message)
-            attempt_trigger_victory(winning_force, override, winning_message, losing_message)
+
+            -- First validate that the possible victory messages are valid
+            -- If it's not valid it will be ignored. During debug sessions
+            -- it will throw an error. Check the logs if it's not working.
+            if is_valid_message(winning_message) then
+                winning_message = nil
+            end
+            if not winning_message or not is_valid_message(losing_message) then
+                losing_message = nil
+            end
+
+            trigger.attempt_trigger_victory(winning_force, override, winning_message, losing_message)
         end
     })
 end
@@ -215,7 +237,7 @@ function trigger.add_commands()
             -- only while the debugger is active. In normal game play it
             -- should not be possible, that would be bad.
             game.print("[Better Victory Screen] Forcing an actual victory.")
-            attempt_trigger_victory(game.forces.player, true)
+            trigger.attempt_trigger_victory(game.forces.player, true)
             return
         end
 

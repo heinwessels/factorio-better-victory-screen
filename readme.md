@@ -21,7 +21,7 @@ Any mods that change the game's victory condition will require explicit compatib
 - [Ultracube: Age of Cube](https://mods.factorio.com/mod/Ultracube)
 
 
-**List of popular INCOMPATIBLE overhauls (definitely incomplete)**:
+**List of popular INCOMPATIBLE overhauls (list is definitely incomplete)**:
 
 - [Krastorio 2](https://mods.factorio.com/mod/Krastorio2)
 - [Pyanodons](https://mods.factorio.com/user/pyanodon)
