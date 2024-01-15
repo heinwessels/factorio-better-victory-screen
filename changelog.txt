@@ -4,6 +4,10 @@ Date: ??.01.2024
   Compatibility:
     - Mods can now force the victory, even if it has been reached before.
     - Mods can now specify a custom victory message. This message can optionally be different for winners and losers.
+    - Added soft compatibility for some specific mods. This allow you to add Better Victory Screen
+      to these mods to track your statistics. However, until full compatibility is added by the other 
+      mod the vanilla screen will still be shown. This list currently includes:
+        Space Exploration, Krastorio 2, SpaceMod, Pyanodons.
   Changes:
     - More consistent and safer formatting of numbers. Now with working unit tests.
     - Safer gathering of statistics from other mods by suppressing any crashes.

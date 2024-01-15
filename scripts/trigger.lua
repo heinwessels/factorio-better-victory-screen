@@ -284,10 +284,40 @@ trigger.events = {
     [defines.events.on_rocket_launched] = on_rocket_launched,
 }
 
+---Determine if we should create soft compatibility with the current mod set.
+---This means we will disable the vanilla victory condition for mods that we
+---know have custom victory conditions, but are not yet fully supported. This
+---means the victory screen will at least on trigger on the first rocket launch.
+---This has the added benifit of this mod being safe to add to playthroughs even
+---though there is no full compatibility yet. Only downside is that the vanilla
+---victory screen will still be shown. When full compatibility is finally added
+---by the other mod everything will continue working as it should.
+local function handle_soft_compatibilities()
+    local soft_compatibilities = {
+        "space-exploration",
+        "Krastorio2",
+        "SpaceMod",
+        "pycoalprocessing",
+    }
+
+    for _, mod_name in pairs(soft_compatibilities) do
+        if script.active_mods[mod_name] then
+            global.disable_vanilla_victory = true
+            return -- Only need to do this once
+        end
+    end
+end
+
 function trigger.on_init(event)
+    handle_soft_compatibilities()
+
+    -- We always disable the vanilla victory condition because we
+    -- should be the main controller victory screens. 
     if remote.interfaces["silo_script"] then
         remote.call("silo_script", "set_no_victory", true)
     end
 end
+
+trigger.on_configuration_changed = handle_soft_compatibilities
 
 return trigger
