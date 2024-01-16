@@ -42,7 +42,7 @@ end
 ---@param winning_force LuaForce
 ---@param winning_message string|LocalisedString ? to show instead of the default victory message
 ---@param losing_message string|LocalisedString ? if provided will be shown to forces that's not the winning force.
-local function show_victory_screen(winning_force, winning_message, losing_message)
+function trigger.show_victory_screen(winning_force, winning_message, losing_message)
 
     ---@type table<string, LuaProfiler>
     local profilers = nil
@@ -150,7 +150,7 @@ function trigger.attempt_trigger_victory(winning_force, override, winning_messag
     game.set_game_state({ player_won = true, victorious_force = winning_force })
 
     -- Show our GUI
-    show_victory_screen(winning_force, winning_message, losing_message)
+    trigger.show_victory_screen(winning_force, winning_message, losing_message)
 end
 
 ---@param event EventData.on_rocket_launched
@@ -163,26 +163,33 @@ local function on_rocket_launched(event)
     trigger.attempt_trigger_victory(rocket.force --[[@as LuaForce]])
 end
 
+---Stores if BVS should trigger on the vanilla victory.
+---Also resets the stored game state if it was maybe called
+---erroniously previously.
+---@param no_vanilla_victory boolean
+local function disable_vanilla_victory(no_vanilla_victory)
+    -- First handle some possible migration issues
+    if not global.disable_vanilla_victory                                   -- Previously assumed vanilla victory condition
+        and no_vanilla_victory                                                      -- Now we should wait for remote trigger
+        and global.finished                                                 -- We already did trigger the screen though
+        and not (game.finished or game.finished_but_continuing) then        -- And the other mod hasn't triggered actual victory
+        -- This is the first time that the vanilla victory condition is disabled
+        -- but we've already triggered a victory condition. And the vanilla
+        -- victory condition has never been reached. This can only happen when
+        -- a mod didn't have support, but was added mid-run.
+        game.print("[Better Victory Screen] Detected newly added support while victory was erroneously shown previously. Reseting victory state. No further action required.")
+        global.finished = false
+    end
+
+    global.disable_vanilla_victory = no_vanilla_victory
+end
+
 trigger.add_remote_interface = function()
 	remote.add_interface("better-victory-screen", {
 
 		--- @param no_victory boolean true to ignore vanilla victory conditions
 		set_no_victory = function(no_victory)
-
-            -- First handle some possible migration issues
-            if not global.disable_vanilla_victory                                   -- Previously assumed vanilla victory condition
-                and no_victory                                                      -- Now we should wait for remote trigger
-                and global.finished                                                 -- We already did trigger the screen though
-                and not (game.finished or game.finished_but_continuing) then        -- And the other mod hasn't triggered actual victory
-                -- This is the first time that the vanilla victory condition is disabled
-                -- but we've already triggered a victory condition. And the vanilla
-                -- victory condition has never been reached. This can only happen when
-                -- a mod didn't have support, but was added mid-run.
-                game.print("[Better Victory Screen] Detected newly added support while victory was erroneously shown previously. Reseting victory state. No further action required.")
-                global.finished = false
-            end
-
-            global.disable_vanilla_victory = no_victory
+            disable_vanilla_victory(no_victory)
 		end,
 
         ---This remote is called by other mods when victory has been achieved.
@@ -226,7 +233,7 @@ function trigger.add_commands()
         end
 
         -- Normal operation
-        show_victory_screen(game.forces.player)
+        trigger.show_victory_screen(game.forces.player)
     end)
 
     local reset_command_help_message = [[
@@ -308,13 +315,13 @@ local function handle_soft_compatibilities()
 
     for _, mod_name in pairs(soft_compatibilities) do
         if script.active_mods[mod_name] then
-            global.disable_vanilla_victory = true
+            disable_vanilla_victory(true)
             return -- Only need to do this once
         end
     end
 end
 
-function trigger.on_init(event)
+function trigger.on_init(event) 
     handle_soft_compatibilities()
 
     -- We always disable the vanilla victory condition because we

@@ -2,12 +2,32 @@ local test_util = { }
 
 local pre = "Assertion failed: "
 
+---@return LuaSurface
+function test_util.get_surface() return game.surfaces.nauvis end
+
+---@return LuaSurface
+function test_util.reset_surface()
+    local surface = test_util.get_surface()
+
+    -- Clear the surface. Can't use surface.clear because that removes the chunks
+    -- as well, which acts weird when placing entities on them now.
+    for _, entity in pairs(surface.find_entities_filtered{}) do
+        entity.destroy { raise_destroy = true }
+    end
+
+    return surface
+end
+
 function test_util.assert_true(a)
     if a ~= true then error(pre.."Value is not false") end
 end
 
 function test_util.assert_false(a)
     if a ~= false then error(pre.."Value is not false") end
+end
+
+function test_util.assert_falsy(a)
+    if a then error(pre.."Value is not falsy") end
 end
 
 function test_util.assert_not_nil(a)

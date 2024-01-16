@@ -6,22 +6,6 @@ local test_util = require("tests.test_util")
 local tracker_tests = { tests = { } }
 local tests = tracker_tests.tests
 
----@return LuaSurface
-local function get_surface() return game.surfaces.nauvis end
-
----@return LuaSurface
-local function reset_surface()
-    local surface = get_surface()
-
-    -- Clear the surface. Can't use surface.clear because that removes the chunks
-    -- as well, which acts weird when placing entities on them now.
-    for _, entity in pairs(surface.find_entities_filtered{}) do
-        entity.destroy { raise_destroy = true }
-    end
-
-    return surface
-end
-
 ---Return a force with given name. Create it if neccesary
 ---@param force_name string
 ---@return LuaForce
@@ -94,12 +78,12 @@ local function assert_type_count(force_name, type, expected_count)
 end
 
 function tracker_tests.setup()
-    reset_surface()
+    test_util.reset_surface()
     reset_tracker()
 end
 
 function tests.runtime_count_by_name_single_item()
-    local surface = get_surface()
+    local surface = test_util.get_surface()
 
     tracker.track_entity_count_by_name("iron-chest")
     assert_name_count("player", "iron-chest", 0)
@@ -124,7 +108,7 @@ function tests.runtime_count_by_name_single_item()
 end
 
 function tests.runtime_count_by_name_multiple_items()
-    local surface = get_surface()
+    local surface = test_util.get_surface()
 
     local items = {{
         name    = "iron-chest",
@@ -185,7 +169,7 @@ function tests.runtime_count_by_name_multiple_items()
 end
 
 function tests.recount_count_by_name()
-    local surface = get_surface()
+    local surface = test_util.get_surface()
     local N = 5
 
     for x=1,N do
@@ -252,7 +236,7 @@ function tests.recount_count_by_name()
 end
 
 function tests.runtime_count_by_type()
-    local surface = get_surface()
+    local surface = test_util.get_surface()
 
     local type = "container" -- to track
     local items = {{
@@ -301,7 +285,7 @@ function tests.runtime_count_by_type()
 end
 
 function tests.count_by_name_and_type_dynamic()
-    local surface = get_surface()
+    local surface = test_util.get_surface()
     local entities = {{
         name    = "iron-chest",
         N       = 5,
@@ -360,7 +344,7 @@ function tests.count_by_name_and_type_dynamic()
 end
 
 function tests.count_by_name_multiple_forces_dynamic()
-    local surface = get_surface()
+    local surface = test_util.get_surface()
 
     local teams = {
         {
@@ -422,7 +406,7 @@ function tests.count_by_name_multiple_forces_dynamic()
 end
 
 function tests.count_by_name_multiple_forces_recount()
-    local surface = get_surface()
+    local surface = test_util.get_surface()
 
     local teams = {
         {
@@ -503,7 +487,7 @@ function tests.retreive_count_for_untracked_force()
 end
 
 function tests.merge_forces_both_tracked_same_item()
-    local surface = get_surface()
+    local surface = test_util.get_surface()
 
     local teams = {
         {
@@ -568,7 +552,7 @@ function tests.merge_forces_both_tracked_same_item()
 end
 
 function tests.merge_forces_both_tracked_different_items()
-    local surface = get_surface()
+    local surface = test_util.get_surface()
 
     local teams = {
         {
@@ -637,7 +621,7 @@ function tests.merge_forces_both_tracked_different_items()
 end
 
 function tests.merge_forces_source_untracked()
-    local surface = get_surface()
+    local surface = test_util.get_surface()
     local untracked = "EE_TESTFORCE_vogon"
 
     local teams = {
@@ -690,7 +674,7 @@ function tests.merge_forces_source_untracked()
 end
 
 function tests.merge_forces_destination_untracked()
-    local surface = get_surface()
+    local surface = test_util.get_surface()
 
     local tracked = "tracked"
     local untracked = "EE_TESTFORCE_vogon"
