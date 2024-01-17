@@ -27,6 +27,7 @@ Any mods that change the game's victory condition will require explicit compatib
 - [Pyanodons](https://mods.factorio.com/user/pyanodon)
 - [Space Exploration](https://mods.factorio.com/mod/space-exploration)
 - [Space Extension Mod](https://mods.factorio.com/mod/SpaceMod)
+- [Mining Space Industries (MSI) II](https://mods.factorio.com/mod/Mining-Space-Industries-II)
 
 
 If the mod is marked compatible, but is combined with another overhaul that's incompatible, then the shown victory screen might still be unchanged, or the custom victory screen will be shown on the first rocket launch by accident. However, it should not prevent you from finishing the game normally as well.

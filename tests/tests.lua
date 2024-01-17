@@ -11,9 +11,9 @@ local test_lib = { }
 local test_suites = {
     ["tracker"]     = require("tests.tracker"),
     ["blacklist"]   = require("tests.blacklist"),
-    ["trigger"]  = require("tests.trigger"),
+    ["trigger"]     = require("tests.trigger"),
     ["formatting"]  = require("tests.formatting"),
-    ["gui"]  = require("tests.gui"),
+    ["gui"]         = require("tests.gui"),
 }
 
 function test_lib.add_commands()
