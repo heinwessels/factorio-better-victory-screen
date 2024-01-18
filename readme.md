@@ -18,26 +18,19 @@ Any mods that change the game's victory condition will require explicit compatib
 - [Freight Forwarding](https://mods.factorio.com/mod/FreightForwarding)
 - [Industrial Revolution 3](https://mods.factorio.com/mod/IndustrialRevolution3)
 - [Nullius](https://mods.factorio.com/mod/nullius)
+- [Pyanodons](https://mods.factorio.com/user/pyanodon)
 - [Ultracube: Age of Cube](https://mods.factorio.com/mod/Ultracube)
-
 
 **List of popular INCOMPATIBLE overhauls (list is definitely incomplete)**:
 
 - [Krastorio 2](https://mods.factorio.com/mod/Krastorio2)
-- [Pyanodons](https://mods.factorio.com/user/pyanodon)
 - [Space Exploration](https://mods.factorio.com/mod/space-exploration)
 - [Space Extension Mod](https://mods.factorio.com/mod/SpaceMod)
 - [Mining Space Industries (MSI) II](https://mods.factorio.com/mod/Mining-Space-Industries-II)
 
-
 If the mod is marked compatible, but is combined with another overhaul that's incompatible, then the shown victory screen might still be unchanged, or the custom victory screen will be shown on the first rocket launch by accident. However, it should not prevent you from finishing the game normally as well.
 
 **Note to mod developers:** If you want to add compatibility to your mod you can read how to [here](https://github.com/heinwessels/factorio-better-victory-screen/blob/main/mod-page/compatibility.md). It also allows you add your own statistics to the GUI, or remove existing entries.
-
-# Incomplete list of incompatible mods:
-
-This is an **incomplete** list of popular mods that are not yet supported! Playing with these mods might cause premature victories.
-
 
 # Caveats:
 - Some statistics (like "distance walked") will only be accurate if mod is added at the start of a save file.
