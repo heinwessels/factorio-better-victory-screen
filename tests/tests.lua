@@ -1,3 +1,5 @@
+local test_util = require("tests.test_util")
+
 local test_lib = { }
 
 ---@alias Test fun()
@@ -25,6 +27,7 @@ function test_lib.add_commands()
         for test_suite_name, test_suite in pairs(test_suites) do
             local suit_test_count = 0
             for _, test in pairs(test_suite.tests) do
+                test_util.mock_release(false) -- Hard reset
                 if test_suite.setup then test_suite.setup() end
                 test()
                 if test_suite.cleanup then test_suite.cleanup() end

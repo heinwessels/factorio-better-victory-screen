@@ -5,7 +5,7 @@ local compatibility = require("scripts.compatibility")
 local debug = require("scripts.debug")
 
 local trigger = { }
-local gather_function_name = "better-victory-screen-statistics"
+trigger.gather_function_name = "better-victory-screen-statistics"
 
 ---A list of forces to show the victory screen to
 ---@return LuaForce[]
@@ -19,21 +19,24 @@ local function get_forces_to_show()
     return forces_to_show
 end
 
+trigger.remote = remote
 --- Gather statistics from other mods
 ---@param winning_force LuaForce
 ---@param forces LuaForce   list of forces that the GUI will be shown to
-local function gather_statistics(winning_force, forces)
+function trigger.gather_statistics(winning_force, forces)
     local gathered_statistics = { by_force = { }, by_player = { } }
-    for interface, functions in pairs(remote.interfaces) do
-        if functions[gather_function_name] then
-            -- Wrap calling other mod's remote in a pcall so that if something breaks there then it won't prevent
-            -- the GUI from showing. Instead we will ignore that 
-            local success, returned_value = pcall(remote.call, interface, gather_function_name, winning_force, forces)
-            debug.debug_assert(success, "Gathering statistics from interface '".. interface .. "' failed! Suppressed, and continuing. Here is the error:\n\n" .. serpent.block(returned_value))
-            if success then
-                gathered_statistics = util.merge{gathered_statistics, returned_value or { } --[[@as table]]}
+    for interface, functions in pairs(trigger.remote.interfaces) do
+        if functions[trigger.gather_function_name] then
+            -- We don't know the quality of the other mod's code and if it will return the correct things.
+            -- So we will wrap it all in a pcall. This includes remote call, as well as merging the returned
+            -- stats into our stats. That way we don't really need to sanitize the data. It's also okay because
+            -- downstream code is written to be robust as well and make any expectations about the data.
+            local success, error_message = pcall(function()
+                local mod_statistics = trigger.remote.call(interface, trigger.gather_function_name, winning_force, forces)
+                gathered_statistics = util.merge{gathered_statistics, mod_statistics --[[@as table]]}
                 log("Successfully gathered statistics from: " .. interface)
-            end
+            end)
+            debug.debug_assert(success, error_message)
         end
     end
     return gathered_statistics
@@ -64,7 +67,7 @@ function trigger.show_victory_screen(winning_force, winning_message, losing_mess
     log("Showing to forces: "..serpent.line(force_names))
 
     if profilers then profilers.gather.reset() end
-    local other_statistics = gather_statistics(winning_force, forces_to_show)
+    local other_statistics = trigger.gather_statistics(winning_force, forces_to_show)
     if profilers then profilers.gather.stop() end
 
     local compatibility_stats = compatibility.gather(forces_to_show)
@@ -178,7 +181,7 @@ local function disable_vanilla_victory(no_vanilla_victory)
         -- but we've already triggered a victory condition. And the vanilla
         -- victory condition has never been reached. This can only happen when
         -- a mod didn't have support, but was added mid-run.
-        game.print("[Better Victory Screen] Detected newly added support while victory was erroneously shown previously. Reseting victory state. No further action required.")
+        log("Detected newly added support while victory was erroneously shown previously. Reseting victory state. No further action required.")
         global.finished = false
     end
 

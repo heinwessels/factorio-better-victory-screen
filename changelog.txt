@@ -3,6 +3,8 @@ Version: 0.2.9
 Date: ??.01.2024
   Compatibility:
     - Added soft compatibility with Mining Space Industries II (See V0.2.8 for explanation) 
+  Changes:
+    - (Internal) Harden gathering statistics from other mods even more.
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.8
 Date: 15.01.2024
