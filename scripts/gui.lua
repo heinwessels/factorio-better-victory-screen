@@ -88,6 +88,7 @@ function gui.create(player, categories, message)
     for _, category_name in pairs(lib.table.ordered_keys(categories)) do
         local category = categories[category_name]
         if category.ignore then goto continue_category end
+        if not category.stats then log("Category: '" .. category_name .. "' has no stats. Ignoring") goto continue_category end
 
         local def = {
             args = {type = "table", column_count = 2, style = "finished_game_table"},
@@ -105,6 +106,9 @@ function gui.create(player, categories, message)
         for _, stat_name in pairs(lib.table.ordered_keys(category.stats or { })) do
             local stat = category.stats[stat_name]
             if stat.ignore then goto continue_stat end
+
+            if not stat.value then log("Statistic: '" .. stat_name .. "' has no value. Ignoring") goto continue_stat end
+            if not stat.unit then log("Statistic: '" .. stat_name .. "' has no unit. Ignoring") goto continue_stat end
 
             -- Safely format the value, and ignore it if the formatting crashes
             local formatted_value

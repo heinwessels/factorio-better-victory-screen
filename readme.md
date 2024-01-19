@@ -21,6 +21,7 @@ Any mods that change the game's victory condition will require explicit compatib
 - [Nullius](https://mods.factorio.com/mod/nullius)
 - [Pyanodons](https://mods.factorio.com/user/pyanodon)
 - [Ultracube: Age of Cube](https://mods.factorio.com/mod/Ultracube)
+- [Warp Drive Machine](https://mods.factorio.com/mod/Warp-Drive-Machine/downloads)
 
 **List of popular INCOMPATIBLE overhauls (list is definitely incomplete)**:
 

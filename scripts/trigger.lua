@@ -31,7 +31,8 @@ local function gather_statistics(winning_force, forces)
             local success, returned_value = pcall(remote.call, interface, gather_function_name, winning_force, forces)
             debug.debug_assert(success, "Gathering statistics from interface '".. interface .. "' failed! Suppressed, and continuing. Here is the error:\n\n" .. serpent.block(returned_value))
             if success then
-                gathered_statistics = util.merge{gathered_statistics, returned_value --[[@as table]]}
+                gathered_statistics = util.merge{gathered_statistics, returned_value or { } --[[@as table]]}
+                log("Successfully gathered statistics from: " .. interface)
             end
         end
     end
