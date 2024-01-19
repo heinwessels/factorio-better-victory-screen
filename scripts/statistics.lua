@@ -388,16 +388,19 @@ local function on_player_changed_position(event)
     end
 end
 
+local character_controller = defines.controllers.character
 statistics.on_nth_tick = {
     --- There are no nice events when hand crafting starts and stops
     ---@param event NthTickEventData
     [10] = function(event)
+        local players = global.statistics.players
+        local time_handcrafted = event.nth_tick
         for _, player in pairs(game.connected_players) do
-            if player.controller_type ~= defines.controllers.character then goto continue end
+            if player.controller_type ~= character_controller then goto continue end
             if player.crafting_queue_progress == 0 then goto continue end
 
-            local data = global.statistics.players[player.index] --[[@as StatisticsPlayerData ]]
-            data.ticks_crafted = data.ticks_crafted + event.nth_tick
+            local data = players[player.index] --[[@as StatisticsPlayerData ]]
+            data.ticks_crafted = data.ticks_crafted + time_handcrafted
 
             ::continue::
         end
