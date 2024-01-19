@@ -87,7 +87,9 @@ local formatters = {
     end,
     ["area"] = function(number)
         number = math.abs(number) -- Negative doesn't make sense
-        if number < 1000 then
+        if number < 10 then
+            number = lib.math.round(number, 3)
+        elseif number < 1000 then
             number = lib.math.round(number, 2)
         else
             number = lib.math.round(number)

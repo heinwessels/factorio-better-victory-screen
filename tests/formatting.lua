@@ -78,8 +78,10 @@ end
 
 function tests.area()
     test_util.assert_string_equal(formatter.format(0, "area"), "0 km2")
-    test_util.assert_string_equal(formatter.format(0.12345, "area"), "0.12 km2")
+    test_util.assert_string_equal(formatter.format(0.004, "area"), "0.004 km2")
+    test_util.assert_string_equal(formatter.format(0.12345, "area"), "0.123 km2")
     test_util.assert_string_equal(formatter.format(1, "area"), "1 km2")
+    test_util.assert_string_equal(formatter.format(9.002, "area"), "9.002 km2")
     test_util.assert_string_equal(formatter.format(1000.1, "area"), "1000 km2")
     test_util.assert_string_equal(formatter.format(1000.9, "area"), "1001 km2")
     test_util.assert_string_equal(formatter.format(123456, "area"), "123456 km2")
