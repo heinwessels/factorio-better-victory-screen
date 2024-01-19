@@ -108,7 +108,6 @@ function gui.create(player, categories, message)
             if stat.ignore then goto continue_stat end
 
             if not stat.value then log("Statistic: '" .. stat_name .. "' has no value. Ignoring") goto continue_stat end
-            if not stat.unit then log("Statistic: '" .. stat_name .. "' has no unit. Ignoring") goto continue_stat end
 
             -- Safely format the value, and ignore it if the formatting crashes
             local formatted_value

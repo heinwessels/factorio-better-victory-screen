@@ -116,6 +116,16 @@ function tests.create_statistics_stat_has_no_value_ignored()
     test_util.assert_falsy(caption_exists_in_gui("bvs-stats.jumping"))
 end
 
+function tests.create_statistics_stat_has_no_unit_not_ignored()
+    local statistics = { gymnastics = { stats = {
+        jumping = { value = 5, order = "b" }
+    }}}
+    gui.create(game.player, statistics)
+
+    test_util.assert_true(caption_exists_in_gui("bvs-categories.gymnastics"))
+    test_util.assert_true(caption_exists_in_gui("bvs-stats.jumping"))
+end
+
 function tests.create_statistics_unexpected_value_debug_death()
     local statistics = { gymnastics = { stats = {
         jumping = { value = {fish = "hungry"}, unit = "distance", order = "b" }
