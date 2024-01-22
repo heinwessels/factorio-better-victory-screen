@@ -1,8 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.9
 Date: ??.01.2024
-  Compatibility:
-    - Added soft compatibility with Mining Space Industries II (See V0.2.8 for explanation) 
   Changes:
     - Slightly change area formatting when the number is small.
     - (Internal) Harden gathering statistics from other mods even more.

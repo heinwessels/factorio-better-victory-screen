@@ -315,7 +315,6 @@ local function handle_soft_compatibilities()
         "Krastorio2",
         "SpaceMod",
         "pycoalprocessing",
-        "Mining-Space-Industries-II",
     }
 
     for _, mod_name in pairs(soft_compatibilities) do
