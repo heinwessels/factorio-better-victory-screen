@@ -33,8 +33,8 @@ local TRACKER_TYPE = {
 	ENTITY_BY_TYPE  = 1,
 
     -- TODO
-    --   Trains by name for Cargo Ships
-    --   Tiles by name for Nullius
+    --   Trains by name for Cargo Ships?
+    --   Tiles by name for Nullius (and on-placed for seablock?)?
 }
 
 ---@class Filter        : string
