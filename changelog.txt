@@ -1,8 +1,11 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.9
 Date: ??.01.2024
+  Compatibility:
+    - Better compatibility with mods that add custom train stops.
   Changes:
     - Slightly change area formatting when the number is small.
+    - Do not count trains on editor surfaces.
     - (Internal) Harden gathering statistics from other mods even more.
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.8

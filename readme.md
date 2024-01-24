@@ -13,12 +13,14 @@ Any mods that change the game's victory condition will require explicit compatib
 **List of compatible overhauls (might be incomplete)**:
 
 - [248k](https://mods.factorio.com/mod/248k)
+- [5Dims](https://mods.factorio.com/user/McGuten)
 - [Bob's](https://mods.factorio.com/user/Bobingabout), [Angel's](https://mods.factorio.com/user/Arch666Angel), and [SeaBlock](https://mods.factorio.com/mod/SeaBlock). **But(!):** [SpaceMod](https://mods.factorio.com/mod/SpaceMod) is not yet supported! This [fork](https://mods.factorio.com/mod/SpaceModFeorasFork) by Feoras is supported.
 - [Exotic Industries](https://mods.factorio.com/mod/exotic-industries)
 - [Freight Forwarding](https://mods.factorio.com/mod/FreightForwarding)
 - [Industrial Revolution 3](https://mods.factorio.com/mod/IndustrialRevolution3)
 - [Mining Space Industries (MSI) II](https://mods.factorio.com/mod/Mining-Space-Industries-II)
 - [Nullius](https://mods.factorio.com/mod/nullius)
+- [Omni](https://mods.factorio.com/user/OmnissiahZelos)
 - [Pyanodons](https://mods.factorio.com/user/pyanodon)
 - [Ultracube: Age of Cube](https://mods.factorio.com/mod/Ultracube)
 - [Warp Drive Machine](https://mods.factorio.com/mod/Warp-Drive-Machine/downloads)

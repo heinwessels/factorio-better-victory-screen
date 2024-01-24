@@ -478,13 +478,23 @@ function tests.count_by_name_multiple_forces_recount()
     end
 end
 
-function tests.retreive_count_for_untracked_force()
+function tests.retreive_count_for_untracked_force_debug_death()
     tracker.track_entity_count_by_name("iron-chest")
     test_util.assert_death(
         tracker.get_entity_count_by_name, {"enemy", "iron-chest"},
         "Untracked force counter requested"
     )
 end
+
+function tests.retreive_count_for_untracked_force_release_zero()
+    test_util.mock_release()
+    tracker.track_entity_count_by_name("iron-chest")
+    test_util.assert_equal(
+        tracker.get_entity_count_by_name("enemy", "iron-chest"),
+        0
+    )
+end
+
 
 function tests.merge_forces_both_tracked_same_item()
     local surface = test_util.get_surface()
@@ -618,6 +628,13 @@ function tests.merge_forces_both_tracked_different_items()
         tracker.get_entity_count_by_name, {"a", "iron-chest"},
         "Untracked force counter requested"
     )
+
+    -- Or if we do a release build just return zero
+    test_util.mock_release()
+    test_util.assert_equal(
+        tracker.get_entity_count_by_name("a", "iron-chest"),
+        0
+    )
 end
 
 function tests.merge_forces_source_untracked()
@@ -720,9 +737,13 @@ function tests.merge_forces_destination_untracked()
         destination = { name = untracked},
     }
 
-    -- Now make sure the counts are now available
+    -- Now make sure the counts are not available
     test_util.assert_death(tracker.get_entity_count_by_name, {tracked, "iron-chest"})
     test_util.assert_death(tracker.get_entity_count_by_name, {untracked, "iron-chest"})
+
+    test_util.mock_release()    -- Or just return zero when it's a release
+    test_util.assert_equal(tracker.get_entity_count_by_name(tracked, "iron-chest"), 0)
+    test_util.assert_equal(tracker.get_entity_count_by_name(untracked, "iron-chest"), 0)
 end
 
 return tracker_tests

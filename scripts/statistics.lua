@@ -1,5 +1,6 @@
 local blacklist = require("scripts.blacklist")
 local tracker = require("scripts.tracker")
+local util = require("util")
 
 local statistics = { }
 
@@ -18,6 +19,31 @@ local all_machines = {
     "radar",
     "rocket-silo",
 }
+
+-- These rails won't be taken into account for the total rail length
+local rail_blacklist = util.list_to_map{
+    "straight-water-way",
+    "curved-water-way",
+    "se-spaceship-clamp-place",     -- heh
+}
+
+local train_stop_blacklist = util.list_to_map{
+    "port",                         -- From cargo ships
+}
+
+---Convenience function to get all prototypes of a type (except some)
+---@param type string that we should return the names of
+---@param prototypes_blacklist table<string, boolean>? list of names to exclude
+---@return table<string, LuaEntityPrototype>
+local function all_prototypes_of_type(type, prototypes_blacklist)
+    local prototypes = { }
+    for prototype_name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = type}}) do
+        if not prototypes_blacklist or not prototypes_blacklist[prototype_name] then
+            prototypes[prototype_name] = prototype
+        end
+    end
+    return prototypes
+end
 
 --- The amount of machines/buildings
 ---@param force LuaForce calculate statistics for
@@ -41,7 +67,7 @@ local function get_total_belt_length(force)
     distance = distance + (splitters * 2)
 
     -- Assume the undergroundies have an average extend length of 50% of the maximum distance
-    for prototype_name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "underground-belt"}}) do
+    for prototype_name, prototype in pairs(all_prototypes_of_type("underground-belt")) do
         local amount = tracker.get_entity_count_by_name(force.name --[[@as ForceName]], prototype_name)
         -- Remember to take into a account we loop over single entities, and not pairs of undergroundies
         local average_length_per_single_underground = prototype.max_underground_distance / 2 / 2
@@ -58,12 +84,18 @@ local function get_total_rail_length(force)
 
     -- Assume each belt has a distance of 2m.
     -- This isn't really true for diagonal pieces but meh
-    local straight = tracker.get_entity_count_by_name(force.name --[[@as ForceName]], "straight-rail")
+    local straight = 0
+    for prototype_name, _ in pairs(all_prototypes_of_type("straight-rail", rail_blacklist)) do
+        straight = straight + tracker.get_entity_count_by_name(force.name --[[@as ForceName]], prototype_name)
+    end
     distance = distance + (straight * 2)
 
     -- Assume each curved rail has a length of 8m.
     -- TODO This can be estimated better! 
-    local curved = tracker.get_entity_count_by_name(force.name --[[@as ForceName]], "curved-rail")
+    local curved = 0
+    for prototype_name, _ in pairs(all_prototypes_of_type("curved-rail", rail_blacklist)) do
+        curved = curved + tracker.get_entity_count_by_name(force.name --[[@as ForceName]], prototype_name)
+    end
     distance = distance + (curved * 8)
 
     return math.floor(distance)
@@ -85,7 +117,7 @@ local function get_total_pipe_length(force)
     -- TODO take pumps into account?
 
     -- Assume an average extend length of 50% of the maximum distance
-    for prototype_name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "pipe-to-ground"}}) do
+    for prototype_name, prototype in pairs(all_prototypes_of_type("pipe-to-ground")) do
         local amount = tracker.get_entity_count_by_name(force.name --[[@as ForceName]], prototype_name)
         -- Remember to take into a account we loop over single entities, and not pairs of undergroundies
         local average_length_per_single_underground = prototype.max_underground_distance / 2 / 2
@@ -98,13 +130,28 @@ end
 ---@param force LuaForce calculate statistics for
 ---@return integer
 local function get_total_trains(force)
-    return #force.get_trains()
+    local count = 0
+
+    -- This will currently count all trains, even the ships in Cargo Ships
+    for _, surface in pairs(game.surfaces) do
+        if not blacklist.surface(surface.name) then
+            count = count + #force.get_trains(surface)
+        end
+    end
+
+    return count
 end
 
 ---@param force LuaForce calculate statistics for
 ---@return integer
 local function get_total_train_stations(force)
-    return tracker.get_entity_count_by_name(force.name --[[@as ForceName]], {"train-stop"})
+    local count = 0
+
+    for prototype_name, _ in pairs(all_prototypes_of_type("train-stop", train_stop_blacklist)) do
+        count = count + tracker.get_entity_count_by_name(force --[[@as ForceName]], prototype_name)
+    end
+
+    return count
 end
 
 ---A table showing the different brackets, and for each bracket it shows some data. This contains
@@ -468,18 +515,25 @@ local function setup_trackers()
     tracker.track_entity_count_by_type(all_machines)
 
     tracker.track_entity_count_by_type{"transport-belt", "splitter"}
-    for prototype_name, _ in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "underground-belt"}}) do
+    for prototype_name, _ in pairs(all_prototypes_of_type("underground-belt")) do
         tracker.track_entity_count_by_name{prototype_name}
     end
 
-    tracker.track_entity_count_by_name{"straight-rail", "curved-rail"}
+    for prototype_name, _ in pairs(all_prototypes_of_type("straight-rail", rail_blacklist)) do
+        tracker.track_entity_count_by_name(prototype_name)
+    end
+    for prototype_name, _ in pairs(all_prototypes_of_type("curved-rail", rail_blacklist)) do
+        tracker.track_entity_count_by_name(prototype_name)
+    end
 
     tracker.track_entity_count_by_type{"pipe", "storage-tank"}
-    for prototype_name, _ in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = "pipe-to-ground"}}) do
+    for prototype_name, _ in pairs(all_prototypes_of_type("pipe-to-ground")) do
         tracker.track_entity_count_by_name{prototype_name}
     end
 
-    tracker.track_entity_count_by_name{"train-stop"}
+    for prototype_name, _ in pairs(all_prototypes_of_type("train-stop", train_stop_blacklist)) do
+        tracker.track_entity_count_by_name(prototype_name)
+    end
 end
 
 ---@param force LuaForce

@@ -31,6 +31,10 @@ local data_key = "_bvs_tracker_cache"
 local TRACKER_TYPE = {
 	ENTITY_BY_NAME  = 0,
 	ENTITY_BY_TYPE  = 1,
+
+    -- TODO
+    --   Trains by name for Cargo Ships
+    --   Tiles by name for Nullius
 }
 
 ---@class Filter        : string
