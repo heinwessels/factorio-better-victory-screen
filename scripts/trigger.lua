@@ -215,30 +215,32 @@ end
 
 function trigger.add_commands()
 
-    local show_victory_help_message = [[
-        Show the Victory GUI as if victory has been reached, without actually triggering the victory.
-        This is mainly for development purposes, but might be interesting for some players.
-        This command does not have any impact on the game.
-        [Mod: Better Victory Screen]
-        ]]
-        ---@param command CustomCommandData
-    commands.add_command("show-victory-screen", show_victory_help_message, function(command)
-        if script.active_mods["debugadapter"] and command.parameter == "victory" then
-            local player = game.get_player(command.player_index)
-            if not player then return end       -- Should never happen.
-            if not player.admin then return end -- Some kind of safety net
+    if settings.startup["bvs-enable-show-victory-screen-command"].value or script.active_mods["debugadapter"] then
+        local show_victory_help_message = [[
+            Show the Victory GUI as if victory has been reached, without actually triggering the victory.
+            This is mainly for development purposes, but might be interesting for some players.
+            This command does not have any impact on the game.
+            [Mod: Better Victory Screen]
+            ]]
+            ---@param command CustomCommandData
+        commands.add_command("show-victory-screen", show_victory_help_message, function(command)
+            if script.active_mods["debugadapter"] and command.parameter == "victory" then
+                local player = game.get_player(command.player_index)
+                if not player then return end       -- Should never happen.
+                if not player.admin then return end -- Some kind of safety net
 
-            -- Add additional option to trigger the actual victory, but
-            -- only while the debugger is active. In normal game play it
-            -- should not be possible, that would be bad.
-            game.print("[Better Victory Screen] Forcing an actual victory.")
-            trigger.attempt_trigger_victory(game.forces.player, true)
-            return
-        end
+                -- Add additional option to trigger the actual victory, but
+                -- only while the debugger is active. In normal game play it
+                -- should not be possible, that would be bad.
+                game.print("[Better Victory Screen] Forcing an actual victory.")
+                trigger.attempt_trigger_victory(game.forces.player, true)
+                return
+            end
 
-        -- Normal operation
-        trigger.show_victory_screen(game.forces.player)
-    end)
+            -- Normal operation
+            trigger.show_victory_screen(game.forces.player)
+        end)
+    end
 
     local reset_command_help_message = [[
         **USE WITH CAUTION!** 

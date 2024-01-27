@@ -6,6 +6,7 @@ Date: ??.01.2024
   Changes:
     - Slightly change area formatting when the number is small.
     - Do not count trains on editor surfaces.
+    - The command /show-victory-screen is now a start-up setting. Disabled by default.
     - (Internal) Harden gathering statistics from other mods even more.
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.8
