@@ -34,7 +34,7 @@ function module.gather(forces)
 
             stats.by_force[force.name] = {
                 ["infrastructure"] = { stats = {
-                    ["waterways"] = { value = math.floor(distance), unit = "distance", order = "c1" }
+                    ["waterways"] = { value = math.floor(distance), unit = "distance", order = "h" }
                 }}
             }
 

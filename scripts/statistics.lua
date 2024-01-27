@@ -148,7 +148,7 @@ local function get_total_train_stations(force)
     local count = 0
 
     for prototype_name, _ in pairs(all_prototypes_of_type("train-stop", train_stop_blacklist)) do
-        count = count + tracker.get_entity_count_by_name(force --[[@as ForceName]], prototype_name)
+        count = count + tracker.get_entity_count_by_name(force.name --[[@as ForceName]], prototype_name)
     end
 
     return count
