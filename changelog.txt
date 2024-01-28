@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.9
-Date: ??.01.2024
+Date: 28.01.2024
   Compatibility:
     - Better compatibility with mods that add custom train stops.
   Changes:
