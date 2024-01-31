@@ -96,8 +96,8 @@ table_containing_custom_statistics = {
             ["industry"] = { order = "a", stats = {
 
                 -- These are all the entries in that category
-                ["breweries"]   = { value = 6,                      order="a" },
-                ["asphalt"]     = { value = 100,    unit="area",    order="b" },
+                ["breweries"]   = { value=6,    has_tooltip=true,   order="a" },
+                ["asphalt"]     = { value=100,  unit="area",        order="b" },
             }}
         },
     },
@@ -152,10 +152,10 @@ asphalt=Asphalt Roads
 highest-jump=Highest Jump
 ```
 
-You can also add an optional tooltip that will be shown be hovering over the statistic's name as follows:
+You can also add an optional tooltip that will be shown be hovering over the statistic's name as follows. This will only be shown if the entry has `has_tooltip=true`.
 ```
 [bvs-stat-tooltip]
-highest-jump=The highest the player could jump during gymnastics class.
+breweries=Historic breweries in your area.
 ```
 
 ## Hiding existing categories or statistics

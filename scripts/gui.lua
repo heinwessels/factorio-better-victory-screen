@@ -10,6 +10,20 @@ local e = defines.events
 local name_column_width = 137
 local value_column_width = 82   -- Keeps the golden ration used by vanilla gui
 
+---@class StatisticEntry
+---@field value number
+---@field unit string
+---@field ignore boolean?
+---@field has_tooltip boolean? Then assumes valid entry exists in locale
+---@field localized_name LocalisedString? To supply a custom name
+---@field localised_tooltip LocalisedString? If supplied then has_tooltip is ignored
+
+---@class StatisticCategory
+---@field stats table<string, StatisticEntry>
+---@field ignore boolean?
+
+---@alias StatisticCategories table<string, StatisticCategory>
+
 ---@param player LuaPlayer
 ---@param categories StatisticCategories
 ---@param message string|LocalisedString ? to show instead of default victory message
@@ -108,27 +122,28 @@ function gui.create(player, categories, message)
             if stat.ignore then goto continue_stat end
 
             if not stat.value then log("Statistic: '" .. stat_name .. "' has no value. Ignoring") goto continue_stat end
+            local has_tooltip = stat.has_tooltip or (stat.localised_tooltip ~= nil)
 
             -- Safely format the value, and ignore it if the formatting crashes
             local formatted_value
-            local formatted_tooltip
+            local fomatted_value_tooltip
             local success, error_message = pcall(function()
                 formatted_value = formatter.format(stat.value, stat.unit)
-                formatted_tooltip = formatter.format_tooltip(stat.value, stat.unit)
+                fomatted_value_tooltip = formatter.format_tooltip(stat.value, stat.unit)
             end)
             debug.debug_assert(success, error_message)
             if not success then goto continue_stat end
 
             category_table.add{
                 type = "label", 
-                caption = {"", {"bvs-stats."..stat_name}, ":"},
-                tooltip = {"?", {"bvs-stat-tooltip."..stat_name}, ""}
+                caption = {"", {"bvs-stats."..stat_name}, ":", (has_tooltip and " [img=info]" or "")},
+                tooltip = has_tooltip and {"bvs-stat-tooltip."..stat_name}
             }
 
             category_table.add{
                 type = "label",
                 caption = formatted_value,
-                tooltip = formatted_tooltip,
+                tooltip = fomatted_value_tooltip,
             }
 
             ::continue_stat::

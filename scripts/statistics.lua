@@ -353,7 +353,7 @@ function statistics.for_force(force, profilers)
     if profilers then profilers.peak_power.stop() end
 
     stats["production"] = {order = "f", stats = {
-        ["peak-power"] =        {value = peak_power_generation, unit="power"},
+        ["peak-power"] =        {value = peak_power_generation, unit="power", has_tooltip=true},
         ["items-produced"] =    {value = get_items_produced(force)},
         ["science-consumed"] =  {value = get_total_science_packs_consumed(force)},
     }}
@@ -363,7 +363,7 @@ function statistics.for_force(force, profilers)
     if profilers then profilers.chunk_counter.stop() end
 
     stats["miscellaneous"] = {order = "g", stats = {
-        ["total-enemy-kills"] = {value = get_total_enemy_kills(force)},
+        ["total-enemy-kills"] = {value = get_total_enemy_kills(force), has_tooltip=true},
         ["total-train-kills"] = {value = get_total_kills_by_train(force)},
         ["area-explored"] =     {value = area_explored, unit="area"},
     }}
@@ -382,7 +382,7 @@ function statistics.for_player(player, profilers)
         ["deaths"] =            {value = player_data.deaths,                                order="a"},
         ["kills"] =             {value = player_data.kills,                                 order="b"},
         ["distance-walked"] =   {value = player_data.distance_walked,   unit="distance",    order="c"},
-        ["distance-drove"] =    {value = player_data.distance_drove,    unit="distance",    order="d"},
+        ["distance-drove"] =    {value = player_data.distance_drove,    unit="distance",    order="d", has_tooltip=true},
         ["handcrafting-time"] = {value = player_data.ticks_crafted,     unit="time",        order="e"},
     }}
 

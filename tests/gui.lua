@@ -52,6 +52,27 @@ local function caption_exists_in_gui(caption, element)
     end
 end
 
+---@param tooltip string to find in localized string tables
+---@param element LuaGuiElement?
+---@return boolean?
+local function tooltip_exists_in_gui(tooltip, element)
+    if type(tooltip) ~= "string" then error("Expects only string tooltips") end
+    if not element then element = game.player.gui.screen.bvs_game_finished end
+
+    if element.tooltip and type(element.tooltip) == "table" then
+        if find_in_table_recursively(element.tooltip --[[@as table]], tooltip) then
+            return true -- Found it!
+        end
+    end
+
+    for _, child in pairs(element.children) do
+        if tooltip_exists_in_gui(tooltip, child) then
+            -- Propagate what the child up through the generations
+            return true
+        end
+    end
+end
+
 function gui_tests.cleanup()
     if game.player.gui.screen.bvs_game_finished then
         gui.handlers.continue({player_index = game.player.index})
@@ -97,6 +118,18 @@ function tests.create_statistics()
 
     test_util.assert_true(caption_exists_in_gui("bvs-categories.gymnastics"))
     test_util.assert_true(caption_exists_in_gui("bvs-stats.jumping"))
+    test_util.assert_falsy(tooltip_exists_in_gui("bvs-stat-tooltip.jumping"))
+end
+
+function tests.create_stat_with_tooltip_shown()
+    local statistics = { gymnastics = { stats = {
+        jumping = { value = 5, unit = "distance", order = "b" , has_tooltip = true}
+    }}}
+    gui.create(game.player, statistics)
+
+    test_util.assert_true(caption_exists_in_gui("bvs-categories.gymnastics"))
+    test_util.assert_true(caption_exists_in_gui("bvs-stats.jumping"))
+    test_util.assert_true(tooltip_exists_in_gui("bvs-stat-tooltip.jumping"))
 end
 
 function tests.create_category_has_no_stats_ignored()
