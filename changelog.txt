@@ -3,6 +3,7 @@ Version: 0.2.10
 Date: ??.01.2024
   Changes:
     - Statistics with tooltips now show the tooltip-info icon similar to vanilla.
+    - Change formatting from Title Case to normal capitilization to more closely mimic vanilla.
   Compatibility:
     - Statistic entries can now define a custom statistic name to be displayed.
     - Statistic entries can now define a custom statistic tooltip to be displayed.
