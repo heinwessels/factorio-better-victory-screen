@@ -33,43 +33,21 @@ end
 
 ---@param caption string to find in localized string tables
 ---@param element LuaGuiElement?
----@return boolean?
-local function caption_exists_in_gui(caption, element)
+---@return LuaGuiElement? the element containing the caption
+local function find_element_with_caption(caption, element)
     if type(caption) ~= "string" then error("Expects only string captions") end
     if not element then element = game.player.gui.screen.bvs_game_finished end
 
     if element.caption and type(element.caption) == "table" then
         if find_in_table_recursively(element.caption --[[@as table]], caption) then
-            return true -- Found it!
+            return element -- Found it!
         end
     end
 
     for _, child in pairs(element.children) do
-        if caption_exists_in_gui(caption, child) then
-            -- Propagate what the child up through the generations
-            return true
-        end
-    end
-end
-
----@param tooltip string to find in localized string tables
----@param element LuaGuiElement?
----@return boolean?
-local function tooltip_exists_in_gui(tooltip, element)
-    if type(tooltip) ~= "string" then error("Expects only string tooltips") end
-    if not element then element = game.player.gui.screen.bvs_game_finished end
-
-    if element.tooltip and type(element.tooltip) == "table" then
-        if find_in_table_recursively(element.tooltip --[[@as table]], tooltip) then
-            return true -- Found it!
-        end
-    end
-
-    for _, child in pairs(element.children) do
-        if tooltip_exists_in_gui(tooltip, child) then
-            -- Propagate what the child up through the generations
-            return true
-        end
+        local found_element = find_element_with_caption(caption, child)
+        -- Propagate what the child up through the generations
+        if found_element then return found_element end
     end
 end
 
@@ -116,9 +94,10 @@ function tests.create_statistics()
     }}}
     gui.create(game.player, statistics)
 
-    test_util.assert_true(caption_exists_in_gui("bvs-categories.gymnastics"))
-    test_util.assert_true(caption_exists_in_gui("bvs-stats.jumping"))
-    test_util.assert_falsy(tooltip_exists_in_gui("bvs-stat-tooltip.jumping"))
+    test_util.assert_not_nil(find_element_with_caption("bvs-categories.gymnastics"))
+    local stat_name_label = find_element_with_caption("bvs-stats.jumping")
+    test_util.assert_not_nil(stat_name_label)
+    test_util.assert_string_equal(stat_name_label.tooltip, "")
 end
 
 function tests.create_statistics_with_localised_name()
@@ -127,10 +106,12 @@ function tests.create_statistics_with_localised_name()
     }}}
     gui.create(game.player, statistics)
 
-    test_util.assert_true(caption_exists_in_gui("bvs-categories.gymnastics"))
-    test_util.assert_falsy(caption_exists_in_gui("bvs-stats.jumping"))
-    test_util.assert_true(caption_exists_in_gui("what-is-love.baby-dont-hurt-me"))
-    test_util.assert_falsy(tooltip_exists_in_gui("bvs-stat-tooltip.jumping"))
+    test_util.assert_not_nil(find_element_with_caption("bvs-categories.gymnastics"))
+    test_util.assert_nil(find_element_with_caption("bvs-stats.jumping"))
+
+    local stat_name_label = find_element_with_caption("what-is-love.baby-dont-hurt-me")
+    test_util.assert_not_nil(stat_name_label)
+    test_util.assert_string_equal(stat_name_label.tooltip, "")
 end
 
 function tests.create_stat_with_tooltip_shown()
@@ -139,9 +120,10 @@ function tests.create_stat_with_tooltip_shown()
     }}}
     gui.create(game.player, statistics)
 
-    test_util.assert_true(caption_exists_in_gui("bvs-categories.gymnastics"))
-    test_util.assert_true(caption_exists_in_gui("bvs-stats.jumping"))
-    test_util.assert_true(tooltip_exists_in_gui("bvs-stat-tooltip.jumping"))
+    test_util.assert_not_nil(find_element_with_caption("bvs-categories.gymnastics"))
+    local stat_name_label = find_element_with_caption("bvs-stats.jumping")
+    test_util.assert_not_nil(stat_name_label)
+    test_util.assert_table_equal(stat_name_label.tooltip, {"bvs-stat-tooltip.jumping"})
 end
 
 function tests.create_stat_with_localised_tooltip_shown()
@@ -150,17 +132,17 @@ function tests.create_stat_with_localised_tooltip_shown()
     }}}
     gui.create(game.player, statistics)
 
-    test_util.assert_true(caption_exists_in_gui("bvs-categories.gymnastics"))
-    test_util.assert_true(caption_exists_in_gui("bvs-stats.jumping"))
-    test_util.assert_falsy(tooltip_exists_in_gui("bvs-stat-tooltip.jumping"))
-    test_util.assert_true(tooltip_exists_in_gui("penguins.are-real"))
+    test_util.assert_not_nil(find_element_with_caption("bvs-categories.gymnastics"))
+    local stat_name_label = find_element_with_caption("bvs-stats.jumping")
+    test_util.assert_not_nil(stat_name_label)
+    test_util.assert_table_equal(stat_name_label.tooltip, {"penguins.are-real"})
 end
 
 function tests.create_category_has_no_stats_ignored()
     local statistics = { gymnastics = {  } }
     gui.create(game.player, statistics)
 
-    test_util.assert_falsy(caption_exists_in_gui("bvs-categories.gymnastics"))
+    test_util.assert_falsy(find_element_with_caption("bvs-categories.gymnastics"))
 end
 
 function tests.create_statistics_stat_has_no_value_ignored()
@@ -169,8 +151,8 @@ function tests.create_statistics_stat_has_no_value_ignored()
     }}}
     gui.create(game.player, statistics)
 
-    test_util.assert_true(caption_exists_in_gui("bvs-categories.gymnastics"))
-    test_util.assert_falsy(caption_exists_in_gui("bvs-stats.jumping"))
+    test_util.assert_not_nil(find_element_with_caption("bvs-categories.gymnastics"))
+    test_util.assert_falsy(find_element_with_caption("bvs-stats.jumping"))
 end
 
 function tests.create_statistics_stat_has_no_unit_not_ignored()
@@ -179,8 +161,8 @@ function tests.create_statistics_stat_has_no_unit_not_ignored()
     }}}
     gui.create(game.player, statistics)
 
-    test_util.assert_true(caption_exists_in_gui("bvs-categories.gymnastics"))
-    test_util.assert_true(caption_exists_in_gui("bvs-stats.jumping"))
+    test_util.assert_not_nil(find_element_with_caption("bvs-categories.gymnastics"))
+    test_util.assert_not_nil(find_element_with_caption("bvs-stats.jumping"))
 end
 
 function tests.create_statistics_unexpected_value_debug_death()
@@ -198,8 +180,8 @@ function tests.create_statistics_unexpected_value_release_ignored()
     }}}
     gui.create(game.player, statistics)
 
-    test_util.assert_true(caption_exists_in_gui("bvs-categories.gymnastics"))
-    test_util.assert_falsy(caption_exists_in_gui("bvs-stats.jumping"))
+    test_util.assert_not_nil(find_element_with_caption("bvs-categories.gymnastics"))
+    test_util.assert_falsy(find_element_with_caption("bvs-stats.jumping"))
 end
 
 return gui_tests

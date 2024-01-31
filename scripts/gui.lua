@@ -142,7 +142,7 @@ function gui.create(player, categories, message)
             category_table.add{
                 type = "label", 
                 caption = {"", localised_name, ":", (has_tooltip and " [img=info]" or "")},
-                tooltip = has_tooltip and localised_tooltip
+                tooltip = has_tooltip and localised_tooltip or ""
             }
 
             category_table.add{
