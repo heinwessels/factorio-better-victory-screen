@@ -4,7 +4,7 @@
 
 A better victory screen that places the focus on automation, and not combat.
 
-You can view the victory screen at any time by typing the command `/show-victory-screen`.
+If enabled in settings you can view the victory screen at any time by typing the command `/show-victory-screen`. This is disabled by default.
 
 # Compatibility
 

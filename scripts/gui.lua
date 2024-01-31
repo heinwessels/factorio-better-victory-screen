@@ -140,7 +140,7 @@ function gui.create(player, categories, message)
             local localised_tooltip = stat.localised_tooltip or {"bvs-stat-tooltip."..stat_name}
 
             category_table.add{
-                type = "label", 
+                type = "label",
                 caption = {"", localised_name, ":", (has_tooltip and " [img=info]" or "")},
                 tooltip = has_tooltip and localised_tooltip or ""
             }
