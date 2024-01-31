@@ -15,7 +15,7 @@ local value_column_width = 82   -- Keeps the golden ration used by vanilla gui
 ---@field unit string
 ---@field ignore boolean?
 ---@field has_tooltip boolean? Then assumes valid entry exists in locale
----@field localized_name LocalisedString? To supply a custom name
+---@field localised_name LocalisedString? To supply a custom name
 ---@field localised_tooltip LocalisedString? If supplied then has_tooltip is ignored
 
 ---@class StatisticCategory
@@ -134,12 +134,15 @@ function gui.create(player, categories, message)
             debug.debug_assert(success, error_message)
             if not success then goto continue_stat end
 
-            local tooltip = stat.localised_tooltip or {"bvs-stat-tooltip."..stat_name}
+            -- TODO: These two are still a little unsafe because other mods can pass us anything.
+            -- We could somehow verify that it's indeed a localised string, or somehow pcall it
+            local localised_name = stat.localised_name or {"bvs-stats."..stat_name}
+            local localised_tooltip = stat.localised_tooltip or {"bvs-stat-tooltip."..stat_name}
 
             category_table.add{
                 type = "label", 
-                caption = {"", {"bvs-stats."..stat_name}, ":", (has_tooltip and " [img=info]" or "")},
-                tooltip = has_tooltip and tooltip   -- TODO: This is still a little unsafe
+                caption = {"", localised_name, ":", (has_tooltip and " [img=info]" or "")},
+                tooltip = has_tooltip and localised_tooltip
             }
 
             category_table.add{

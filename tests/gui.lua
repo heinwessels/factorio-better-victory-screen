@@ -121,6 +121,18 @@ function tests.create_statistics()
     test_util.assert_falsy(tooltip_exists_in_gui("bvs-stat-tooltip.jumping"))
 end
 
+function tests.create_statistics_with_localised_name()
+    local statistics = { gymnastics = { stats = {
+        jumping = { value = 5, unit = "distance", order = "b", localised_name={"what-is-love.baby-dont-hurt-me"}}
+    }}}
+    gui.create(game.player, statistics)
+
+    test_util.assert_true(caption_exists_in_gui("bvs-categories.gymnastics"))
+    test_util.assert_falsy(caption_exists_in_gui("bvs-stats.jumping"))
+    test_util.assert_true(caption_exists_in_gui("what-is-love.baby-dont-hurt-me"))
+    test_util.assert_falsy(tooltip_exists_in_gui("bvs-stat-tooltip.jumping"))
+end
+
 function tests.create_stat_with_tooltip_shown()
     local statistics = { gymnastics = { stats = {
         jumping = { value = 5, unit = "distance", order = "b" , has_tooltip = true}

@@ -97,7 +97,7 @@ table_containing_custom_statistics = {
 
                 -- These are all the entries in that category
                 ["breweries"]   = { value=6,    has_tooltip=true,   order="a" },
-                ["asphalt"]     = { value=100,  unit="area",        order="b" },
+                ["asphalt"]     = { value=100,  unit="area",        order="b", localised_name = {"custom.name"} },
             }}
         },
     },
