@@ -110,7 +110,7 @@ table_containing_custom_statistics = {
             ["gymnastics"] = { order = "b", stats = {
 
                 -- This in an entry in that category
-                ["highest-jump"]    = { value = 100000, unit="distance"}
+                ["highest-jump"]    = { value = 100000, unit="distance", localised_tooltip = {"custom.tooltip"}}
             }}
         },
 
@@ -152,7 +152,7 @@ asphalt=Asphalt Roads
 highest-jump=Highest Jump
 ```
 
-You can also add an optional tooltip that will be shown be hovering over the statistic's name as follows. This will only be shown if the entry has `has_tooltip=true`.
+You can also add an optional tooltip that will be shown be hovering over the statistic's name as follows. This will only be shown if the entry has `has_tooltip=true`. You can instead pass your own localised string to be shown as tooltip: `localised_tooltip = {"custom.tooltip}`
 ```
 [bvs-stat-tooltip]
 breweries=Historic breweries in your area.

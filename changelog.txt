@@ -4,6 +4,7 @@ Date: ??.01.2024
   Changes:
     - Statistics with tooltips now show the tooltip-info icon similar to vanilla.
   Compatibility:
+    - Statistic entries can now define a custom tooltip to be displayed.
     - Statistic entries now need to explicitly define the existance of a tooltip.
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.9

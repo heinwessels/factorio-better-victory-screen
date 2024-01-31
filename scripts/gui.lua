@@ -134,10 +134,12 @@ function gui.create(player, categories, message)
             debug.debug_assert(success, error_message)
             if not success then goto continue_stat end
 
+            local tooltip = stat.localised_tooltip or {"bvs-stat-tooltip."..stat_name}
+
             category_table.add{
                 type = "label", 
                 caption = {"", {"bvs-stats."..stat_name}, ":", (has_tooltip and " [img=info]" or "")},
-                tooltip = has_tooltip and {"bvs-stat-tooltip."..stat_name}
+                tooltip = has_tooltip and tooltip   -- TODO: This is still a little unsafe
             }
 
             category_table.add{

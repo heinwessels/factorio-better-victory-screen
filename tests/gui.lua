@@ -132,6 +132,18 @@ function tests.create_stat_with_tooltip_shown()
     test_util.assert_true(tooltip_exists_in_gui("bvs-stat-tooltip.jumping"))
 end
 
+function tests.create_stat_with_localised_tooltip_shown()
+    local statistics = { gymnastics = { stats = {
+        jumping = { value = 5, unit = "distance", order = "b" , localised_tooltip = {"penguins.are-real"}}
+    }}}
+    gui.create(game.player, statistics)
+
+    test_util.assert_true(caption_exists_in_gui("bvs-categories.gymnastics"))
+    test_util.assert_true(caption_exists_in_gui("bvs-stats.jumping"))
+    test_util.assert_falsy(tooltip_exists_in_gui("bvs-stat-tooltip.jumping"))
+    test_util.assert_true(tooltip_exists_in_gui("penguins.are-real"))
+end
+
 function tests.create_category_has_no_stats_ignored()
     local statistics = { gymnastics = {  } }
     gui.create(game.player, statistics)
