@@ -59,7 +59,8 @@ function gui.create(player, categories, message)
                 children = {{
                     args = {type = "frame", style = "bvs_finished_game_frame"},
                     children = {{
-                        args = {type = "table", column_count = 2, style = "bvs_finished_game_table"}, -- can't get rid of inner borders on the style yet
+                        args = {type = "table", column_count = 2, style = "bvs_finished_game_table"},
+                        style_mods = {margin = -4},
                         children = {{
                             args = {type = "flow"},
                             children = {{
@@ -111,6 +112,7 @@ function gui.create(player, categories, message)
             args = {type = "frame", style = "bvs_finished_game_frame"},
             children = {{
                 args = {type = "table", column_count = 2, style = "bvs_finished_game_table"},
+                style_mods = {margin = -4},
                 children = {{
                     args = {type = "label", caption = {"bvs-categories."..category_name}, style = "caption_label"},
                     style_mods = {horizontally_stretchable = true},
