@@ -8,9 +8,7 @@ If enabled in settings you can view the victory screen at any time by typing the
 
 # Compatibility
 
-Any mods that change the game's victory condition will require explicit compatibility. 
-
-**List of compatible overhauls (might be incomplete)**:
+**Compatible overhauls**:
 
 - [248k](https://mods.factorio.com/mod/248k)
 - [5Dims](https://mods.factorio.com/user/McGuten)
@@ -22,18 +20,28 @@ Any mods that change the game's victory condition will require explicit compatib
 - [Nullius](https://mods.factorio.com/mod/nullius)
 - [Omni](https://mods.factorio.com/user/OmnissiahZelos)
 - [Pyanodons](https://mods.factorio.com/user/pyanodon)
+- [Space Exploration](https://mods.factorio.com/mod/space-exploration) (works with [Krastorio 2](https://mods.factorio.com/mod/Krastorio2))
 - [Ultracube: Age of Cube](https://mods.factorio.com/mod/Ultracube)
 - [Warp Drive Machine](https://mods.factorio.com/mod/Warp-Drive-Machine/downloads)
 
-**List of popular incompatible overhauls (list is definitely incomplete)**:
+**Soft-Compatible overhauls**:
+
+These mods are safe to be installed to without any side-effects to track your statistics (like distance walked) until the mod is fully supported. However, the vanilla victory screen will still be shown on victory (except possibly when combining it with a fully compatible mod).
 
 - [Krastorio 2](https://mods.factorio.com/mod/Krastorio2)
-- [Space Exploration](https://mods.factorio.com/mod/space-exploration)
 - [Space Extension Mod](https://mods.factorio.com/mod/SpaceMod)
 
-If the mod is marked compatible, but is combined with another overhaul that's incompatible, then the shown victory screen might still be unchanged, or the custom victory screen will be shown on the first rocket launch by accident. However, it should not prevent you from finishing the game normally as well.
+**Incompatible overhauls:**
 
-**Note to mod developers:** If you want to add compatibility to your mod you can read how to [here](https://github.com/heinwessels/factorio-better-victory-screen/blob/main/mod-page/compatibility.md). Any mod can also add its statistics to the GUI, or remove existing entries.
+Mods that are not listed already, that change the victory condition, are not compatible, and might cause unintended behaviour when installed. For example, still showing the victory screen erroneously on the first rocket launch, instead of during actual victory condition.
+
+If you come across such a mod it's best to ask the author to add official compatibility. You can also request that Better Victory Screen adds a soft compatibility for it in the meantime in the [Discussion](https://mods.factorio.com/mod/better-victory-screen/discussion).
+
+**Note to mod developers:**
+
+Any mods that change the game's victory condition will require explicit compatibility. If you want to add compatibility to your mod you can read how to [here](https://github.com/heinwessels/factorio-better-victory-screen/blob/main/mod-page/compatibility.md). 
+
+Additionally, any mod can also add its statistics to the GUI, or remove existing entries.
 
 # Caveats:
 - Some statistics (like "distance walked") will only be accurate if mod is added at the start of a save file.
