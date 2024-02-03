@@ -57,18 +57,22 @@ function gui.create(player, categories, message)
                 args = {type = "scroll-pane", name = "statistics", style = "scroll_pane_under_subheader"},
                 style_mods = {horizontally_squashable = true},
                 children = {{
-                    args = {type = "table", column_count = 2, style = "finished_game_table"}, -- can't get rid of inner borders on the style yet
+                    args = {type = "frame", style = "bvs_finished_game_frame"},
                     children = {{
-                        args = {type = "flow"},
+                        args = {type = "table", column_count = 2, style = "bvs_finished_game_table"},
+                        style_mods = {margin = -4},
                         children = {{
-                            args = {type = "label", caption = {"gui-game-finished.time-played"}, style = "caption_label"},
+                            args = {type = "flow"},
+                            children = {{
+                                args = {type = "label", caption = {"gui-game-finished.time-played"}, style = "caption_label"},
+                            }, {
+                                args = {type = "empty-widget"},
+                                style_mods = {minimal_width = name_column_width, horizontally_stretchable = true},
+                            }}
                         }, {
-                            args = {type = "empty-widget"},
-                            style_mods = {minimal_width = name_column_width, horizontally_stretchable = true},
+                            args = {type = "label", caption = formatter.format_time(game.tick)},
+                            style_mods = {minimal_width = value_column_width, horizontal_align = "right"}, -- width required because can't sync table column widths yet
                         }}
-                    }, {
-                        args = {type = "label", caption = formatter.format_time(game.tick)},
-                        style_mods = {minimal_width = value_column_width, horizontal_align = "right"}, -- width required because can't sync table column widths yet
                     }}
                 }}
             }}
@@ -105,17 +109,21 @@ function gui.create(player, categories, message)
         if not category.stats then log("Category: '" .. category_name .. "' has no stats. Ignoring") goto continue_category end
 
         local def = {
-            args = {type = "table", column_count = 2, style = "finished_game_table"},
+            args = {type = "frame", style = "bvs_finished_game_frame"},
             children = {{
-                args = {type = "label", caption = {"bvs-categories."..category_name}, style = "caption_label"},
-                style_mods = {horizontally_stretchable = true},
-            }, {
-                args = {type = "empty-widget"},
-                style_mods = {minimal_width = value_column_width, horizontal_align = "right"}, -- width required because can't sync table column widths yet
+                args = {type = "table", column_count = 2, style = "bvs_finished_game_table"},
+                style_mods = {margin = -4},
+                children = {{
+                    args = {type = "label", caption = {"bvs-categories."..category_name}, style = "caption_label"},
+                    style_mods = {horizontally_stretchable = true},
+                }, {
+                    args = {type = "empty-widget"},
+                    style_mods = {minimal_width = value_column_width, horizontal_align = "right"}, -- width required because can't sync table column widths yet
+                }}
             }}
         }
 
-        local category_table = glib.add(stats_gui, def)
+        local category_table = glib.add(stats_gui, def).children[1]
 
         for _, stat_name in pairs(lib.table.ordered_keys(category.stats or { })) do
             local stat = category.stats[stat_name]
