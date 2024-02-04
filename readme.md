@@ -12,7 +12,7 @@ If enabled in settings you can view the victory screen at any time by typing the
 
 - [248k](https://mods.factorio.com/mod/248k)
 - [5Dims](https://mods.factorio.com/user/McGuten)
-- [Bob's](https://mods.factorio.com/user/Bobingabout), [Angel's](https://mods.factorio.com/user/Arch666Angel), and [SeaBlock](https://mods.factorio.com/mod/SeaBlock). **But(!):** [SpaceMod](https://mods.factorio.com/mod/SpaceMod) is not yet supported! This [fork](https://mods.factorio.com/mod/SpaceModFeorasFork) by Feoras is supported.
+- [Bob's](https://mods.factorio.com/user/Bobingabout), [Angel's](https://mods.factorio.com/user/Arch666Angel), and [SeaBlock](https://mods.factorio.com/mod/SeaBlock). 
 - [Exotic Industries](https://mods.factorio.com/mod/exotic-industries)
 - [Freight Forwarding](https://mods.factorio.com/mod/FreightForwarding)
 - [Industrial Revolution 3](https://mods.factorio.com/mod/IndustrialRevolution3)
@@ -21,6 +21,7 @@ If enabled in settings you can view the victory screen at any time by typing the
 - [Omni](https://mods.factorio.com/user/OmnissiahZelos)
 - [Pyanodons](https://mods.factorio.com/user/pyanodon)
 - [Space Exploration](https://mods.factorio.com/mod/space-exploration) (works with [Krastorio 2](https://mods.factorio.com/mod/Krastorio2))
+- [Space Extension Mod](https://mods.factorio.com/mod/SpaceMod), and this [fork](https://mods.factorio.com/mod/SpaceModFeorasFork).
 - [Ultracube: Age of Cube](https://mods.factorio.com/mod/Ultracube)
 - [Warp Drive Machine](https://mods.factorio.com/mod/Warp-Drive-Machine/downloads)
 
@@ -29,13 +30,12 @@ If enabled in settings you can view the victory screen at any time by typing the
 These mods are safe to be installed to without any side-effects to track your statistics (like distance walked) until the mod is fully supported. However, the vanilla victory screen will still be shown on victory (except possibly when combining it with a fully compatible mod).
 
 - [Krastorio 2](https://mods.factorio.com/mod/Krastorio2)
-- [Space Extension Mod](https://mods.factorio.com/mod/SpaceMod)
 
 **Incompatible overhauls:**
 
 Mods that are not listed already, that change the victory condition, are not compatible, and might cause unintended behaviour when installed. For example, still showing the victory screen erroneously on the first rocket launch, instead of during actual victory condition.
 
-If you come across such a mod it's best to ask the author to add official compatibility. You can also request that Better Victory Screen adds a soft compatibility for it in the meantime in the [Discussion](https://mods.factorio.com/mod/better-victory-screen/discussion).
+If you come across such a mod it's best to ask the author to add official compatibility. You can also request that Better Victory Screen adds a soft compatibility for it in the meantime in the [Discussion](https://mods.factorio.com/mod/better-victory-screen/discussion`).
 
 **Note to mod developers:**
 
