@@ -161,12 +161,18 @@ function trigger.attempt_trigger_victory(winning_force, override, winning_messag
     trigger.show_victory_screen(winning_force, winning_message, losing_message)
 end
 
+-- There are some "rockets" that we will ignore for the winning condition
+local rocket_name_blacklist = util.list_to_map{
+    "ballistic-missile",            -- Ballistic Missile
+}
+
 ---@param event EventData.on_rocket_launched
 local function on_rocket_launched(event)
     if global.disable_vanilla_victory then return end
 
     local rocket = event.rocket
     if not (rocket and rocket.valid) then return end
+    if rocket_name_blacklist[rocket.name] then return end
 
     trigger.attempt_trigger_victory(rocket.force --[[@as LuaForce]])
 end

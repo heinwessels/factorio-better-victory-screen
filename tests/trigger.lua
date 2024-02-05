@@ -16,6 +16,20 @@ function trigger_tests.setup()
     test_util.reset_surface()
 end
 
+---A fake LuaEntity that can pass as a rocket
+---@param override table? to override some parameters
+---@return LuaEntity
+local function mock_rocket(override)
+    return util.merge{
+        {
+            name = "rocket-silo-rocket",
+            force = game.forces.player,
+            valid = true,
+        },
+        override or { }
+    }
+end
+
 function tests.on_init_config_vanilla_victory_expected()
     trigger.on_init()
     trigger.on_configuration_changed()
@@ -43,8 +57,6 @@ function tests.remote_disable_vanilla_victory_migrate_after_recorded_victory()
 end
 
 function tests.on_rocket_vanilla_trigger_victory()
-    local surface = test_util.get_surface()
-
     local called = false
     local store_function = trigger.attempt_trigger_victory
     trigger.attempt_trigger_victory = function(winning_force, override, winning_message, losing_message)
@@ -55,18 +67,13 @@ function tests.on_rocket_vanilla_trigger_victory()
         test_util.assert_nil(winning_message)
     end
 
-    local rocket = surface.create_entity{name="iron-chest", force="player", position={0, 0}}
-    test_util.assert_valid_entity(rocket)
-    if not rocket then return error("What?") end -- Assert should catch this
-    trigger.events[defines.events.on_rocket_launched]({rocket = rocket})
+    trigger.events[defines.events.on_rocket_launched]({rocket = mock_rocket()})
 
     test_util.assert_true(called)
     trigger.attempt_trigger_victory = store_function
 end
 
-function tests.on_rocket_vanilla_disabled_doesnt_trigger_victory()
-    local surface = test_util.get_surface()
-
+function tests.on_invalid_rocket_doesnt_trigger_victory()
     global.disable_vanilla_victory = true
 
     local called = false
@@ -75,10 +82,35 @@ function tests.on_rocket_vanilla_disabled_doesnt_trigger_victory()
         called = true
     end
 
-    local rocket = surface.create_entity{name="iron-chest", force="player", position={0, 0}}
-    test_util.assert_valid_entity(rocket)
-    if not rocket then return error("What?") end -- Assert should catch this
-    trigger.events[defines.events.on_rocket_launched]({rocket = rocket})
+    trigger.events[defines.events.on_rocket_launched]({rocket = mock_rocket{valid = false}})
+
+    test_util.assert_false(called)
+    trigger.attempt_trigger_victory = store_function
+end
+
+function tests.on_rocket_vanilla_disabled_doesnt_trigger_victory()
+    global.disable_vanilla_victory = true
+
+    local called = false
+    local store_function = trigger.attempt_trigger_victory
+    trigger.attempt_trigger_victory = function(_, _, _, _)
+        called = true
+    end
+
+    trigger.events[defines.events.on_rocket_launched]({rocket = mock_rocket()})
+
+    test_util.assert_false(called)
+    trigger.attempt_trigger_victory = store_function
+end
+
+function tests.on_blacklisted_rocket_doesnt_trigger_victory()
+    local called = false
+    local store_function = trigger.attempt_trigger_victory
+    trigger.attempt_trigger_victory = function(_, _, _, _)
+        called = true
+    end
+
+    trigger.events[defines.events.on_rocket_launched]({rocket = mock_rocket{name = "ballistic-missile"}})
 
     test_util.assert_false(called)
     trigger.attempt_trigger_victory = store_function
@@ -353,7 +385,7 @@ function tests.gather_statistics_call_error_release_ignore()
     }
 
     trigger.gather_statistics(game.player.force --[[@as LuaForce]], {game.player.force})
-    -- Nothing useful to do with result
+    -- Nothing useful to do with result. Just check that it doesn't crash
 
     trigger.remote = store_function
 end
@@ -368,7 +400,7 @@ function tests.gather_statistics_return_nil_release_ignore()
     }
 
     trigger.gather_statistics(game.player.force --[[@as LuaForce]], {game.player.force})
-    -- Nothing useful to do with result
+    -- Nothing useful to do with result. Just check that it doesn't crash
 
     trigger.remote = store_function
 end
@@ -383,7 +415,7 @@ function tests.gather_statistics_return_non_table_release_ignore()
     }
 
     trigger.gather_statistics(game.player.force --[[@as LuaForce]], {game.player.force})
-    -- Nothing useful to do with result
+    -- Nothing useful to do with result. Just check that it doesn't crash
 
     trigger.remote = store_function
 end
