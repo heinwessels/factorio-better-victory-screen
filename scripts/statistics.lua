@@ -1,4 +1,6 @@
 local blacklist = require("scripts.blacklist")
+local debug = require("__better-victory-screen__.scripts.debug")
+local lib = require("scripts.lib")
 local tracker = require("scripts.tracker")
 local util = require("util")
 
@@ -254,6 +256,19 @@ local function get_peak_power_generation(force)
     return peak * 60 -- Was in joule per tick
 end
 
+---@param force LuaForce
+---@return integer
+local function get_ores_produced(force)
+    local count = 0
+
+    local force_stats = force.item_production_statistics
+    for _, ore_name in pairs(global.statistics.ore_names) do
+        count = count + force_stats.get_input_count(ore_name)
+    end
+
+    return count
+end
+
 
 ---@param force LuaForce
 ---@return integer
@@ -353,9 +368,10 @@ function statistics.for_force(force, profilers)
     if profilers then profilers.peak_power.stop() end
 
     stats["production"] = {order = "f", stats = {
-        ["peak-power"] =        {value = peak_power_generation, unit="power", has_tooltip=true},
-        ["items-produced"] =    {value = get_items_produced(force)},
-        ["science-consumed"] =  {value = get_total_science_packs_consumed(force)},
+        ["peak-power"] =        {value = peak_power_generation, unit="power", has_tooltip=true, order="a"},
+        ["ores-produced"] =     {value = get_ores_produced(force),                              order="b"},
+        ["items-produced"] =    {value = get_items_produced(force),                             order="c"},
+        ["science-consumed"] =  {value = get_total_science_packs_consumed(force),               order="d"},
     }}
 
     if profilers then profilers.chunk_counter.restart() end
@@ -509,6 +525,28 @@ function statistics.setup_player(player)
     }
 end
 
+local function cache_some_properties()
+
+    -- Find all items that we consider are ores
+    do
+        ---@type string[]
+        local ore_names = { }
+        for _, resource_prototype in pairs(game.get_filtered_entity_prototypes({{filter = "type", type = "resource"}})) do
+            local mineable_properties = resource_prototype.mineable_properties
+            if mineable_properties.minable then
+                for _, product in pairs(mineable_properties.products) do
+                    if product.type == "item" and game.item_prototypes[product.name] and not lib.table.in_array(ore_names, product.name) then
+                        table.insert(ore_names, product.name)
+                    end
+                end
+            end
+        end
+
+        global.statistics.ore_names = ore_names
+        debug.debug_log("Ore names: "..serpent.line(ore_names))
+    end
+end
+
 -- We will offload as much processing as possible to be done while the game loads
 -- so that it doesn't all happen when the GUI is trying to draw
 local function setup_trackers()
@@ -553,14 +591,16 @@ function initialize_data()
     }
 end
 
-function statistics.on_init (event)
+function statistics.on_init(event)
     initialize_data()
     setup_trackers()
+    cache_some_properties()
 end
 
 ---@param event ConfigurationChangedData
 function statistics.on_configuration_changed(event)
     setup_trackers()
+    cache_some_properties()
 end
 
 return statistics

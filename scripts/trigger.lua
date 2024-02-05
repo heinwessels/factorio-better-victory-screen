@@ -122,6 +122,10 @@ function trigger.show_victory_screen(winning_force, winning_message, losing_mess
         })
     end
 
+    -- This will also handle the case when victory is reached in an headless server
+    -- without any online players. The risk is that the game is paused accidentally.
+    -- However, in MP it will never pause, and in single player there will always
+    -- be a player. So it will all work nicely, not pausing accidentally.
     if not game.is_multiplayer() then
         game.tick_paused = true
     end

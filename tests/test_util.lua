@@ -49,6 +49,10 @@ function test_util.assert_equal(a, b)
     if a ~= b then error(pre .. a .. " ~= " .. b) end
 end
 
+function test_util.assert_greater_than(a, b)
+    if a <= b then error(pre .. a .. " <= " .. b) end
+end
+
 function test_util.assert_table_equal(a, b)
     test_util.assert_not_nil(a)
     test_util.assert_not_nil(b)

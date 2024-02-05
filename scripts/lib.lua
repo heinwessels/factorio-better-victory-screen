@@ -25,6 +25,16 @@ function lib.table.ordered_keys(t)
     return sorted_keys
 end
 
+---@param array any[]
+---@param query any
+---@return boolean
+function lib.table.in_array(array, query)
+    for _, element in pairs(array) do
+        if element == query then return true end
+    end
+    return false
+end
+
 ---@param number number
 ---@return number
 function lib.math.sign(number)

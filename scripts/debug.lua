@@ -15,4 +15,11 @@ function lib.debug_assert(condition, message)
     end
 end
 
+---log something only when in debug mode
+---@param message string
+function lib.debug_log(message)
+    if not lib.debugger_active then return end
+    log(message)
+end
+
 return lib

@@ -1,6 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.11
 Date: ??.02.2024
+  Features:
+    - Now show 'Ores produced' in victory screen.
   Changes:
     - Change table style to more closely match vanilla (#3 by _CodeGreen)
 ---------------------------------------------------------------------------------------------------

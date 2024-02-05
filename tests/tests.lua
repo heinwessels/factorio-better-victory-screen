@@ -16,11 +16,14 @@ local test_suites = {
     ["trigger"]     = require("tests.trigger"),
     ["formatting"]  = require("tests.formatting"),
     ["gui"]         = require("tests.gui"),
+    ["statistics"]  = require("tests.statistics"),
 }
 
 function test_lib.add_commands()
     commands.add_command("bvs-test", nil, function(command)
         game.reload_script()
+
+        local profiler = game.create_profiler(false)
 
         local suite_count = 0
         local count = 0
@@ -37,7 +40,14 @@ function test_lib.add_commands()
             count = count + suit_test_count
             suite_count = suite_count + 1
         end
-        game.print("[TESTS] Success! Executed "..count.." tests across "..suite_count.." suites.")
+
+        profiler.stop()
+        log({"",
+            "[TESTS] Success! ",
+            "Executed "..count.." tests across "..suite_count.." suites in",
+            profiler,
+            "."
+        })
     end)
 end
 
