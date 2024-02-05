@@ -42,9 +42,9 @@ function test_lib.add_commands()
         end
 
         profiler.stop()
-        log({"",
+        game.print({"",
             "[TESTS] Success! ",
-            "Executed "..count.." tests across "..suite_count.." suites in",
+            "Executed "..count.." tests across "..suite_count.." suites. ",
             profiler,
             "."
         })

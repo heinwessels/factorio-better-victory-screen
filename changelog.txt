@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.11
-Date: ??.02.2024
+Date: 05.02.2024
   Features:
     - Now show 'Ores produced' in victory screen.
   Changes:

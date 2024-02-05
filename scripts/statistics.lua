@@ -533,7 +533,7 @@ local function cache_some_properties()
         local ore_names = { }
         for _, resource_prototype in pairs(game.get_filtered_entity_prototypes({{filter = "type", type = "resource"}})) do
             local mineable_properties = resource_prototype.mineable_properties
-            if mineable_properties.minable then
+            if mineable_properties.minable and mineable_properties.products then
                 for _, product in pairs(mineable_properties.products) do
                     if product.type == "item" and game.item_prototypes[product.name] and not lib.table.in_array(ore_names, product.name) then
                         table.insert(ore_names, product.name)
