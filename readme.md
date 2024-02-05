@@ -30,6 +30,7 @@ If enabled in settings you can view the victory screen at any time by typing the
 These mods are safe to be installed to without any side-effects to track your statistics (like distance walked) until the mod is fully supported. However, the vanilla victory screen will still be shown on victory (except possibly when combining it with a fully compatible mod).
 
 - [Krastorio 2](https://mods.factorio.com/mod/Krastorio2)
+- [Satisfactorio](https://mods.factorio.com/mod/Satisfactorio)
 
 **Incompatible overhauls:**
 

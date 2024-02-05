@@ -5,6 +5,8 @@ Date: ??.02.2024
     - Now show 'Ores produced' in victory screen.
   Changes:
     - Change table style to more closely match vanilla (#3 by _CodeGreen)
+  Compatibility:
+    - Added soft compatibility with Satisfactorio.
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.10
 Date: 31.01.2024
