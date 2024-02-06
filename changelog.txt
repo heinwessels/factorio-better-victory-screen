@@ -1,8 +1,9 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.12
-Date: ??.02.2024
+Date: 06.02.2024
   Changes:
     - Slightly change formatting of distance numbers.
+    - Change "Ores produced" to "Ores mined".
   Bugfixes:
     - Teleporting the player is no longer counted as walking distance. Acrued walking distances over
       10000km is reset to zero in an attempt to fix bad statistics to something more reasonable.
@@ -16,6 +17,8 @@ Date: 05.02.2024
   Compatibility:
     - Added soft compatibility with Satisfactorio.
     - Now compatible with the mod Ballistic Missile.
+  Localization:
+    - Update translations from Crowdin.
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.10
 Date: 31.01.2024
@@ -26,6 +29,8 @@ Date: 31.01.2024
     - Statistic entries can now define a custom statistic name to be displayed.
     - Statistic entries can now define a custom statistic tooltip to be displayed.
     - Statistic entries now need to explicitly define the existance of a tooltip.
+  Localization:
+    - Update translations from Crowdin.
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.9
 Date: 28.01.2024
