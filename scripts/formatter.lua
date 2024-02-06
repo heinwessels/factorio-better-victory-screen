@@ -83,7 +83,12 @@ local formatters = {
         if number <= 9999 then
             return lib.math.round(number, 0) .. " m"
         end
-        return lib.math.round(number /  1000, 2) .. " km"
+        number = number / 1000 -- Convert to km
+        if number < 10000 then
+            return lib.math.round(number, 2) .. " km"
+        else
+            return lib.math.round(number) .. " km"
+        end
     end,
     ["area"] = function(number)
         number = math.abs(number) -- Negative doesn't make sense

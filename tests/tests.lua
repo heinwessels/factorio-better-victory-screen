@@ -17,6 +17,7 @@ local test_suites = {
     ["formatting"]  = require("tests.formatting"),
     ["gui"]         = require("tests.gui"),
     ["statistics"]  = require("tests.statistics"),
+    ["migrations"]  = require("tests.migrations"),
 }
 
 function test_lib.add_commands()

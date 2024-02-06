@@ -71,8 +71,10 @@ function tests.distance()
     test_util.assert_string_equal(formatter.format(1000, "distance"), "1000 m")
     test_util.assert_string_equal(formatter.format(9999, "distance"), "9999 m")
     test_util.assert_string_equal(formatter.format(10000, "distance"), "10 km")
-    test_util.assert_string_equal(formatter.format(10011    , "distance"), "10.01 km")
     test_util.assert_string_equal(formatter.format(1234000, "distance"), "1234 km")
+    test_util.assert_string_equal(formatter.format(1234120, "distance"), "1234.12 km")
+    test_util.assert_string_equal(formatter.format(1234121.2, "distance"), "1234.12 km")
+    test_util.assert_string_equal(formatter.format(70001000.12, "distance"), "70001 km")
     test_util.assert_string_equal(formatter.format(1234999.99, "distance"), "1235 km")
 end
 

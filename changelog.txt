@@ -1,4 +1,12 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.12
+Date: ??.02.2024
+  Changes:
+    - Slightly change formatting of distance numbers.
+  Bugfixes:
+    - Teleporting the player is no longer counted as walking distance. Acrued walking distances over
+      10000km is reset to zero in an attempt to fix bad statistics to something more reasonable.
+---------------------------------------------------------------------------------------------------
 Version: 0.2.11
 Date: 05.02.2024
   Features:

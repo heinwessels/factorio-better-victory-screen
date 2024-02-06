@@ -18,6 +18,18 @@ local migrations = {
             global.finished = next(global.finished) ~= nil
         end
     end,
+    ["0.2.12"] = function()
+        for _, player in pairs(game.players) do
+            local player_data = global.statistics.players[player.index]
+            if player_data.distance_walked > 10000 * 1000 then
+                -- Resetting because this is likely bad data. Or at least should
+                -- be in 99% percent of cases.
+                player_data.distance_walked = 0
+                -- We could let the player know, but this might just confuse the player.
+                -- Let's do it silently, muhuhahaha
+            end
+        end
+    end,
 }
 
 local function handle_migrations(event)

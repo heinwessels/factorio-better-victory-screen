@@ -430,8 +430,11 @@ local function on_player_changed_position(event)
         player_data = global.statistics.players[event.player_index]
     end
 
-    -- Only measure distance when character controller.
-    if player.controller_type ~= defines.controllers.character then
+    -- Do some sanity check first if calculating the travelled position makes sense
+    if  player.controller_type ~= defines.controllers.character
+        or blacklist.surface(player.surface.name)
+        or blacklist.force(player.force.name)
+    then
         player_data.last_posistion = nil
         return
     elseif not player_data.last_posistion then
@@ -444,10 +447,28 @@ local function on_player_changed_position(event)
     local distance = math.sqrt((old.x - new.x)^2 + (old.y - new.y)^2)
     player_data.last_posistion = new
 
-    if player.driving then
-        player_data.distance_drove = player_data.distance_drove + distance
-    else
-        player_data.distance_walked = player_data.distance_walked + distance
+    if distance < 5 then
+        -- We need to handle moving between surfaces and teleportation.
+        -- Surfaces is easy, we could just check if we are still on the same surface.
+        -- Teleportation is not that easy, not all mods call script_raised_teleported
+        -- Therefore, to catch all, lets just ignore large numbers. The function on_player_changed_position
+        -- should be called everytime the player changes the tile it's on, at 60Hz. So the calculated
+        -- distance should always be small.
+        --
+        -- This approximation will remain valid until the player reaches 648km/h
+        -- d = s * t
+        -- 5 = ? * (1/60)
+        -- s = 5 / (1 / 60)
+        --   = 300 t/s
+        --   = 1080 km/h
+        --
+        -- Good enough for me
+
+        if player.driving then
+            player_data.distance_drove = player_data.distance_drove + distance
+        else
+            player_data.distance_walked = player_data.distance_walked + distance
+        end
     end
 end
 

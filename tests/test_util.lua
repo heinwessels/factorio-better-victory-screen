@@ -12,7 +12,9 @@ function test_util.reset_surface()
     -- Clear the surface. Can't use surface.clear because that removes the chunks
     -- as well, which acts weird when placing entities on them now.
     for _, entity in pairs(surface.find_entities_filtered{}) do
-        entity.destroy { raise_destroy = true }
+        if entity.type ~= "character" then
+            entity.destroy { raise_destroy = true }
+        end
     end
 
     return surface
@@ -47,6 +49,10 @@ end
 
 function test_util.assert_equal(a, b)
     if a ~= b then error(pre .. a .. " ~= " .. b) end
+end
+
+function test_util.assert_near(a, b, epsilon)
+    if math.abs(a - b) > epsilon then error(pre .. a .. " not near " .. b) end
 end
 
 function test_util.assert_greater_than(a, b)
