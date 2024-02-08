@@ -12,7 +12,7 @@ If enabled in settings you can view the victory screen at any time by typing the
 
 - [248k](https://mods.factorio.com/mod/248k)
 - [5Dims](https://mods.factorio.com/user/McGuten)
-- [Bob's](https://mods.factorio.com/user/Bobingabout), [Angel's](https://mods.factorio.com/user/Arch666Angel), and [SeaBlock](https://mods.factorio.com/mod/SeaBlock). 
+- [Bob's](https://mods.factorio.com/user/Bobingabout) and [Angel's](https://mods.factorio.com/user/Arch666Angel) 
 - [Exotic Industries](https://mods.factorio.com/mod/exotic-industries)
 - [Freight Forwarding](https://mods.factorio.com/mod/FreightForwarding)
 - [Industrial Revolution 3](https://mods.factorio.com/mod/IndustrialRevolution3)
@@ -20,9 +20,11 @@ If enabled in settings you can view the victory screen at any time by typing the
 - [Nullius](https://mods.factorio.com/mod/nullius)
 - [Omni](https://mods.factorio.com/user/OmnissiahZelos)
 - [Pyanodons](https://mods.factorio.com/user/pyanodon)
+- [SeaBlock](https://mods.factorio.com/mod/SeaBlock)
 - [Space Exploration](https://mods.factorio.com/mod/space-exploration) (works with [Krastorio 2](https://mods.factorio.com/mod/Krastorio2))
 - [Space Extension Mod](https://mods.factorio.com/mod/SpaceMod), and this [fork](https://mods.factorio.com/mod/SpaceModFeorasFork).
 - [Ultracube: Age of Cube](https://mods.factorio.com/mod/Ultracube)
+- [Warptorio 2](https://mods.factorio.com/mod/warptorio2)
 - [Warp Drive Machine](https://mods.factorio.com/mod/Warp-Drive-Machine/downloads)
 
 **Soft-Compatible overhauls**:
