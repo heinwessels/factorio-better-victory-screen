@@ -4,6 +4,8 @@ local lib = require("scripts.lib")
 local tracker = require("scripts.tracker")
 local util = require("util")
 
+local jetpack_mod_active = script.active_mods["jetpack"] ~= nil
+
 local statistics = { }
 
 local all_machines = {
@@ -399,8 +401,12 @@ function statistics.for_player(player, profilers)
         ["kills"] =             {value = player_data.kills,                                 order="b"},
         ["distance-walked"] =   {value = player_data.distance_walked,   unit="distance",    order="c"},
         ["distance-drove"] =    {value = player_data.distance_drove,    unit="distance",    order="d", has_tooltip=true},
-        ["handcrafting-time"] = {value = player_data.ticks_crafted,     unit="time",        order="e"},
+        ["handcrafting-time"] = {value = player_data.ticks_crafted,     unit="time",        order="h"},
     }}
+
+    if jetpack_mod_active then
+        stats["player"].stats["distance-jetpacked"] = {value = player_data.distance_jetpacked,unit="distance", order="e"}
+    end
 
     return stats
 end
@@ -414,6 +420,15 @@ local function on_entity_died(event)
     if not player then return end
     local data = global.statistics.players[player.index] --[[@as StatisticsPlayerData ]]
     data.kills = data.kills + 1
+end
+
+---@param player LuaPlayer
+---@return boolean?
+local function is_jetpack_active_for_player(player)
+    if not (jetpack_mod_active) then return end
+    local character = player.character
+    if not (character and character.valid) then return end
+    return remote.call("jetpack", "is_jetpacking", {character=character})
 end
 
 ---@param event EventData.on_player_changed_position
@@ -467,7 +482,11 @@ local function on_player_changed_position(event)
         if player.driving then
             player_data.distance_drove = player_data.distance_drove + distance
         else
-            player_data.distance_walked = player_data.distance_walked + distance
+            if jetpack_mod_active and is_jetpack_active_for_player(player) then
+                player_data.distance_jetpacked = player_data.distance_jetpacked + distance
+            else
+                player_data.distance_walked = player_data.distance_walked + distance
+            end
         end
     end
 end
@@ -524,6 +543,7 @@ statistics.events = {
 ---@field kills integer
 ---@field distance_walked integer
 ---@field distance_drove integer
+---@field distance_jetpacked integer
 ---@field last_posistion MapPosition?
 ---@field ticks_crafted uint
 
@@ -540,6 +560,7 @@ function statistics.setup_player(player)
 
         distance_walked = 0,
         distance_drove = 0,
+        distance_jetpacked = 0,
         last_posistion = nil,
 
         ticks_crafted = 0,

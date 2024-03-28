@@ -30,6 +30,12 @@ local migrations = {
             end
         end
     end,
+    ["0.2.13"] = function()
+        for _, player in pairs(game.players) do
+            local player_data = global.statistics.players[player.index]
+            player_data.distance_jetpacked = 0
+        end
+    end,
 }
 
 local function handle_migrations(event)

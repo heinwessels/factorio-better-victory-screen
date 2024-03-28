@@ -1,6 +1,8 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.13
 Date: 28.03.2024
+  Features:
+    - Now shows "Distance jetpacked" in victory screen. (Was previously counted as "walking")
   Localization:
     - Update translations from Crowdin.
 ---------------------------------------------------------------------------------------------------
