@@ -338,7 +338,7 @@ local function handle_soft_compatibilities()
     end
 end
 
-function trigger.on_init(event) 
+function trigger.on_init(event)
     handle_soft_compatibilities()
 
     -- We always disable the vanilla victory condition because we
@@ -348,6 +348,16 @@ function trigger.on_init(event)
     end
 end
 
-trigger.on_configuration_changed = handle_soft_compatibilities
+function trigger.on_configuration_changed(event)
+
+    -- We will reset this every time to account for when
+    -- mods that disable the vanilla victory condition is removed.
+    -- All mods that call our disable interface should have a dependency
+    -- on BVS and will therefore run after this, and thus disable it again.
+    global.disable_vanilla_victory = false
+
+    -- We will always disable vanilla victory in some cases though
+    handle_soft_compatibilities()
+end
 
 return trigger
