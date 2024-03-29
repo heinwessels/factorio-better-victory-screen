@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.2.14
+Date: 29.03.2024
+  Bugfixes:
+    - Fixed regression that might cause victory to be triggered multiple times by removing a faulty migration script.  
+---------------------------------------------------------------------------------------------------
 Version: 0.2.13
 Date: 28.03.2024
   Features:

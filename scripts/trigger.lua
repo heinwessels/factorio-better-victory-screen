@@ -182,18 +182,8 @@ end
 ---erroniously previously.
 ---@param no_vanilla_victory boolean
 local function disable_vanilla_victory(no_vanilla_victory)
-    -- First handle some possible migration issues
-    if not global.disable_vanilla_victory                                   -- Previously assumed vanilla victory condition
-        and no_vanilla_victory                                                      -- Now we should wait for remote trigger
-        and global.finished                                                 -- We already did trigger the screen though
-        and not (game.finished or game.finished_but_continuing) then        -- And the other mod hasn't triggered actual victory
-        -- This is the first time that the vanilla victory condition is disabled
-        -- but we've already triggered a victory condition. And the vanilla
-        -- victory condition has never been reached. This can only happen when
-        -- a mod didn't have support, but was added mid-run.
-        log("Detected newly added support while victory was erroneously shown previously. Reseting victory state. No further action required.")
-        global.finished = false
-    end
+
+    -- This is a function because there was a hacky migration here...
 
     global.disable_vanilla_victory = no_vanilla_victory
 end

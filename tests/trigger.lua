@@ -45,17 +45,6 @@ function tests.remote_disable_vanilla_victory()
     test_util.assert_true(global.disable_vanilla_victory)
 end
 
-function tests.remote_disable_vanilla_victory_migrate_after_recorded_victory()
-    test_util.assert_falsy(global.disable_vanilla_victory)
-
-    global.finished = true
-
-    remote.call("better-victory-screen", "set_no_victory", true)
-
-    test_util.assert_falsy(global.finished)
-    test_util.assert_true(global.disable_vanilla_victory)
-end
-
 function tests.on_rocket_vanilla_trigger_victory()
     local called = false
     local store_function = trigger.attempt_trigger_victory

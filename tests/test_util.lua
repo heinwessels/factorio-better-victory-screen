@@ -28,15 +28,15 @@ function test_util.mock_release(enable)
 end
 
 function test_util.assert_true(a)
-    if a ~= true then error(pre.."Value is not true") end
+    if a ~= true then error(pre.."Value `"..serpent.line(a).."` is not true") end
 end
 
 function test_util.assert_false(a)
-    if a ~= false then error(pre.."Value is not false") end
+    if a ~= false then error(pre.."Value `"..serpent.line(a).."` is not false") end
 end
 
 function test_util.assert_falsy(a)
-    if a then error(pre.."Value is not falsy") end
+    if a then error(pre.."Value `"..serpent.line(a).."` is not falsy") end
 end
 
 function test_util.assert_not_nil(a)
