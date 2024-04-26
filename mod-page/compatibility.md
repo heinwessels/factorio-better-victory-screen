@@ -11,6 +11,10 @@ Your mod has a custom victory condition if at `on_init` you call `remote.call("s
 
 To support Better Victory Screen you will also have to notify this mod to `set_no_victory`. And then when you deem the player victorious call a remote call in this mod, instead of setting the game state.
 
+### Depend on Better Victory Screen
+
+First you need to add a [dependency](https://wiki.factorio.com/Tutorial:Mod_structure#dependencies) to Better Victory Screen.
+
 ### Disabling the vanilla victory condition 
 
 Normally this is done during `on_init`, but in order to support existing save games we will have to do it during `on_configuration_changed` as well. 
