@@ -306,7 +306,7 @@ trigger.events = {
 ---Determine if we should create soft compatibility with the current mod set.
 ---This means we will disable the vanilla victory condition for mods that we
 ---know have custom victory conditions, but are not yet fully supported. This
----means the victory screen will at least on trigger on the first rocket launch.
+---means the victory screen will at least not trigger on the first rocket launch.
 ---This has the added benifit of this mod being safe to add to playthroughs even
 ---though there is no full compatibility yet. Only downside is that the vanilla
 ---victory screen will still be shown. When full compatibility is finally added
