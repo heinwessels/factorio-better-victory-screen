@@ -13,20 +13,22 @@ If enabled in settings you can view the victory screen at any time by typing the
 - [248k](https://mods.factorio.com/mod/248k)
 - [5Dims](https://mods.factorio.com/user/McGuten)
 - [Bob's](https://mods.factorio.com/user/Bobingabout) and [Angel's](https://mods.factorio.com/user/Arch666Angel) 
-- [Exotic Industries](https://mods.factorio.com/mod/exotic-industries)
+- [Exotic Industries](https://mods.factorio.com/mod/exotic-industries) _(has custom integration)_
 - [Freight Forwarding](https://mods.factorio.com/mod/FreightForwarding)
 - [Industrial Revolution 3](https://mods.factorio.com/mod/IndustrialRevolution3)
-- [Krastorio 2](https://mods.factorio.com/mod/Krastorio2)
+- [Krastorio 2](https://mods.factorio.com/mod/Krastorio2) _(has custom integration)_
 - [Mining Space Industries (MSI) II](https://mods.factorio.com/mod/Mining-Space-Industries-II)
-- [Nullius](https://mods.factorio.com/mod/nullius)
+- [Nullius](https://mods.factorio.com/mod/nullius) _(has custom integration)_
 - [Omni](https://mods.factorio.com/user/OmnissiahZelos)
 - [Pyanodons](https://mods.factorio.com/user/pyanodon)
 - [SeaBlock](https://mods.factorio.com/mod/SeaBlock)
-- [Space Exploration](https://mods.factorio.com/mod/space-exploration)
-- [Space Extension Mod](https://mods.factorio.com/mod/SpaceMod), and this [fork](https://mods.factorio.com/mod/SpaceModFeorasFork).
-- [Ultracube: Age of Cube](https://mods.factorio.com/mod/Ultracube)
+- [Space Exploration](https://mods.factorio.com/mod/space-exploration) _(has custom integration)_
+- [Space Extension Mod](https://mods.factorio.com/mod/SpaceMod) [(fork)](https://mods.factorio.com/mod/SpaceModFeorasFork).
+- [Ultracube: Age of Cube](https://mods.factorio.com/mod/Ultracube) _(has custom integration)_
 - [Warptorio 2](https://mods.factorio.com/mod/warptorio2)
-- [Warp Drive Machine](https://mods.factorio.com/mod/Warp-Drive-Machine/downloads)
+- [Warp Drive Machine](https://mods.factorio.com/mod/Warp-Drive-Machine/downloads) _(has custom integration)_
+
+_Custom integration are (known) mod-specific statistics added to the victory screen. For example the Space Exploration will show the amount of worlds visited._
 
 **Soft-Compatible overhauls**:
 
