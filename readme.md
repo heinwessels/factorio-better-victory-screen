@@ -17,6 +17,7 @@ If enabled in settings you can view the victory screen at any time by typing the
 - [Freight Forwarding](https://mods.factorio.com/mod/FreightForwarding)
 - [Industrial Revolution 3](https://mods.factorio.com/mod/IndustrialRevolution3)
 - [Krastorio 2](https://mods.factorio.com/mod/Krastorio2) _(has custom integration)_
+- [Lunar Landings](https://mods.factorio.com/mod/LunarLandings)
 - [Mining Space Industries (MSI) II](https://mods.factorio.com/mod/Mining-Space-Industries-II)
 - [Nullius](https://mods.factorio.com/mod/nullius) _(has custom integration)_
 - [Omni](https://mods.factorio.com/user/OmnissiahZelos)
