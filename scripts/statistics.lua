@@ -563,12 +563,12 @@ statistics.events = {
         end
     end,
 
+    ---@param event EventData.on_player_removed
+    [defines.events.on_player_removed] = function (event)
+        if not global.statistics then return end -- Should not happen? Don't care though
+        global.statistics.players[event.player_index] = nil
+    end,
 }
-
-script.on_event(defines.events.on_player_removed, function(event)
-    if not global.statistics then return end -- Should not happen? Don't care though
-    global.statistics.players[event.player_index] = nil
-end)
 
 ---@class StatisticsPlayerData
 ---@field deaths integer

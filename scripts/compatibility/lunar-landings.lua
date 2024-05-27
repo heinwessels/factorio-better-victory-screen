@@ -10,12 +10,11 @@ function module.gather(forces)
         for _, player in pairs(force.connected_players) do
             local player_data = players[player.index]
             if not player_data then goto continue end
-            local luna_time = player_data and player_data.times_on_surfaces["luna"]
-            if not luna_time then goto continue end
+            local luna_time = player_data and player_data.times_on_surfaces["luna"] or nil
 
             stats.by_player[player.index] = {
                 ["player"] = { stats = {
-                    ["ll-luna-time"] = { value = luna_time, unit = "time", order = "a" }
+                    ["ll-luna-time"] = { value = luna_time or 0, unit = "time", order = "a" }
                 }}
             }
 

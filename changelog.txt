@@ -1,10 +1,12 @@
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.0
-Date: ??.??.2024
+Date: 27.05.2024
   Internal:
     - Keep track of how long players spend on each surface.
   Changes:
     - Show total time spent on Luna when Lunar Landings is installed.
+  Localization:
+    - Update translations from Crowdin.
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.14
 Date: 29.03.2024
