@@ -42,7 +42,7 @@ local function is_surface_blacklisted(surface_name)
 end
 
 ---@param surface_name string
----@return boolean
+---@return boolean is_blacklisted
 function blacklist.surface(surface_name)
     -- First attempt to use the cached value
     local is_blacklisted = data.surfaces[surface_name]
@@ -50,7 +50,7 @@ function blacklist.surface(surface_name)
 
     -- No cached value yet. Need to calculate it and then cache it
     is_blacklisted = is_surface_blacklisted(surface_name)
-    data.surfaces[surface_name] = is_blacklisted
+    data.surfaces[surface_name] = is_blacklisted -- Cache it
     return is_blacklisted
 end
 

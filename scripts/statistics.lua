@@ -508,6 +508,20 @@ statistics.on_nth_tick = {
             ::continue::
         end
     end,
+
+    ---@param event NthTickEventData
+    [60] = function(event)
+        local players = global.statistics.players
+        local time_passed = event.nth_tick
+        for _, player in pairs(game.connected_players) do
+            if blacklist.force(player.force.name) then goto continue end
+            local surface_name = player.surface.name
+            if blacklist.surface(surface_name) then goto continue end
+            local data = players[player.index] --[[@as StatisticsPlayerData ]]
+            data.times_on_surfaces[surface_name] = (data.times_on_surfaces[surface_name] or 0) + time_passed
+            ::continue::
+        end
+    end,
 }
 
 statistics.events = {
@@ -532,11 +546,29 @@ statistics.events = {
         local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
         statistics.setup_player(player)
     end,
-    script.on_event(defines.events.on_player_removed, function(event)
-        if not global.statistics then return end -- Should not happen? Don't care though
-        global.statistics.players[event.player_index] = nil
-    end)
+
+    ---@param event EventData.on_pre_surface_deleted
+    [defines.events.on_pre_surface_deleted] = function (event)
+        local surface_name = game.get_surface(event.surface_index).name
+        for _, player_data in pairs(global.statistics.players) do
+            player_data.times_on_surfaces[surface_name] = nil
+        end
+    end,
+
+    ---@param event EventData.on_surface_renamed
+    [defines.events.on_surface_renamed] = function (event)
+        for _, player_data in pairs(global.statistics.players) do
+            player_data.times_on_surfaces[event.new_name] = player_data.times_on_surfaces[event.old_name]
+            player_data.times_on_surfaces[event.old_name] = nil
+        end
+    end,
+
 }
+
+script.on_event(defines.events.on_player_removed, function(event)
+    if not global.statistics then return end -- Should not happen? Don't care though
+    global.statistics.players[event.player_index] = nil
+end)
 
 ---@class StatisticsPlayerData
 ---@field deaths integer
@@ -546,6 +578,7 @@ statistics.events = {
 ---@field distance_jetpacked integer
 ---@field last_posistion MapPosition?
 ---@field ticks_crafted uint
+---@field times_on_surfaces table<string, uint> the amount of ticks spent on each surface. Indexed by surface name
 
 ---@class StatisticsForceData
 
@@ -564,6 +597,8 @@ function statistics.setup_player(player)
         last_posistion = nil,
 
         ticks_crafted = 0,
+
+        times_on_surfaces = { },
     }
 end
 

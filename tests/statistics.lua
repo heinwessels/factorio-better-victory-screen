@@ -79,4 +79,53 @@ function tests.on_player_changed_position_unreasonable_ignored()
     player.teleport({0, 0}) -- Bring player back to not be annoying
 end
 
+function tests.player_time_on_new_surface()
+    local player = game.player
+    if not player then error("BAD") end
+    local times_on_surfaces = global.statistics.players[player.index].times_on_surfaces
+
+    statistics.on_nth_tick[60]{tick=1, nth_tick=60}
+    test_util.assert_greater_than(times_on_surfaces["nauvis"], 0)
+    local previous_nauvis_time = times_on_surfaces["nauvis"]
+
+    local new_surface = game.create_surface("new_surface")
+    player.teleport({0, 0}, new_surface)
+
+    statistics.on_nth_tick[60]{tick=1, nth_tick=60}
+    test_util.assert_equal(times_on_surfaces["new_surface"], 60)
+    test_util.assert_equal(times_on_surfaces["nauvis"], previous_nauvis_time)
+    statistics.on_nth_tick[60]{tick=1, nth_tick=60}
+    test_util.assert_equal(times_on_surfaces["new_surface"], 120)
+    test_util.assert_equal(times_on_surfaces["nauvis"], previous_nauvis_time)
+end
+
+function tests.player_time_on_renamed_surface()
+    local player = game.player
+    if not player then error("BAD") end
+    local times_on_surfaces = global.statistics.players[player.index].times_on_surfaces
+    local surface = game.get_surface("new_surface")
+
+    test_util.assert_greater_than(times_on_surfaces["new_surface"], 0)
+    local ticks = times_on_surfaces["new_surface"]
+    test_util.assert_nil(times_on_surfaces["renamed"])
+
+    surface.name = "renamed"
+
+    test_util.assert_equal(times_on_surfaces["renamed"], ticks)
+    test_util.assert_nil(times_on_surfaces["new_surface"])
+end
+
+function tests.delete_surface_clear_time()
+    local player = game.player
+    if not player then error("BAD") end
+    local times_on_surfaces = global.statistics.players[player.index].times_on_surfaces
+    test_util.assert_greater_than(times_on_surfaces["renamed"], 0)
+
+    player.teleport({0, 0}, "nauvis")
+    statistics.events[defines.events.on_pre_surface_deleted]{surface_index=game.get_surface("renamed").index}
+    game.delete_surface("renamed") -- Only happens later
+
+    test_util.assert_nil(times_on_surfaces["renamed"])
+end
+
 return statistics_tests

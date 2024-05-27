@@ -36,6 +36,12 @@ local migrations = {
             player_data.distance_jetpacked = 0
         end
     end,
+    ["0.3.0"] = function()
+        for _, player in pairs(game.players) do
+            local player_data = global.statistics.players[player.index]
+            player_data.times_on_surfaces = { }
+        end
+    end,
 }
 
 local function handle_migrations(event)
