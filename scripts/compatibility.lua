@@ -12,6 +12,7 @@ local module = { }
 ---@type CompatibilityWrapper[]
 local compatibilities = {
     require("scripts.compatibility.cargo-ships"),
+    require("scripts.compatibility.lunar-landings"),
 }
 
 function module.initialize(event_handler)

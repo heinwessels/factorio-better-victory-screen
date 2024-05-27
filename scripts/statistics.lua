@@ -397,15 +397,15 @@ function statistics.for_player(player, profilers)
     local player_data = global.statistics.players[player.index] --[[@as StatisticsPlayerData]]
 
     stats["player"] = {order = "d", stats = {
-        ["deaths"] =            {value = player_data.deaths,                                order="a"},
-        ["kills"] =             {value = player_data.kills,                                 order="b"},
-        ["distance-walked"] =   {value = player_data.distance_walked,   unit="distance",    order="c"},
-        ["distance-drove"] =    {value = player_data.distance_drove,    unit="distance",    order="d", has_tooltip=true},
+        ["deaths"] =            {value = player_data.deaths,                                order="d"},
+        ["kills"] =             {value = player_data.kills,                                 order="e"},
+        ["distance-walked"] =   {value = player_data.distance_walked,   unit="distance",    order="f"},
+        ["distance-drove"] =    {value = player_data.distance_drove,    unit="distance",    order="g", has_tooltip=true},
         ["handcrafting-time"] = {value = player_data.ticks_crafted,     unit="time",        order="h"},
     }}
 
     if jetpack_mod_active then
-        stats["player"].stats["distance-jetpacked"] = {value = player_data.distance_jetpacked,unit="distance", order="e"}
+        stats["player"].stats["distance-jetpacked"] = {value = player_data.distance_jetpacked,unit="distance", order="k"}
     end
 
     return stats

@@ -17,14 +17,14 @@ If enabled in settings you can view the victory screen at any time by typing the
 - [Freight Forwarding](https://mods.factorio.com/mod/FreightForwarding)
 - [Industrial Revolution 3](https://mods.factorio.com/mod/IndustrialRevolution3)
 - [Krastorio 2](https://mods.factorio.com/mod/Krastorio2) _(has custom integration)_
-- [Lunar Landings](https://mods.factorio.com/mod/LunarLandings)
+- [Lunar Landings](https://mods.factorio.com/mod/LunarLandings)  _(has custom integration)_
 - [Mining Space Industries (MSI) II](https://mods.factorio.com/mod/Mining-Space-Industries-II)
 - [Nullius](https://mods.factorio.com/mod/nullius) _(has custom integration)_
 - [Omni](https://mods.factorio.com/user/OmnissiahZelos)
 - [Pyanodons](https://mods.factorio.com/user/pyanodon)
 - [SeaBlock](https://mods.factorio.com/mod/SeaBlock)
 - [Space Exploration](https://mods.factorio.com/mod/space-exploration) _(has custom integration)_
-- [Space Extension Mod](https://mods.factorio.com/mod/SpaceMod) [(fork)](https://mods.factorio.com/mod/SpaceModFeorasFork).
+- [Space Extension Mod](https://mods.factorio.com/mod/SpaceMod) (and this [fork](https://mods.factorio.com/mod/SpaceModFeorasFork)).
 - [Ultracube: Age of Cube](https://mods.factorio.com/mod/Ultracube) _(has custom integration)_
 - [Warptorio 2](https://mods.factorio.com/mod/warptorio2)
 - [Warp Drive Machine](https://mods.factorio.com/mod/Warp-Drive-Machine/downloads) _(has custom integration)_
