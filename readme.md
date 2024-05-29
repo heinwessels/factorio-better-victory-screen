@@ -31,6 +31,14 @@ If enabled in settings you can view the victory screen at any time by typing the
 
 _Custom integration are (known) mod-specific statistics added to the victory screen. For example the Space Exploration will show the amount of worlds visited._
 
+**Non-overhaul mods adding victory screen statistics**:
+
+These are non-overhaul mods which also adds extra statistics to the victory screen when active. (Known about at time of writing)
+
+- [Cargo Ships](https://mods.factorio.com/mod/cargo-ships)
+- [Jetpack](https://mods.factorio.com/mod/jetpack)
+- [Territory Claim](https://mods.factorio.com/mod/territory_claim)
+
 **Soft-Compatible overhauls**:
 
 These mods are safe to be installed to without any side-effects to track your statistics (like distance walked) until the mod is fully supported. However, the vanilla victory screen will still be shown on victory (except possibly when combining it with a fully compatible mod).
