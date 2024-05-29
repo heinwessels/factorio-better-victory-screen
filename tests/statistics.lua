@@ -115,17 +115,17 @@ function tests.player_time_on_renamed_surface()
     test_util.assert_nil(times_on_surfaces["new_surface"])
 end
 
-function tests.delete_surface_clear_time()
+function tests.delete_surface_doesnt_clear_time()
     local player = game.player
     if not player then error("BAD") end
     local times_on_surfaces = global.statistics.players[player.index].times_on_surfaces
-    test_util.assert_greater_than(times_on_surfaces["renamed"], 0)
+    local prev_time = times_on_surfaces["renamed"]
+    test_util.assert_greater_than(prev_time, 0)
 
     player.teleport({0, 0}, "nauvis")
-    statistics.events[defines.events.on_pre_surface_deleted]{surface_index=game.get_surface("renamed").index}
-    game.delete_surface("renamed") -- Only happens later
+    game.delete_surface("renamed") -- Only happens later, so techincally this test is flawed. Need multi-tick tests.
 
-    test_util.assert_nil(times_on_surfaces["renamed"])
+    test_util.assert_equal(times_on_surfaces["renamed"], prev_time)
 end
 
 return statistics_tests

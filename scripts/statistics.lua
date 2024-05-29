@@ -547,14 +547,6 @@ statistics.events = {
         statistics.setup_player(player)
     end,
 
-    ---@param event EventData.on_pre_surface_deleted
-    [defines.events.on_pre_surface_deleted] = function (event)
-        local surface_name = game.get_surface(event.surface_index).name
-        for _, player_data in pairs(global.statistics.players) do
-            player_data.times_on_surfaces[surface_name] = nil
-        end
-    end,
-
     ---@param event EventData.on_surface_renamed
     [defines.events.on_surface_renamed] = function (event)
         for _, player_data in pairs(global.statistics.players) do
