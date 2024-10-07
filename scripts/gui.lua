@@ -26,8 +26,7 @@ local value_column_width = 82   -- Keeps the golden ration used by vanilla gui
 
 ---@param player LuaPlayer
 ---@param categories StatisticCategories
----@param message string|LocalisedString ? to show instead of default victory message
-function gui.create(player, categories, message)
+function gui.create(player, categories)
     player.play_sound{path = "utility/game_won"}
     ---@diagnostic disable: missing-fields
 
@@ -92,14 +91,6 @@ function gui.create(player, categories, message)
     })
     frame.force_auto_center()
     player.opened = frame
-
-    if message then
-        -- Attempt to add the victory (losing) message. We will do this in a safe way
-        -- so that if something goes wrong for some reason then we will ignore it
-        local success, error_message = pcall(function(caption)
-            refs.victory_label.caption = caption end, message)
-        debug.debug_assert(success, error_message)
-    end
 
     -- Now start adding the statistics
     local stats_gui = refs.statistics

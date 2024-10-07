@@ -2,8 +2,7 @@
 
 ## When is specific compatibility required?
 
-- If your mod has a custom victory condition then extra plumping is required to instead trigger this mod.
-- If you want to show (or hide) extra statistics in the victory GUI.
+- Only if you want to show (or hide) extra statistics in the victory GUI.
 
 ## Supporting custom victory conditions 
 

@@ -64,28 +64,8 @@ function tests.create_gui()
     test_util.assert_table_equal(find_victory_label(), {"gui-game-finished.victory"})
 end
 
-function tests.create_gui_with_string_message()
-    gui.create(game.player, { }, "hello")
-
-    test_util.assert_string_equal(find_victory_label(), "hello")
-end
-
-function tests.create_gui_with_localized_message()
-    gui.create(game.player, { }, {"item-name.iron-plate"})
-
-    test_util.assert_table_equal(find_victory_label(), {"item-name.iron-plate"})
-end
-
 function tests.create_gui_with_invalid_message_debug_death()
     test_util.assert_death(gui.create, {game.player, { }, {hungry = true}})
-end
-
-function tests.create_gui_with_invalid_message_release_ignore()
-    test_util.mock_release()
-
-    gui.create(game.player, { }, {sleepy = true})
-
-    test_util.assert_table_equal(find_victory_label(), {"gui-game-finished.victory"})
 end
 
 function tests.create_statistics()

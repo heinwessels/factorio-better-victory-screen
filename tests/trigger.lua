@@ -16,20 +16,6 @@ function trigger_tests.setup()
     test_util.reset_surface()
 end
 
----A fake LuaEntity that can pass as a rocket
----@param override table? to override some parameters
----@return LuaEntity
-local function mock_rocket(override)
-    return util.merge{
-        {
-            name = "rocket-silo-rocket",
-            force = game.forces.player,
-            valid = true,
-        },
-        override or { }
-    }
-end
-
 function tests.on_init_config_vanilla_victory_expected()
     trigger.on_init()
     trigger.on_configuration_changed()
@@ -45,196 +31,16 @@ function tests.remote_disable_vanilla_victory()
     test_util.assert_true(storage.disable_vanilla_victory)
 end
 
-function tests.on_rocket_vanilla_trigger_victory()
+function tests.on_pre_scenario_finished_triggers()
     local called = false
     local store_function = trigger.attempt_trigger_victory
-    trigger.attempt_trigger_victory = function(winning_force, override, winning_message, losing_message)
-        called = true
-        test_util.assert_equal(winning_force, game.player.force)
-        test_util.assert_nil(override)
-        test_util.assert_nil(winning_message)
-        test_util.assert_nil(winning_message)
-    end
+    trigger.show_victory_screen = function() called = true end -- Mock
 
-    trigger.events[defines.events.on_rocket_launched]({rocket = mock_rocket()})
+    game.set_game_state({player_won = true, can_continue = true})
+    trigger.events[defines.events.on_pre_scenario_finished]()
 
     test_util.assert_true(called)
-    trigger.attempt_trigger_victory = store_function
-end
-
-function tests.on_invalid_rocket_doesnt_trigger_victory()
-    storage.disable_vanilla_victory = true
-
-    local called = false
-    local store_function = trigger.attempt_trigger_victory
-    trigger.attempt_trigger_victory = function(_, _, _, _)
-        called = true
-    end
-
-    trigger.events[defines.events.on_rocket_launched]({rocket = mock_rocket{valid = false}})
-
-    test_util.assert_false(called)
-    trigger.attempt_trigger_victory = store_function
-end
-
-function tests.on_rocket_vanilla_disabled_doesnt_trigger_victory()
-    storage.disable_vanilla_victory = true
-
-    local called = false
-    local store_function = trigger.attempt_trigger_victory
-    trigger.attempt_trigger_victory = function(_, _, _, _)
-        called = true
-    end
-
-    trigger.events[defines.events.on_rocket_launched]({rocket = mock_rocket()})
-
-    test_util.assert_false(called)
-    trigger.attempt_trigger_victory = store_function
-end
-
-function tests.on_blacklisted_rocket_doesnt_trigger_victory()
-    local called = false
-    local store_function = trigger.attempt_trigger_victory
-    trigger.attempt_trigger_victory = function(_, _, _, _)
-        called = true
-    end
-
-    trigger.events[defines.events.on_rocket_launched]({rocket = mock_rocket{name = "ballistic-missile"}})
-
-    test_util.assert_false(called)
-    trigger.attempt_trigger_victory = store_function
-end
-
-function tests.remote_trigger_victory()
-    storage.disable_vanilla_victory = true
-
-    local called = false
-    local store_function = trigger.attempt_trigger_victory
-    trigger.attempt_trigger_victory = function(winning_force, override, winning_message, losing_message)
-        called = true
-        test_util.assert_equal(winning_force, game.player.force)
-        test_util.assert_nil(override)
-        test_util.assert_nil(winning_message)
-        test_util.assert_nil(losing_message)
-    end
-
-    remote.call("better-victory-screen", "trigger_victory", game.forces.player)
-
-    test_util.assert_true(called)
-    trigger.attempt_trigger_victory = store_function
-end
-
-function tests.remote_trigger_victory_valid_winning_and_losing_message()
-    local store_function = trigger.attempt_trigger_victory
-
-    local called = false
-    trigger.attempt_trigger_victory = function(_, _, winning_message, losing_message)
-        called = true
-        test_util.assert_table_equal(winning_message, {"item-name.iron-plate"})
-        test_util.assert_string_equal(losing_message, "what")
-    end
-
-    remote.call("better-victory-screen", "trigger_victory",
-        game.forces.player,
-        false,
-        {"item-name.iron-plate"},
-        "what"
-    )
-
-    test_util.assert_true(called)
-    trigger.attempt_trigger_victory = store_function
-end
-
-function tests.remote_trigger_victory_no_winning_but_losing_message()
-    local store_function = trigger.attempt_trigger_victory
-
-    local called = false
-    trigger.attempt_trigger_victory = function(_, _, winning_message, losing_message)
-        called = true
-        test_util.assert_nil(winning_message)
-        test_util.assert_nil(losing_message)
-    end
-
-    remote.call("better-victory-screen", "trigger_victory",
-        game.forces.player,
-        false,
-        nil,
-        "can't have a losing message but no winning message because."
-    )
-
-    test_util.assert_true(called)
-    trigger.attempt_trigger_victory = store_function
-end
-
-function tests.remote_trigger_victory_no_winning_or_losing_message()
-    local store_function = trigger.attempt_trigger_victory
-
-    local called = false
-    trigger.attempt_trigger_victory = function(_, _, winning_message, losing_message)
-        called = true
-        test_util.assert_nil(winning_message)
-        test_util.assert_nil(losing_message)
-    end
-
-    remote.call("better-victory-screen", "trigger_victory",
-        game.forces.player,
-        false
-    )
-
-    test_util.assert_true(called)
-    trigger.attempt_trigger_victory = store_function
-end
-
-function tests.attempt_trigger_victory_show_victory()
-    local store_function = trigger.show_victory_screen
-
-    local called = false
-    trigger.show_victory_screen = function(winning_force, winning_message, losing_message)
-        called = true
-        test_util.assert_equal(winning_force, game.player.force)
-        test_util.assert_nil(winning_message)
-        test_util.assert_nil(losing_message)
-    end
-
-    trigger.attempt_trigger_victory(game.player.force)
-
-    test_util.assert_true(called)
-    trigger.show_victory_screen = store_function
-end
-
-function tests.attempt_trigger_victory_show_victory_ignore_second_time()
-    local store_function = trigger.show_victory_screen
-
-    local count = 0
-    trigger.show_victory_screen = function(winning_force, winning_message, losing_message)
-        count = count + 1
-        test_util.assert_equal(winning_force, game.player.force)
-        test_util.assert_nil(winning_message)
-        test_util.assert_nil(losing_message)
-    end
-
-    trigger.attempt_trigger_victory(game.player.force)
-    trigger.attempt_trigger_victory(game.player.force)
-
-    test_util.assert_equal(count, 1)
-    trigger.show_victory_screen = store_function
-end
-
-function tests.attempt_trigger_victory_show_victory_override_doesnt_ignore_second_time()
-    local store_function = trigger.show_victory_screen
-
-    local count = 0
-    trigger.show_victory_screen = function(winning_force, winning_message, losing_message)
-        count = count + 1
-        test_util.assert_equal(winning_force, game.player.force)
-        test_util.assert_nil(winning_message)
-        test_util.assert_nil(losing_message)
-    end
-
-    trigger.attempt_trigger_victory(game.player.force)
-    trigger.attempt_trigger_victory(game.player.force, true)
-
-    test_util.assert_equal(count, 2)
+    test_util.assert_true(game.finished_but_continuing)
     trigger.show_victory_screen = store_function
 end
 
@@ -251,17 +57,16 @@ function tests.gather_statistics_by_force()
     local called = false
     trigger.remote = {
         interfaces = { ["mock-interface"] = util.list_to_map{trigger.gather_function_name} },
-        call = function(interface, function_name, winning_force, forces)
+        call = function(interface, function_name, forces)
             called = true
             test_util.assert_string_equal(interface, "mock-interface")
             test_util.assert_string_equal(function_name, trigger.gather_function_name)
-            test_util.assert_equal(winning_force, game.player.force)
             test_util.assert_table_equal(forces, {game.player.force})
             return statistics_to_gather
         end
     }
 
-    local statistics = trigger.gather_statistics(game.player.force --[[@as LuaForce]], {game.player.force})
+    local statistics = trigger.gather_statistics({game.player.force})
     test_util.assert_true(called)
     test_util.assert_table_equal(statistics, { by_force = {
         ["player"] = {
@@ -315,7 +120,7 @@ function tests.gather_statistics_by_force_merge_multiple()
         end
     }
 
-    local statistics = trigger.gather_statistics(game.player.force --[[@as LuaForce]], {game.player.force})
+    local statistics = trigger.gather_statistics({game.player.force})
     test_util.assert_true(called_a)
     test_util.assert_true(called_b)
     test_util.assert_table_equal(statistics, {
@@ -373,7 +178,7 @@ function tests.gather_statistics_call_error_release_ignore()
         end
     }
 
-    trigger.gather_statistics(game.player.force --[[@as LuaForce]], {game.player.force})
+    trigger.gather_statistics({game.player.force})
     -- Nothing useful to do with result. Just check that it doesn't crash
 
     trigger.remote = store_function
@@ -388,7 +193,7 @@ function tests.gather_statistics_return_nil_release_ignore()
         call = function() return nil end
     }
 
-    trigger.gather_statistics(game.player.force --[[@as LuaForce]], {game.player.force})
+    trigger.gather_statistics({game.player.force})
     -- Nothing useful to do with result. Just check that it doesn't crash
 
     trigger.remote = store_function
@@ -403,7 +208,7 @@ function tests.gather_statistics_return_non_table_release_ignore()
         call = function() return 6 end
     }
 
-    trigger.gather_statistics(game.player.force --[[@as LuaForce]], {game.player.force})
+    trigger.gather_statistics({game.player.force})
     -- Nothing useful to do with result. Just check that it doesn't crash
 
     trigger.remote = store_function

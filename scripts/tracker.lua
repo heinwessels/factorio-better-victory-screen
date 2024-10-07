@@ -76,7 +76,7 @@ local data = {
 ---@type table<TrackerType, fun(filter: Filter): boolean>
 local is_valid_filter_functions = {
     [TRACKER_TYPE.ENTITY_BY_NAME] = function (filter)
-        return game.entity_prototypes[filter] ~= nil
+        return prototypes.entity[filter] ~= nil
     end,
     [TRACKER_TYPE.ENTITY_BY_TYPE] = function (filter)
         return defines.prototypes['entity'][filter] ~= nil

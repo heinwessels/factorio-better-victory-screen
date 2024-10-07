@@ -28,7 +28,6 @@ local all_machines = {
 local rail_blacklist = util.list_to_map{
     "straight-water-way",
     "curved-water-way",
-    "se-spaceship-clamp-place",     -- heh
 }
 
 local train_stop_blacklist = util.list_to_map{
@@ -40,13 +39,13 @@ local train_stop_blacklist = util.list_to_map{
 ---@param prototypes_blacklist table<string, boolean>? list of names to exclude
 ---@return table<string, LuaEntityPrototype>
 local function all_prototypes_of_type(type, prototypes_blacklist)
-    local prototypes = { }
-    for prototype_name, prototype in pairs(game.get_filtered_entity_prototypes{{filter = "type", type = type}}) do
+    local result = { }
+    for prototype_name, prototype in pairs(prototypes.get_entity_filtered{{filter = "type", type = type}}) do
         if not prototypes_blacklist or not prototypes_blacklist[prototype_name] then
-            prototypes[prototype_name] = prototype
+            result[prototype_name] = prototype
         end
     end
-    return prototypes
+    return result
 end
 
 --- The amount of machines/buildings
@@ -137,10 +136,12 @@ local function get_total_trains(force)
     local count = 0
 
     -- This will currently count all trains, even the ships in Cargo Ships
+    -- TODO Use filter to somehow filter out ships
+    local manager = game.train_manager
     for _, surface in pairs(game.surfaces) do
-        if not blacklist.surface(surface.name) then
-            count = count + #force.get_trains(surface)
-        end
+        if blacklist.surface(surface.name) then goto continue end
+        count = count + #manager.get_trains{surface=surface, force=force}
+        ::continue::
     end
 
     return count
@@ -263,9 +264,13 @@ end
 local function get_ores_produced(force)
     local count = 0
 
-    local force_stats = force.item_production_statistics
-    for _, ore_name in pairs(storage.statistics.ore_names) do
-        count = count + force_stats.get_input_count(ore_name)
+    for _, surface in pairs(game.surfaces) do
+        if blacklist.surface(surface.name) then goto continue end
+        local force_stats = force.get_item_production_statistics(surface)
+        for _, ore_name in pairs(storage.statistics.ore_names) do
+            count = count + force_stats.get_input_count(ore_name)
+        end
+        ::continue::
     end
 
     return count
@@ -277,8 +282,13 @@ end
 local function get_items_produced(force)
     local count = 0
 
-    for _, amount in pairs(force.item_production_statistics.input_counts) do
-        count = count + amount
+    for _, surface in pairs(game.surfaces) do
+        if blacklist.surface(surface.name) then goto continue end
+        local item_stats = force.get_item_production_statistics(surface)
+        for _, amount in pairs(item_stats.input_counts) do
+            count = count + amount
+        end
+        ::continue::
     end
 
     return count
@@ -289,9 +299,14 @@ end
 local function get_total_science_packs_consumed(force)
     local count = 0
 
-    local force_stats = force.item_production_statistics
-    for science_pack_name, _ in pairs(game.get_filtered_item_prototypes{{filter="tool"}}) do
-        count = count + force_stats.get_output_count(science_pack_name)
+    local tools = prototypes.get_item_filtered{{filter="tool"}}
+    for _, surface in pairs(game.surfaces) do
+        if blacklist.surface(surface.name) then goto continue end
+        local force_stats = force.get_item_production_statistics(surface)
+        for science_pack_name, _ in pairs(tools) do
+            count = count + force_stats.get_output_count(science_pack_name)
+        end
+        ::continue::
     end
 
     return count
@@ -302,11 +317,15 @@ end
 local function get_total_enemy_kills(force)
     local count = 0
 
-    local force_stats = force.kill_count_statistics
-    for enity_type, _ in pairs(game.get_filtered_entity_prototypes
-        {{filter = "type", type = {"unit", "unit-spawner"}}}
-    ) do
-        count = count + force_stats.get_input_count(enity_type)
+    ---TODO Add new enemy types
+    local enemies = prototypes.get_entity_filtered{{filter = "type", type = {"unit", "unit-spawner"}}}
+    for _, surface in pairs(game.surfaces) do
+        if blacklist.surface(surface.name) then goto continue end
+        local force_stats = force.get_kill_count_statistics(surface)
+        for enity_type, _ in pairs(enemies) do
+            count = count + force_stats.get_input_count(enity_type)
+        end
+        ::continue::
     end
 
     return count
@@ -317,8 +336,13 @@ end
 local function get_total_kills_by_train(force)
     local count = 0
 
-    for _, train in pairs(force.get_trains()) do
-        count = count + train.kill_count
+    local manager = game.train_manager
+    for _, surface in pairs(game.surfaces) do
+        if blacklist.surface(surface.name) then goto continue end
+        for _, train in pairs(manager.get_trains{surface=surface, force=force}) do
+            count = count + train.kill_count
+        end
+        ::continue::
     end
 
     return count
@@ -600,11 +624,12 @@ local function cache_some_properties()
     do
         ---@type string[]
         local ore_names = { }
-        for _, resource_prototype in pairs(game.get_filtered_entity_prototypes({{filter = "type", type = "resource"}})) do
+        local items = prototypes.item
+        for _, resource_prototype in pairs(prototypes.get_entity_filtered({{filter = "type", type = "resource"}})) do
             local mineable_properties = resource_prototype.mineable_properties
             if mineable_properties.minable and mineable_properties.products then
                 for _, product in pairs(mineable_properties.products) do
-                    if product.type == "item" and game.item_prototypes[product.name] and not lib.table.in_array(ore_names, product.name) then
+                    if product.type == "item" and items[product.name] and not lib.table.in_array(ore_names, product.name) then
                         table.insert(ore_names, product.name)
                     end
                 end
