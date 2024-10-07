@@ -8,14 +8,14 @@ local migration_tests = { tests = { } }
 local tests = migration_tests.tests
 
 local function trigger_migrations()
-    global.migrations = { }
+    storage.migrations = { }
     migrations.on_configuration_changed{}
 end
 
 function tests.fix_crazy_distance_walked()
     local player = game.player
     if not player then error("BAD") end
-    local player_data = global.statistics.players[player.index]
+    local player_data = storage.statistics.players[player.index]
 
     player_data.distance_walked = 9200*1000
     trigger_migrations()

@@ -68,8 +68,8 @@ If the `remote.call` is has some additional parameters to better suit your needs
 -- In the function where the victory is triggered, where you (likely) first check
 -- if it hasn't been reached already
 
-if game.finished or game.finished_but_continuing or global.finished then return end
-global.finished = true
+if game.finished or game.finished_but_continuing or storage.finished then return end
+storage.finished = true
 ```
 
 Only real effect of not adding this code, except for possibly confusing your mod logic, is that if Better Victory Screen is removed _after_ victory is reached, then your mod might trigger it again.

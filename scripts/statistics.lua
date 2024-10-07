@@ -264,7 +264,7 @@ local function get_ores_produced(force)
     local count = 0
 
     local force_stats = force.item_production_statistics
-    for _, ore_name in pairs(global.statistics.ore_names) do
+    for _, ore_name in pairs(storage.statistics.ore_names) do
         count = count + force_stats.get_input_count(ore_name)
     end
 
@@ -394,7 +394,7 @@ end
 ---@return table containing statistics
 function statistics.for_player(player, profilers)
     local stats = {}
-    local player_data = global.statistics.players[player.index] --[[@as StatisticsPlayerData]]
+    local player_data = storage.statistics.players[player.index] --[[@as StatisticsPlayerData]]
 
     stats["player"] = {order = "d", stats = {
         ["deaths"] =            {value = player_data.deaths,                                order="d"},
@@ -418,7 +418,7 @@ local function on_entity_died(event)
     if cause.type ~= "character" then return end
     local player = cause.player
     if not player then return end
-    local data = global.statistics.players[player.index] --[[@as StatisticsPlayerData ]]
+    local data = storage.statistics.players[player.index] --[[@as StatisticsPlayerData ]]
     data.kills = data.kills + 1
 end
 
@@ -434,7 +434,7 @@ end
 ---@param event EventData.on_player_changed_position
 local function on_player_changed_position(event)
     local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
-    local player_data = global.statistics.players[event.player_index]
+    local player_data = storage.statistics.players[event.player_index]
 
     if not player_data then
         -- This should never happen, right? Then why did it?
@@ -442,7 +442,7 @@ local function on_player_changed_position(event)
         -- It only happens in multiplayer.
         -- TODO: What is up with this?
         statistics.setup_player(player)
-        player_data = global.statistics.players[event.player_index]
+        player_data = storage.statistics.players[event.player_index]
     end
 
     -- Do some sanity check first if calculating the travelled position makes sense
@@ -496,7 +496,7 @@ statistics.on_nth_tick = {
     --- There are no nice events when hand crafting starts and stops
     ---@param event NthTickEventData
     [10] = function(event)
-        local players = global.statistics.players
+        local players = storage.statistics.players
         local time_handcrafted = event.nth_tick
         for _, player in pairs(game.connected_players) do
             if player.controller_type ~= character_controller then goto continue end
@@ -511,7 +511,7 @@ statistics.on_nth_tick = {
 
     ---@param event NthTickEventData
     [60] = function(event)
-        local players = global.statistics.players
+        local players = storage.statistics.players
         local time_passed = event.nth_tick
         for _, player in pairs(game.connected_players) do
             if blacklist.force(player.force.name) then goto continue end
@@ -529,8 +529,8 @@ statistics.events = {
     [defines.events.on_entity_died] = on_entity_died,
 
     [defines.events.on_player_died] = function(event)
-        global.statistics.players[event.player_index].deaths
-            = global.statistics.players[event.player_index].deaths + 1
+        storage.statistics.players[event.player_index].deaths
+            = storage.statistics.players[event.player_index].deaths + 1
     end,
 
     ---@param event EventData.on_force_created
@@ -549,7 +549,7 @@ statistics.events = {
 
     ---@param event EventData.on_surface_renamed
     [defines.events.on_surface_renamed] = function (event)
-        for _, player_data in pairs(global.statistics.players) do
+        for _, player_data in pairs(storage.statistics.players) do
             player_data.times_on_surfaces[event.new_name] = player_data.times_on_surfaces[event.old_name]
             player_data.times_on_surfaces[event.old_name] = nil
         end
@@ -557,8 +557,8 @@ statistics.events = {
 
     ---@param event EventData.on_player_removed
     [defines.events.on_player_removed] = function (event)
-        if not global.statistics then return end -- Should not happen? Don't care though
-        global.statistics.players[event.player_index] = nil
+        if not storage.statistics then return end -- Should not happen? Don't care though
+        storage.statistics.players[event.player_index] = nil
     end,
 }
 
@@ -578,8 +578,8 @@ statistics.events = {
 function statistics.setup_player(player)
     ---@type StatisticsPlayerData
     initialize_data()
-    if global.statistics.players[player.index] then return end
-    global.statistics.players[player.index] = {
+    if storage.statistics.players[player.index] then return end
+    storage.statistics.players[player.index] = {
         deaths = 0,
         kills = 0,
 
@@ -611,7 +611,7 @@ local function cache_some_properties()
             end
         end
 
-        global.statistics.ore_names = ore_names
+        storage.statistics.ore_names = ore_names
         debug.debug_log("Ore names: "..serpent.line(ore_names))
     end
 end
@@ -647,12 +647,12 @@ end
 function statistics.setup_force(force)
     if blacklist.force(force.name) then return end
     ---@type StatisticsForceData
-    global.statistics.forces[force.index] = { }
+    storage.statistics.forces[force.index] = { }
 end
 
 function initialize_data()
-    if global.statistics then return end -- Already set up
-    global.statistics = {
+    if storage.statistics then return end -- Already set up
+    storage.statistics = {
         forces = { },
 
         ---@type table<uint, StatisticsPlayerData>

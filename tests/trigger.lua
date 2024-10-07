@@ -8,8 +8,8 @@ local tests = trigger_tests.tests
 
 function trigger_tests.setup()
     -- Reset state
-    global.disable_vanilla_victory = nil
-    global.finished = nil
+    storage.disable_vanilla_victory = nil
+    storage.finished = nil
 
 
     game.reset_game_state()
@@ -34,15 +34,15 @@ function tests.on_init_config_vanilla_victory_expected()
     trigger.on_init()
     trigger.on_configuration_changed()
 
-    test_util.assert_falsy(global.disable_vanilla_victory)
+    test_util.assert_falsy(storage.disable_vanilla_victory)
 end
 
 function tests.remote_disable_vanilla_victory()
-    test_util.assert_falsy(global.disable_vanilla_victory)
+    test_util.assert_falsy(storage.disable_vanilla_victory)
 
     remote.call("better-victory-screen", "set_no_victory", true)
 
-    test_util.assert_true(global.disable_vanilla_victory)
+    test_util.assert_true(storage.disable_vanilla_victory)
 end
 
 function tests.on_rocket_vanilla_trigger_victory()
@@ -63,7 +63,7 @@ function tests.on_rocket_vanilla_trigger_victory()
 end
 
 function tests.on_invalid_rocket_doesnt_trigger_victory()
-    global.disable_vanilla_victory = true
+    storage.disable_vanilla_victory = true
 
     local called = false
     local store_function = trigger.attempt_trigger_victory
@@ -78,7 +78,7 @@ function tests.on_invalid_rocket_doesnt_trigger_victory()
 end
 
 function tests.on_rocket_vanilla_disabled_doesnt_trigger_victory()
-    global.disable_vanilla_victory = true
+    storage.disable_vanilla_victory = true
 
     local called = false
     local store_function = trigger.attempt_trigger_victory
@@ -106,7 +106,7 @@ function tests.on_blacklisted_rocket_doesnt_trigger_victory()
 end
 
 function tests.remote_trigger_victory()
-    global.disable_vanilla_victory = true
+    storage.disable_vanilla_victory = true
 
     local called = false
     local store_function = trigger.attempt_trigger_victory

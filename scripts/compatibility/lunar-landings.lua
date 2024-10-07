@@ -4,7 +4,7 @@ local module = { }
 
 ---@param forces LuaForce[] to gather statistics from
 function module.gather(forces)
-    local players = global.statistics.players
+    local players = storage.statistics.players
     local stats = { by_player = { } }
     for _, force in pairs(forces) do
         for _, player in pairs(force.connected_players) do

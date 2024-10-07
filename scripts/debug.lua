@@ -8,7 +8,7 @@ lib.debugger_active = script.active_mods["debugadapter"] ~= nil
 ---@param message any
 function lib.debug_assert(condition, message)
     if condition then return end
-    if not lib.debugger_active or global.__testing_release then
+    if not lib.debugger_active or storage.__testing_release then
         log("Warning: "..serpent.block(message))
     else
         error(message)

@@ -147,10 +147,10 @@ function trigger.attempt_trigger_victory(winning_force, override, winning_messag
         if game.finished or game.finished_but_continuing then return end
 
         -- Check if this a force has already finished cache
-        if global.finished then return end
+        if storage.finished then return end
     end
 
-    global.finished = true
+    storage.finished = true
 
     -- Set the game state to victory without setting game_finished.
     -- This will trigger the achievements without showing the vanilla GUI.
@@ -168,7 +168,7 @@ local rocket_name_blacklist = util.list_to_map{
 
 ---@param event EventData.on_rocket_launched
 local function on_rocket_launched(event)
-    if global.disable_vanilla_victory then return end
+    if storage.disable_vanilla_victory then return end
 
     local rocket = event.rocket
     if not (rocket and rocket.valid) then return end
@@ -185,7 +185,7 @@ local function disable_vanilla_victory(no_vanilla_victory)
 
     -- This is a function because there was a hacky migration here...
 
-    global.disable_vanilla_victory = no_vanilla_victory
+    storage.disable_vanilla_victory = no_vanilla_victory
 end
 
 trigger.add_remote_interface = function()
@@ -260,12 +260,12 @@ function trigger.add_commands()
             return
         end
 
-        if not global.finished then
+        if not storage.finished then
             player.print("A custom victory has not been reached. Nothing to do")
             return
         end
 
-        global.finished = false -- So that a force can win again
+        storage.finished = false -- So that a force can win again
         game.print("Victory tracked by Better Victory Screen has been reset.")
 
         -- We can't set the internal game state again to haven't won. But
@@ -288,8 +288,8 @@ function trigger.add_commands()
     commands.add_command("is-victory-pending", pending_victory_help_message, function(command)
         local player = game.get_player(command.player_index)
         if not player then return end -- Should never happen.
-        local pending_type = global.disable_vanilla_victory and "Custom" or "Vanilla"
-        if global.finished then
+        local pending_type = storage.disable_vanilla_victory and "Custom" or "Vanilla"
+        if storage.finished then
             player.print("No. Better Victory Screen has already created a victory condition [Type: " .. pending_type .. "]. Use '/reset-victory-condition` to revert.")
         elseif game.finished or game.finished_but_continuing then
             player.print("No. Vanilla victory condition has already been reached without Better Victory Screen.")
@@ -344,7 +344,7 @@ function trigger.on_configuration_changed(event)
     -- mods that disable the vanilla victory condition is removed.
     -- All mods that call our disable interface should have a dependency
     -- on BVS and will therefore run after this, and thus disable it again.
-    global.disable_vanilla_victory = false
+    storage.disable_vanilla_victory = false
 
     -- We will always disable vanilla victory in some cases though
     handle_soft_compatibilities()

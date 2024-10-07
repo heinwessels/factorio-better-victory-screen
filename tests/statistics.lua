@@ -8,23 +8,23 @@ local statistics_tests = { tests = { } }
 local tests = statistics_tests.tests
 
 function tests.on_init_and_config_determine_ores()
-    local backup = global.statistics
+    local backup = storage.statistics
 
-    global.statistics = { } -- Reset
+    storage.statistics = { } -- Reset
     statistics.on_init({})
-    test_util.assert_greater_than(#global.statistics.ore_names, 0)
+    test_util.assert_greater_than(#storage.statistics.ore_names, 0)
 
-    global.statistics = { } -- Reset
+    storage.statistics = { } -- Reset
     statistics.on_configuration_changed({})
-    test_util.assert_greater_than(#global.statistics.ore_names, 0)
+    test_util.assert_greater_than(#storage.statistics.ore_names, 0)
 
-    global.statistics = backup
+    storage.statistics = backup
 end
 
 function tests.on_player_changed_position_straight()
     local player = game.player
     if not player then error("BAD") end
-    local player_data = global.statistics.players[player.index]
+    local player_data = storage.statistics.players[player.index]
 
     player_data.distance_walked = 10
     player_data.last_posistion = nil
@@ -46,7 +46,7 @@ end
 function tests.on_player_changed_position_diagonal()
     local player = game.player
     if not player then error("BAD") end
-    local player_data = global.statistics.players[player.index]
+    local player_data = storage.statistics.players[player.index]
 
     player_data.distance_walked = 10
     player_data.last_posistion = nil
@@ -63,7 +63,7 @@ end
 function tests.on_player_changed_position_unreasonable_ignored()
     local player = game.player
     if not player then error("BAD") end
-    local player_data = global.statistics.players[player.index]
+    local player_data = storage.statistics.players[player.index]
 
     player_data.distance_walked = 10
     player_data.last_posistion = nil
@@ -82,7 +82,7 @@ end
 function tests.player_time_on_new_surface()
     local player = game.player
     if not player then error("BAD") end
-    local times_on_surfaces = global.statistics.players[player.index].times_on_surfaces
+    local times_on_surfaces = storage.statistics.players[player.index].times_on_surfaces
 
     statistics.on_nth_tick[60]{tick=1, nth_tick=60}
     test_util.assert_greater_than(times_on_surfaces["nauvis"], 0)
@@ -102,7 +102,7 @@ end
 function tests.player_time_on_renamed_surface()
     local player = game.player
     if not player then error("BAD") end
-    local times_on_surfaces = global.statistics.players[player.index].times_on_surfaces
+    local times_on_surfaces = storage.statistics.players[player.index].times_on_surfaces
     local surface = game.get_surface("new_surface")
 
     test_util.assert_greater_than(times_on_surfaces["new_surface"], 0)
@@ -118,7 +118,7 @@ end
 function tests.delete_surface_doesnt_clear_time()
     local player = game.player
     if not player then error("BAD") end
-    local times_on_surfaces = global.statistics.players[player.index].times_on_surfaces
+    local times_on_surfaces = storage.statistics.players[player.index].times_on_surfaces
     local prev_time = times_on_surfaces["renamed"]
     test_util.assert_greater_than(prev_time, 0)
 

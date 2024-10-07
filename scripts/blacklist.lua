@@ -99,8 +99,8 @@ function blacklist.force(force_name)
 end
 
 local function initialize_cache()
-    global[data_key] = global[data_key] or data
-    data = global[data_key] --[[@as BlacklistGlobalData]]
+    storage[data_key] = storage[data_key] or data
+    data = storage[data_key] --[[@as BlacklistGlobalData]]
 end
 
 local function reset_cache()
@@ -109,7 +109,7 @@ local function reset_cache()
 end
 
 blacklist.on_init = initialize_cache
-blacklist.on_load = function() data = global[data_key] or data end
+blacklist.on_load = function() data = storage[data_key] or data end
 blacklist.on_configuration_changed = reset_cache
 
 return blacklist

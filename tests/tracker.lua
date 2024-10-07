@@ -27,7 +27,7 @@ end
 -- Resets the trackers internal state
 local function reset_tracker()
     ---@type TrackerGlobalData
-    local tracker_cache = global["_bvs_tracker_cache"]
+    local tracker_cache = storage["_bvs_tracker_cache"]
     for _, tracker_to_reset in pairs(tracker_cache.trackers) do
         tracker_to_reset.counters = { }
         tracker_to_reset.tracking = { }
@@ -43,7 +43,7 @@ end
 ---to pass time.
 local function decrease_last_recalculation_by_one_tick()
     ---@type table<TrackerType, TrackerClass>
-    local trackers = global["_bvs_tracker_cache"].trackers
+    local trackers = storage["_bvs_tracker_cache"].trackers
     for _, tracker in pairs(trackers) do
         for _, force_counter in pairs(tracker.counters) do
             for _, counter in pairs(force_counter) do

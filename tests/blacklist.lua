@@ -8,19 +8,19 @@ local blacklist_cache_name = "_bvs_blacklist_cache"
 ---@param surface_name string
 ---@return boolean?
 local function get_cached_surface(surface_name)
-    return global[blacklist_cache_name].surfaces[surface_name]
+    return storage[blacklist_cache_name].surfaces[surface_name]
 end
 
 ---@param force_name string
 ---@return boolean?
 local function get_cached_force(force_name)
-    return global[blacklist_cache_name].forces[force_name]
+    return storage[blacklist_cache_name].forces[force_name]
 end
 
 function blacklist_tests.setup()
     -- Sneakily delete the blacklist's internal cache before each test
-    global[blacklist_cache_name].surfaces = { }
-    global[blacklist_cache_name].forces = { }
+    storage[blacklist_cache_name].surfaces = { }
+    storage[blacklist_cache_name].forces = { }
 end
 
 function blacklist_tests.tests.nauvis_not_blacklisted()

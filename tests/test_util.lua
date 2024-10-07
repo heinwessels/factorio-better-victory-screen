@@ -24,7 +24,7 @@ end
 ---@param enable boolean? if we should mock release
 function test_util.mock_release(enable)
     if enable == nil then enable = true end
-    global.__testing_release = enable
+    storage.__testing_release = enable
 end
 
 function test_util.assert_true(a)
