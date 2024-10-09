@@ -189,7 +189,7 @@ local function get_peak_power_generation(force)
 
     -- Some caching
     local table_insert = table.insert
-    local get_flow_args = { input = false --[[ producers ]] }  -- To not create table every time
+    local get_flow_args = { category = "output"}  -- To not create table every time
 
     for _, surface in pairs(game.surfaces) do
         if blacklist.surface(surface.name) then goto continue end

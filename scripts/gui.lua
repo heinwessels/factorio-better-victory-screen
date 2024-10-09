@@ -45,9 +45,9 @@ function gui.create(player, categories)
         style_mods = {maximal_height = 930},
         handlers = {[e.on_gui_closed] = handlers.continue},
         children = {{
-            args = {type = "frame", direction = "vertical", style = "window_content_frame_packed"},
+            args = {type = "frame", direction = "vertical", style = "bvs_window_content_frame_packed"},
             children = {{
-                args = {type = "frame", style = "finished_game_subheader_frame"},
+                args = {type = "frame", style = "bvs_finished_game_subheader_frame"},
                 style_mods = {horizontally_stretchable = true},
                 children = {{
                     args = {type = "label", name = "victory_label",  caption = {"gui-game-finished.victory"}},
