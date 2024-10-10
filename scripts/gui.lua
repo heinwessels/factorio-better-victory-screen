@@ -41,37 +41,33 @@ function gui.create(player, categories)
 
     --- Create the actual GUI
     local frame, refs = glib.add(player.gui.screen, {
-        args = {type = "frame", name = "bvs_game_finished", direction = "vertical", caption = {"gui-game-finished.title"}},
+        args = {type = "frame", name = "bvs_game_finished", direction = "vertical", caption = {"gui-game-finished.victory"}},
         style_mods = {maximal_height = 930},
         handlers = {[e.on_gui_closed] = handlers.continue},
         children = {{
-            args = {type = "frame", direction = "vertical", style = "bvs_window_content_frame_packed"},
+            args = {type = "frame", direction = "horizontal", style = "subheader_frame"},
+            style_mods = {horizontally_stretchable = true, horizontally_squashable = true},
             children = {{
-                args = {type = "frame", style = "bvs_finished_game_subheader_frame"},
-                style_mods = {horizontally_stretchable = true},
-                children = {{
-                    args = {type = "label", name = "victory_label",  caption = {"gui-game-finished.victory"}},
-                }}
-            }, {
-                args = {type = "scroll-pane", name = "statistics", style = "scroll_pane_under_subheader"},
-                style_mods = {horizontally_squashable = true},
-                children = {{
-                    args = {type = "frame", style = "bvs_finished_game_frame"},
+                args = {type = "label",  caption = {"gui-game-finished.time-played"}, style="subheader_caption_label"},
+            }},
+        }, {
+            args = {type = "frame", name="content_frame", style = "inside_shallow_frame_with_padding"},
+            children = {{
+                args = {type = "flow", name="inner_flow", style = "inset_frame_container_horizontal_flow"},
+                children = {{ -- The image
+                    args = {type = "frame", name="content_frame", direction = "vertical", style = "deep_frame_in_shallow_frame"},
+                    style_mods = {horizontally_stretchable = true, horizontally_squashable = true},
                     children = {{
-                        args = {type = "table", column_count = 2, style = "bvs_finished_game_table"},
-                        style_mods = {margin = -4},
-                        children = {{
-                            args = {type = "flow"},
-                            children = {{
-                                args = {type = "label", caption = {"gui-game-finished.time-played"}, style = "caption_label"},
-                            }, {
-                                args = {type = "empty-widget"},
-                                style_mods = {minimal_width = name_column_width, horizontally_stretchable = true},
-                            }}
-                        }, {
-                            args = {type = "label", caption = formatter.format_time(game.tick)},
-                            style_mods = {minimal_width = value_column_width, horizontal_align = "right"}, -- width required because can't sync table column widths yet
-                        }}
+                        args = {type = "sprite", sprite = "bvs-victory-sprite"}
+                    }}
+                }, { -- The stats
+                    args = {type = "frame", style = "deep_frame_in_shallow_frame_for_description"},
+                    style_mods = { padding = 4, maximal_width = 400, maximal_height = 600 },
+                    children = {{
+                        args = {type = "scroll-pane", name = "statistics", style = "scroll_pane_under_subheader"},
+                        style_mods = { padding = 0, maximal_width = 400, maximal_height = 600 },
+                        -- style_mods = { horizontally_squashable = true },
+                        children = { }
                     }}
                 }}
             }}
@@ -101,9 +97,9 @@ function gui.create(player, categories)
 
         local def = {
             args = {type = "frame", style = "bvs_finished_game_frame"},
+            style_mods = { maximal_width = 400 },
             children = {{
-                args = {type = "table", column_count = 2, style = "bvs_finished_game_table"},
-                style_mods = {margin = -4},
+                args = {type = "table", column_count = 2},
                 children = {{
                     args = {type = "label", caption = {"bvs-categories."..category_name}, style = "caption_label"},
                     style_mods = {horizontally_stretchable = true},

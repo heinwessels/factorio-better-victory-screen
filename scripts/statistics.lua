@@ -187,6 +187,8 @@ local function get_peak_power_generation(force)
     local tick = game.tick      -- Basically the current playtime
     local found_networks = { }  -- Cache of networks we already checked
 
+    -- TODO Doesn't handle platforms with surface-wide networks.
+
     -- Some caching
     local table_insert = table.insert
     local get_flow_args = { category = "output"}  -- To not create table every time
