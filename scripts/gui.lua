@@ -45,14 +45,14 @@ function gui.create(player, categories)
         style_mods = {maximal_height = 930},
         handlers = {[e.on_gui_closed] = handlers.continue},
         children = {{
-            args = {type = "frame", direction = "horizontal", style = "subheader_frame"},
-            style_mods = {horizontally_stretchable = true, horizontally_squashable = true},
+            args = {type = "frame", direction = "vertical", name="content_frame", style = "inside_shallow_frame_with_padding"},
             children = {{
-                args = {type = "label",  caption = {"gui-game-finished.time-played"}, style="subheader_caption_label"},
-            }},
-        }, {
-            args = {type = "frame", name="content_frame", style = "inside_shallow_frame_with_padding"},
-            children = {{
+                args = {type = "frame", direction = "horizontal", style = "subheader_frame"},
+                style_mods = {horizontally_stretchable = true, horizontally_squashable = true, margin = -12, bottom_margin = 12},
+                children = {{
+                    args = {type = "label",  caption = {"gui-game-finished.time-played"}, style="subheader_caption_label"},
+                }},
+            }, {
                 args = {type = "flow", name="inner_flow", style = "inset_frame_container_horizontal_flow"},
                 children = {{ -- The image
                     args = {type = "frame", name="content_frame", direction = "vertical", style = "deep_frame_in_shallow_frame"},
@@ -60,12 +60,35 @@ function gui.create(player, categories)
                     children = {{
                         args = {type = "sprite", sprite = "bvs-victory-sprite"}
                     }}
+                }, { -- The message
+                    args = {type = "frame", direction = "vertical", style = "deep_frame_in_shallow_frame_for_description"},
+                    children = {{ -- change caption depending on space-age or other mods, locale in freeplay scenario
+                        args = {type = "label", caption = {"victory-message"}, style = "finished_game_label"},
+                    }, {
+                        args = {type = "table", name = "victory_bullet_table", column_count = 2},
+                        style_mods = {maximal_width = 400, },
+                        children = {
+                            {args = {type = "label", caption = "•"}},
+                            {args = {type = "label", caption = {"victory-bullet-point-1"}}},
+                            {args = {type = "label", caption = "•"}},
+                            {args = {type = "label", caption = {"victory-bullet-point-2"}}},
+                            {args = {type = "label", caption = "•"}},
+                            {args = {type = "label", caption = {"victory-bullet-point-3"}}},
+                            {args = {type = "label", caption = "•"}},
+                            {args = {type = "label", caption = {"victory-bullet-point-4"}}},
+                        }
+                    }, {
+                        args = {type = "empty-widget"},
+                        style_mods = {vertically_stretchable = true},
+                    }, {
+                        args = {type = "label", caption = {"victory-final-message"}, style = "finished_game_label"}
+                    }}
                 }, { -- The stats
                     args = {type = "frame", style = "deep_frame_in_shallow_frame_for_description"},
                     style_mods = { padding = 4, maximal_width = 400, maximal_height = 600 },
                     children = {{
                         args = {type = "scroll-pane", name = "statistics", style = "scroll_pane_under_subheader"},
-                        style_mods = { padding = 0, maximal_width = 400, maximal_height = 600 },
+                        style_mods = { padding = 0, maximal_width = 400, maximal_height = 600, vertically_stretchable = true },
                         -- style_mods = { horizontally_squashable = true },
                         children = { }
                     }}
@@ -77,14 +100,21 @@ function gui.create(player, categories)
                 args = {type = "button", caption = {"gui-game-finished.finish"}, style = "red_back_button",
                         enabled=false, tooltip = "Modded GUIs cannot exit the game. It is still possible to 'Continue' and exit manually."},
             }, {
-                args = {type = "empty-widget"},
-                style_mods = {horizontally_stretchable = true},
+                args = {type = "empty-widget", style = "draggable_space"},
+                style_mods = {horizontally_stretchable = true, vertically_stretchable = true},
+                drag_target = "bvs_game_finished"
             }, {
                 args = {type = "button", caption = {"gui-game-finished.continue"}, style = "confirm_button_without_tooltip"},
                 handlers = {[e.on_gui_click] = handlers.continue}
             }}
         }}
     })
+
+    -- column_alignments as a whole is read-only and I need to add support to it in glib
+    -- I also plan to make glib a released mod instead of a file because I think people should be able to use it easier
+    refs.victory_bullet_table.style.column_alignments[1] = "top-right"
+    refs.victory_bullet_table.style.column_alignments[2] = "top-left"
+
     frame.force_auto_center()
     player.opened = frame
 
