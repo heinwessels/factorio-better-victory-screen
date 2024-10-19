@@ -141,10 +141,13 @@ function gui.create(player, categories)
         }
 
         local category_table = glib.add(stats_gui, def).children[1]
+        category_table.style.column_alignments[2] = "top-right"
+
         glib.add(stats_gui, {
             args = {type = "line"},
             style_mods = {left_margin = -8, right_margin = -8} -- comment this out to make lines not connect to sides
         })
+
 
         for _, stat_name in pairs(lib.table.ordered_keys(category.stats or { })) do
             local stat = category.stats[stat_name]
