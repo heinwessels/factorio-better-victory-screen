@@ -85,10 +85,10 @@ function gui.create(player, categories)
                     }}
                 }, { -- The stats
                     args = {type = "frame", style = "deep_frame_in_shallow_frame_for_description"},
-                    style_mods = { padding = 4, maximal_width = 400, maximal_height = 600 },
+                    style_mods = { padding = 0, maximal_width = 400, maximal_height = 600 },
                     children = {{
-                        args = {type = "scroll-pane", name = "statistics", style = "scroll_pane_under_subheader"},
-                        style_mods = { padding = 0, maximal_width = 400, maximal_height = 600, vertically_stretchable = true },
+                        args = {type = "scroll-pane", name = "statistics", style = "scroll_pane_under_subheader", vertical_scroll_policy = "auto"},
+                        style_mods = { padding = 8, maximal_width = 400, maximal_height = 600, vertically_stretchable = true },
                         -- style_mods = { horizontally_squashable = true },
                         children = { }
                     }}
@@ -126,7 +126,7 @@ function gui.create(player, categories)
         if not category.stats then log("Category: '" .. category_name .. "' has no stats. Ignoring") goto continue_category end
 
         local def = {
-            args = {type = "frame", style = "bvs_finished_game_frame"},
+            args = {type = "frame", style = "invisible_frame"},
             style_mods = { maximal_width = 400 },
             children = {{
                 args = {type = "table", column_count = 2},
@@ -141,6 +141,10 @@ function gui.create(player, categories)
         }
 
         local category_table = glib.add(stats_gui, def).children[1]
+        glib.add(stats_gui, {
+            args = {type = "line"},
+            style_mods = {left_margin = -8, right_margin = -8} -- comment this out to make lines not connect to sides
+        })
 
         for _, stat_name in pairs(lib.table.ordered_keys(category.stats or { })) do
             local stat = category.stats[stat_name]
