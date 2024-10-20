@@ -5,6 +5,7 @@ local tracker = require("scripts.tracker")
 local util = require("util")
 
 local jetpack_mod_active = script.active_mods["jetpack"] ~= nil
+local has_quality = script.feature_flags["quality"]
 
 local statistics = { }
 
@@ -23,6 +24,17 @@ local all_machines = {
     "radar",
     "rocket-silo",
 }
+
+if script.active_mods["space-age"] then
+    for _, machine in pairs{
+        "agricultural-tower",
+        "asteroid-collector",
+        "cargo-landing-pad",
+        "lightning-attractor",
+    } do
+        table.insert(all_machines, machine)
+    end
+end
 
 -- These rails won't be taken into account for the total rail length
 local rail_blacklist = util.list_to_map{
@@ -81,25 +93,24 @@ local function get_total_belt_length(force)
 end
 
 ---@param force LuaForce calculate statistics for
----@return uint32 in m
+---@return integer in m
 local function get_total_rail_length(force)
     local distance = 0
 
-    -- Assume each belt has a distance of 2m.
-    -- This isn't really true for diagonal pieces but meh
-    local straight = 0
-    for prototype_name, _ in pairs(all_prototypes_of_type("straight-rail", rail_blacklist)) do
-        straight = straight + tracker.get_entity_count_by_name(force.name --[[@as ForceName]], prototype_name)
+    local function get_length_of_rails(prototype_type, length_per_entity)
+        local count = 0
+        for prototype_name, _ in pairs(all_prototypes_of_type(prototype_type, rail_blacklist)) do
+            count = count + tracker.get_entity_count_by_name(force.name --[[@as ForceName]], prototype_name)
+        end
+        return count * length_per_entity
     end
-    distance = distance + (straight * 2)
 
-    -- Assume each curved rail has a length of 8m.
-    -- TODO This can be estimated better! 
-    local curved = 0
-    for prototype_name, _ in pairs(all_prototypes_of_type("curved-rail", rail_blacklist)) do
-        curved = curved + tracker.get_entity_count_by_name(force.name --[[@as ForceName]], prototype_name)
-    end
-    distance = distance + (curved * 8)
+    distance = distance + get_length_of_rails("straight-rail", 2) -- This isn't really true for diagonal pieces but meh
+    distance = distance + get_length_of_rails("curved-rail-a", 2) ---@TODO Measure
+    distance = distance + get_length_of_rails("curved-rail-b", 2) ---@TODO Measure
+
+    distance = distance + get_length_of_rails("legacy-curved-rail", 8)
+    distance = distance + get_length_of_rails("legacy-straight-rail", 2)
 
     return math.floor(distance)
 end
@@ -301,12 +312,15 @@ end
 local function get_total_science_packs_consumed(force)
     local count = 0
 
+    local qualities = prototypes.quality
     local tools = prototypes.get_item_filtered{{filter="tool"}}
     for _, surface in pairs(game.surfaces) do
         if blacklist.surface(surface.name) then goto continue end
         local force_stats = force.get_item_production_statistics(surface)
         for science_pack_name, _ in pairs(tools) do
-            count = count + force_stats.get_output_count(science_pack_name)
+            for _, quality_prototype in pairs(qualities) do
+                count = count + force_stats.get_output_count(science_pack_name)
+            end
         end
         ::continue::
     end
@@ -360,6 +374,7 @@ local function get_total_area_explored(force)
     -- now, so it's good enough. For vanilla-ish playthroughs this is fine anyway.
     for _, surface in pairs(game.surfaces) do
         if blacklist.surface(surface.name) then goto continue end
+        if surface.platform then goto continue end -- Ingore space platforms
 
         for chunk in surface.get_chunks() do
             if force.is_chunk_charted(surface, chunk) then
@@ -397,8 +412,8 @@ function statistics.for_force(force, profilers)
 
     stats["production"] = {order = "f", stats = {
         ["peak-power"] =        {value = peak_power_generation, unit="power", has_tooltip=true, order="a"},
-        ["ores-produced"] =     {value = get_ores_produced(force),                              order="b"},
-        ["items-produced"] =    {value = get_items_produced(force),                             order="c"},
+        ["ores-produced"] =     not has_quality and {value = get_ores_produced(force), order="b"} or nil,
+        ["items-produced"] =    not has_quality and {value = get_items_produced(force), order="c"} or nil,
         ["science-consumed"] =  {value = get_total_science_packs_consumed(force),               order="d"},
     }}
 
@@ -623,7 +638,7 @@ end
 local function cache_some_properties()
 
     -- Find all items that we consider are ores
-    do
+    if not has_quality then
         ---@type string[]
         local ore_names = { }
         local items = prototypes.item
