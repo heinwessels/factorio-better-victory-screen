@@ -147,18 +147,36 @@ function trigger.add_commands()
     end
 end
 
-function trigger.on_pre_scenario_finished()
+---@param event EventData.on_pre_scenario_finished
+function trigger.on_pre_scenario_finished(event)
+
+    -- Ah! There's currently no way to know in this event if the player won or lost.
+    -- The game is set to "finished" when the player lost as well.
+    -- Meaning it can also be called when the player dies! Until I get the changes into
+    -- source I'll just silence any victories within the next tick after a player's death.
+    -- TODO: Be better.
+    if storage.silence_finished_until and event.tick <= storage.silence_finished_until then
+        return
+    end
+
     -- Set the game state to victory without setting game_finished.
     -- This will trigger the achievements without showing the vanilla GUI.
     -- Thanks Rseding!
     game.set_game_state({ player_won = true, game_finished = false })
 
+    game.print("pre scenario finished "..event.tick)
     -- Show our GUI
     trigger.show_victory_screen()
 end
 
+---@param event EventData.on_player_died
+function trigger.on_player_died(event)
+    storage.silence_finished_until = event.tick + 1
+end
+
 trigger.events = {
     [defines.events.on_pre_scenario_finished] = trigger.on_pre_scenario_finished,
+    [defines.events.on_player_died] = trigger.on_player_died,
 }
 
 return trigger
