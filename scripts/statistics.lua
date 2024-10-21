@@ -106,8 +106,14 @@ local function get_total_rail_length(force)
     end
 
     distance = distance + get_length_of_rails("straight-rail", 2) -- This isn't really true for diagonal pieces but meh
-    distance = distance + get_length_of_rails("curved-rail-a", 2) ---@TODO Measure
-    distance = distance + get_length_of_rails("curved-rail-b", 2) ---@TODO Measure
+    distance = distance + get_length_of_rails("curved-rail-a", 5.06)
+    distance = distance + get_length_of_rails("curved-rail-b", 5.06)
+
+    distance = distance + get_length_of_rails("elevated-straight-rail", 2) -- This isn't really true for diagonal pieces but meh
+    distance = distance + get_length_of_rails("elevated-curved-rail-a", 5.06)
+    distance = distance + get_length_of_rails("elevated-curved-rail-b", 5.06)
+
+    distance = distance + get_length_of_rails("rail-ramp", 16)
 
     distance = distance + get_length_of_rails("legacy-curved-rail", 8)
     distance = distance + get_length_of_rails("legacy-straight-rail", 2)
@@ -319,7 +325,7 @@ local function get_total_science_packs_consumed(force)
         local force_stats = force.get_item_production_statistics(surface)
         for science_pack_name, _ in pairs(tools) do
             for _, quality_prototype in pairs(qualities) do
-                count = count + force_stats.get_output_count(science_pack_name)
+                count = count + force_stats.get_output_count({name = science_pack_name, quality = quality_prototype.name})
             end
         end
         ::continue::
@@ -663,22 +669,29 @@ end
 local function setup_trackers()
     tracker.track_entity_count_by_type(all_machines)
 
-    tracker.track_entity_count_by_type{"transport-belt", "splitter"}
-    for prototype_name, _ in pairs(all_prototypes_of_type("underground-belt")) do
-        tracker.track_entity_count_by_name{prototype_name}
+    local track_all_by_type = function(prototype_type)
+        for prototype_name, _ in pairs(all_prototypes_of_type(prototype_type)) do
+            tracker.track_entity_count_by_name{prototype_name}
+        end
     end
 
-    for prototype_name, _ in pairs(all_prototypes_of_type("straight-rail", rail_blacklist)) do
-        tracker.track_entity_count_by_name(prototype_name)
-    end
-    for prototype_name, _ in pairs(all_prototypes_of_type("curved-rail", rail_blacklist)) do
-        tracker.track_entity_count_by_name(prototype_name)
-    end
+    tracker.track_entity_count_by_type{"transport-belt", "splitter"}
+    track_all_by_type("underground-belt")
+
+    track_all_by_type("curved-rail-a")
+    track_all_by_type("curved-rail-b")
+    track_all_by_type("straight-rail")
+    track_all_by_type("elevated-curved-rail-b")
+    track_all_by_type("elevated-curved-rail-a")
+    track_all_by_type("elevated-straight-rail")
+    track_all_by_type("rail-ramp")
+
+    track_all_by_type("legacy-straight-rail")
+    track_all_by_type("legacy-curved-rail")
+
 
     tracker.track_entity_count_by_type{"pipe", "storage-tank"}
-    for prototype_name, _ in pairs(all_prototypes_of_type("pipe-to-ground")) do
-        tracker.track_entity_count_by_name{prototype_name}
-    end
+    track_all_by_type("pipe-to-ground")
 
     for prototype_name, _ in pairs(all_prototypes_of_type("train-stop", train_stop_blacklist)) do
         tracker.track_entity_count_by_name(prototype_name)

@@ -1,5 +1,7 @@
 # Mod Compatibility
 
+**NOTE: THIS FILE IS STILL OUTDATED**
+
 ## When is specific compatibility required?
 
 - Only if you want to show (or hide) extra statistics in the victory GUI.

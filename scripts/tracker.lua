@@ -336,7 +336,7 @@ end
 
 ---@param event EventData.on_robot_built_entity|EventData.on_built_entity|EventData.script_raised_built|EventData.script_raised_revive|EventData.on_entity_cloned
 function tracker_lib.on_entity_created(event)
-    local entity = event.created_entity or event.entity or event.destination
+    local entity = event.entity or event.destination
     if not entity or not entity.valid then return end
     if blacklist.surface(entity.surface.name) then return end
     local force_name = entity.force.name --[[@as ForceName]]
@@ -412,18 +412,20 @@ function tracker_lib.on_forces_merged(event)
 end
 
 tracker_lib.events = {
-    [defines.events.on_robot_built_entity]  = tracker_lib.on_entity_created,
-    [defines.events.on_built_entity]        = tracker_lib.on_entity_created,
-    [defines.events.script_raised_built]    = tracker_lib.on_entity_created,
-    [defines.events.script_raised_revive]   = tracker_lib.on_entity_created,
-    [defines.events.on_entity_cloned]       = tracker_lib.on_entity_created,
+    [defines.events.on_robot_built_entity]              = tracker_lib.on_entity_created,
+    [defines.events.on_built_entity]                    = tracker_lib.on_entity_created,
+    [defines.events.script_raised_built]                = tracker_lib.on_entity_created,
+    [defines.events.script_raised_revive]               = tracker_lib.on_entity_created,
+    [defines.events.on_entity_cloned]                   = tracker_lib.on_entity_created,
+    [defines.events.on_space_platform_built_entity  ]   = tracker_lib.on_entity_created,
 
-    [defines.events.on_player_mined_entity] = tracker_lib.on_entity_removed,
-    [defines.events.on_robot_mined_entity]  = tracker_lib.on_entity_removed,
-    [defines.events.on_entity_died]         = tracker_lib.on_entity_removed,
-    [defines.events.script_raised_destroy]  = tracker_lib.on_entity_removed,
+    [defines.events.on_player_mined_entity]             = tracker_lib.on_entity_removed,
+    [defines.events.on_robot_mined_entity]              = tracker_lib.on_entity_removed,
+    [defines.events.on_entity_died]                     = tracker_lib.on_entity_removed,
+    [defines.events.script_raised_destroy]              = tracker_lib.on_entity_removed,
+    [defines.events.on_space_platform_mined_entity]     = tracker_lib.on_entity_removed,
 
-    [defines.events.on_player_changed_force]= tracker_lib.on_player_changed_force,
+    [defines.events.on_player_changed_force] = tracker_lib.on_player_changed_force,
 }
 
 return tracker_lib
