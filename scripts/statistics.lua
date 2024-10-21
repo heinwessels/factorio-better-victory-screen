@@ -109,11 +109,12 @@ local function get_total_rail_length(force)
     distance = distance + get_length_of_rails("curved-rail-a", 5.06)
     distance = distance + get_length_of_rails("curved-rail-b", 5.06)
 
-    distance = distance + get_length_of_rails("elevated-straight-rail", 2) -- This isn't really true for diagonal pieces but meh
-    distance = distance + get_length_of_rails("elevated-curved-rail-a", 5.06)
-    distance = distance + get_length_of_rails("elevated-curved-rail-b", 5.06)
-
-    distance = distance + get_length_of_rails("rail-ramp", 16)
+    if script.feature_flags.rail_bridges then
+        distance = distance + get_length_of_rails("elevated-straight-rail", 2) -- This isn't really true for diagonal pieces but meh
+        distance = distance + get_length_of_rails("elevated-curved-rail-a", 5.06)
+        distance = distance + get_length_of_rails("elevated-curved-rail-b", 5.06)
+        distance = distance + get_length_of_rails("rail-ramp", 16)
+    end
 
     distance = distance + get_length_of_rails("legacy-curved-rail", 8)
     distance = distance + get_length_of_rails("legacy-straight-rail", 2)
@@ -380,7 +381,7 @@ local function get_total_area_explored(force)
     -- now, so it's good enough. For vanilla-ish playthroughs this is fine anyway.
     for _, surface in pairs(game.surfaces) do
         if blacklist.surface(surface.name) then goto continue end
-        if surface.platform then goto continue end -- Ingore space platforms
+        if script.feature_flags.space_travel and surface.platform then goto continue end -- Ingore space platforms
 
         for chunk in surface.get_chunks() do
             if force.is_chunk_charted(surface, chunk) then
@@ -681,10 +682,12 @@ local function setup_trackers()
     track_all_by_type("curved-rail-a")
     track_all_by_type("curved-rail-b")
     track_all_by_type("straight-rail")
-    track_all_by_type("elevated-curved-rail-b")
-    track_all_by_type("elevated-curved-rail-a")
-    track_all_by_type("elevated-straight-rail")
-    track_all_by_type("rail-ramp")
+    if script.feature_flags.rail_bridges then
+        track_all_by_type("elevated-curved-rail-b")
+        track_all_by_type("elevated-curved-rail-a")
+        track_all_by_type("elevated-straight-rail")
+        track_all_by_type("rail-ramp")
+    end
 
     track_all_by_type("legacy-straight-rail")
     track_all_by_type("legacy-curved-rail")
