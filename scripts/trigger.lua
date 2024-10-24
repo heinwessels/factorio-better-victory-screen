@@ -149,6 +149,13 @@ end
 
 ---@param event EventData.on_pre_scenario_finished
 function trigger.on_pre_scenario_finished(event)
+    -- Oh no! In Factorio 2.0.10 is introducing the awesome Galaxy of Fame!
+    -- The problem is that it's only triggered when the game is finished, 
+    -- but this mod works by _never_ setting game as finished, and so take
+    -- over the Finished GUI. I'd much rather people use the Galaxy of Fame,
+    -- so for no I'll just suppress my GUI until I figure out a better way.
+    -- Just so we can still keep track of statistics.
+    do return end
 
     -- Ah! There's currently no way to know in this event if the player won or lost.
     -- The game is set to "finished" when the player lost as well.

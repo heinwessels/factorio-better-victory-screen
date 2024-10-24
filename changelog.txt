@@ -1,4 +1,9 @@
 ---------------------------------------------------------------------------------------------------
+Version: 0.4.2
+Date: 24.10.2024
+  Changes:
+    - Temporarily supressing the Better Victory Screen due to a conflict with the upcoming Galaxy of Fame. Statistics are still tracked.
+---------------------------------------------------------------------------------------------------
 Version: 0.4.1
 Date: 21.10.2024
   Bugfixes:

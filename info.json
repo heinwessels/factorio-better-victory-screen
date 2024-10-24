@@ -1,6 +1,6 @@
 {
   "name": "better-victory-screen",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "title": "Better Victory Screen",
   "description": "Upon victory it shows various interesting game statistics, like the total amount of time you spent hand crafting and your peak power production. Can be added to an existing save.",
   "author": "stringweasel",
