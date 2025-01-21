@@ -1,27 +1,15 @@
-local gui = require("scripts.gui")
 local util = require("util")
 local statistics = require("scripts.statistics")
 local compatibility = require("scripts.compatibility")
 local debug = require("scripts.debug")
+local builder = require("scripts.builder")
 
 local trigger = { }
 trigger.gather_function_name = "better-victory-screen-statistics"
 
----A list of forces to show the victory screen to
----@return LuaForce[]
-local function get_forces_to_show()
-    local forces_to_show = { }
-    for _, force in pairs(game.forces) do
-        if #force.connected_players == 0 then goto continue end
-        table.insert(forces_to_show, force)
-        ::continue::
-    end
-    return forces_to_show
-end
-
 trigger.remote = remote
 --- Gather statistics from other mods
----@param forces LuaForce   list of forces that the GUI will be shown to
+---@param forces LuaForce[]   list of forces that the GUI will be shown to
 function trigger.gather_statistics(forces)
     local gathered_statistics = { by_force = { }, by_player = { } }
     for interface, functions in pairs(trigger.remote.interfaces) do
@@ -41,8 +29,32 @@ function trigger.gather_statistics(forces)
     return gathered_statistics
 end
 
+---@return LuaForce? force to show statistics of
+---@return LuaPlayer? player to show statistics of (if there's only one player)
+function trigger.get_observers()
+    ---@type LuaForce?
+    local force
+
+    for _, this_force in pairs(game.forces) do
+        if table_size(this_force.connected_players) >= 1 then
+            force = this_force
+            break
+        end
+    end
+
+    if not force then return end
+
+    local connected_players = force.connected_players
+    if #connected_players > 1 then
+        -- Too many players, so don't show any player specific stats.
+        return force
+    end
+
+    return force, connected_players[1]
+end
+
 ---Show the victory screen for all connected players
-function trigger.show_victory_screen()
+function trigger.set_ending_info()
 
     ---@type table<string, LuaProfiler>
     local profilers = nil
@@ -56,44 +68,46 @@ function trigger.show_victory_screen()
         }
     end
 
-    local forces_to_show = get_forces_to_show()
-
-    local force_names = { }
-    for _, force in pairs(forces_to_show) do table.insert(force_names, force.name) end
-    log("Showing to forces: "..serpent.line(force_names))
+    -- Decide who we're gonna show it too.
+    local force, player = trigger.get_observers()
+    if not force then
+        log("[BVS] Could not determine force to show it for, so not showing anything")
+        return
+    else
+        log("[BVS] Showing victory screen for force: " .. force.name .. " and player: " .. (player and player.name or "-"))
+    end
 
     if profilers then profilers.gather.reset() end
-    local other_statistics = trigger.gather_statistics(forces_to_show)
+    local third_party_statistics = trigger.gather_statistics({ force })
     if profilers then profilers.gather.stop() end
 
-    local compatibility_stats = compatibility.gather(forces_to_show)
+    local compatibility_stats = compatibility.gather({ force })
 
-    for _, force in pairs(forces_to_show) do
-        local force_statistics = statistics.for_force(force, profilers)
-        local compatibility_force_statistics = compatibility_stats.by_force[force.name] or { }
-        local other_force_statistics = other_statistics.by_force[force.name] or { }
+    local all_statistics = util.merge{ -- Order is important. Later will override previous
 
-        for _, player in pairs(force.connected_players) do
+        -- Our main statistics
+        statistics.for_force(force, profilers),
+        player and statistics.for_player(player, profilers) or { },
 
-            -- Clear the cursor because it's annoying if it's still there
-            player.clear_cursor()
+        -- Our compatability statistics
+        compatibility_stats.by_force[force.name] or { },
+        player and compatibility_stats.by_player[player.name] or { },
 
-            local compat_player_statistics = compatibility_stats.by_player[player.index] or { }
-            local other_player_statistics = other_statistics.by_player[player.index] or { }
+        -- Statistics gathered from other mods
+        third_party_statistics.by_force[force.name] or { },
+        player and third_party_statistics.by_player[player.name] or { },
 
-            gui.create(player, util.merge{
-                -- Order is important. Later will override previous
-                force_statistics,
-                statistics.for_player(player, profilers),
+    }
 
-                compatibility_force_statistics,
-                compat_player_statistics,
+    -- TODO Add message to top of stats
 
-                other_force_statistics,
-                other_player_statistics,
-            })
-        end
-    end
+    local is_space_age = script.active_mods["space-age"]
+    game.set_win_ending_info{
+        image_path = is_space_age and "__base__/script/freeplay/victory-space-age.png" or "__base__/script/freeplay/victory.png",
+        title = {"gui-game-finished.victory"},
+        message = builder.unflatten(builder.build( all_statistics )),
+        final_message = {"victory-final-message"},
+    }
 
     if profilers then
         profilers.total.stop()
@@ -106,14 +120,6 @@ function trigger.show_victory_screen()
             "\tChunk counter: ", profilers.chunk_counter, "\n",
             "\tTOTAL: ", profilers.total, "\n",
         })
-    end
-
-    -- This will also handle the case when victory is reached in an headless server
-    -- without any online players. The risk is that the game is paused accidentally.
-    -- However, in MP it will never pause, and in single player there will always
-    -- be a player. So it will all work nicely, not pausing accidentally.
-    if not game.is_multiplayer() then
-        game.tick_paused = true
     end
 end
 
@@ -149,36 +155,10 @@ end
 
 ---@param event EventData.on_pre_scenario_finished
 function trigger.on_pre_scenario_finished(event)
-    -- Oh no! In Factorio 2.0.10 is introducing the awesome Galaxy of Fame!
-    -- The problem is that it's only triggered when the game is finished, 
-    -- but this mod works by _never_ setting game as finished, and so take
-    -- over the Finished GUI. I'd much rather people use the Galaxy of Fame,
-    -- so for no I'll just suppress my GUI until I figure out a better way.
-    -- Just so we can still keep track of statistics.
-    do return end
+    if not event.player_won then return end
 
-    -- Ah! There's currently no way to know in this event if the player won or lost.
-    -- The game is set to "finished" when the player lost as well.
-    -- Meaning it can also be called when the player dies! Until I get the changes into
-    -- source I'll just silence any victories within the next tick after a player's death.
-    -- TODO: Be better.
-    if storage.silence_finished_until and event.tick <= storage.silence_finished_until then
-        return
-    end
-
-    -- Set the game state to victory without setting game_finished.
-    -- This will trigger the achievements without showing the vanilla GUI.
-    -- Thanks Rseding!
-    game.set_game_state({ player_won = true, game_finished = false })
-
-    game.print("pre scenario finished "..event.tick)
-    -- Show our GUI
-    trigger.show_victory_screen()
-end
-
----@param event EventData.on_player_died
-function trigger.on_player_died(event)
-    storage.silence_finished_until = event.tick + 1
+    -- Set ending info
+    trigger.set_ending_info()
 end
 
 trigger.events = {

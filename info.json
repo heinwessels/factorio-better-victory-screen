@@ -1,12 +1,12 @@
 {
   "name": "better-victory-screen",
-  "version": "0.4.2",
+  "version": "1.0.0",
   "title": "Better Victory Screen",
   "description": "Upon victory it shows various interesting game statistics, like the total amount of time you spent hand crafting and your peak power production. Can be added to an existing save.",
   "author": "stringweasel",
   "factorio_version": "2.0",
   "dependencies": [ 
-    "base >= 2.0.6"
+    "base >= 2.0.30"
   ],
   "package":{
     "ignore":[ "*.md", "*.zip", "mod-page/*" ]
