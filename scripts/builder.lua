@@ -17,16 +17,15 @@ local builder = { }
 
 ---@alias StatisticCategories table<string, StatisticCategory>
 
+---@param victory_message StatisticCategories
 ---@param categories StatisticCategories
 ---@return LocalisedString message
-function builder.build(categories)
+function builder.build(victory_message, categories)
     local message = {""}
     local first = true
 
-    -- Add a long message to set the width based on the vanilla size
-    local spacer = ""
-    for i=1,60 do spacer = spacer .. "-" end -- Can't use a space because it doesn't create space
-    table.insert(message, "[color=#FFFFFF]"..spacer.."[/color]\n")
+    table.insert(message, victory_message)
+    table.insert(message, "\n\n")
 
     for _, category_name in pairs(lib.table.ordered_keys(categories)) do
         local category = categories[category_name]
@@ -56,7 +55,7 @@ function builder.build(categories)
             local localised_name = stat.localised_name or {"bvs-stats."..stat_name}
 
             table.insert(message, {"", "[color=0.7,0.7,0.7]", localised_name, "[/color]"})
-            table.insert(message, ":     ")
+            table.insert(message, ":   ")
             table.insert(message, {"", "[font=default-semibold]", formatted_value, "[/font]"})
             table.insert(message, "\n")
 

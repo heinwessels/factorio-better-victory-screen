@@ -1,7 +1,11 @@
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.0
-Date: ??.??.2025
+Date: 22.01.2025
+  Features:
+    - Incorporated statistics into existing victory screen with new API.
   Changes:
+    - Player specific statistics are only shown if only one player is connected during victory due to API limitations.
+    - Removed command `/show-victory-screen` as it is no longer possible.
 ---------------------------------------------------------------------------------------------------
 Version: 0.4.3
 Date: 06.01.2025

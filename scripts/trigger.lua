@@ -99,13 +99,19 @@ function trigger.set_ending_info()
 
     }
 
-    -- TODO Add message to top of stats
-
+    -- Determine message
     local is_space_age = script.active_mods["space-age"]
+    local victory_message = {"",
+        is_space_age and {"better-victory-screen.victory-message-space-age"} or {"better-victory-screen.victory-message"},
+        "\n\n",
+        {"better-victory-screen.stats-message"},
+        player and {"", " ", {"better-victory-screen.stats-message-player", player.name}} or "",
+    }
+
     game.set_win_ending_info{
         image_path = is_space_age and "__base__/script/freeplay/victory-space-age.png" or "__base__/script/freeplay/victory.png",
         title = {"gui-game-finished.victory"},
-        message = builder.unflatten(builder.build( all_statistics )),
+        message = builder.unflatten(builder.build( victory_message, all_statistics )),
         final_message = {"victory-final-message"},
     }
 
@@ -123,36 +129,6 @@ function trigger.set_ending_info()
     end
 end
 
-function trigger.add_commands()
-
-    if settings.startup["bvs-enable-show-victory-screen-command"].value or script.active_mods["debugadapter"] then
-        local show_victory_help_message = [[
-            Show the Victory GUI as if victory has been reached, without actually triggering the victory.
-            This is mainly for development purposes, but might be interesting for some players.
-            This command does not have any impact on the game.
-            [Mod: Better Victory Screen]
-            ]]
-            ---@param command CustomCommandData
-        commands.add_command("show-victory-screen", show_victory_help_message, function(command)
-            if script.active_mods["debugadapter"] and command.parameter == "victory" then
-                -- Add additional option to trigger the actual victory, but
-                -- only while the debugger is active. In normal game play it
-                -- should not be possible, that would be bad.
-                local player = game.get_player(command.player_index)
-                if not player then return end       -- Should never happen.
-                if not player.admin then return end -- Some kind of safety net
-
-                game.print("[Better Victory Screen] Forcing an actual victory.")
-                game.set_game_state{player_won=true, game_finished=true, can_continue=true}
-                return
-            end
-
-            -- Normal operation
-            trigger.show_victory_screen()
-        end)
-    end
-end
-
 ---@param event EventData.on_pre_scenario_finished
 function trigger.on_pre_scenario_finished(event)
     if not event.player_won then return end
@@ -163,7 +139,6 @@ end
 
 trigger.events = {
     [defines.events.on_pre_scenario_finished] = trigger.on_pre_scenario_finished,
-    [defines.events.on_player_died] = trigger.on_player_died,
 }
 
 return trigger
