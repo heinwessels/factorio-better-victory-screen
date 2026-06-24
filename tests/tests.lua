@@ -22,7 +22,7 @@ function test_lib.add_commands()
     commands.add_command("bvs-test", nil, function(command)
         game.reload_script()
 
-        local profiler = game.create_profiler(false)
+        local profiler = helpers.create_profiler(false)
 
         local suite_count = 0
         local count = 0
