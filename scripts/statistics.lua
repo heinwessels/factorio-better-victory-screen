@@ -479,6 +479,14 @@ local function is_jetpack_active_for_player(player)
     return remote.call("jetpack", "is_jetpacking", {character=character})
 end
 
+---@param player LuaPlayer
+---@return boolean?
+local function has_valid_vehicle_to_track_driving(player)
+    local vehicle = player.vehicle
+    if not vehicle then return end -- Riding rocket and cargo pod results in vehicle == nil
+    return vehicle.type ~= "cargo-pod"
+end
+
 ---@param event EventData.on_player_changed_position
 local function on_player_changed_position(event)
     local player = game.get_player(event.player_index) --[[@as LuaPlayer]]
@@ -528,7 +536,9 @@ local function on_player_changed_position(event)
         -- Good enough for me
 
         if player.driving then
-            player_data.distance_drove = player_data.distance_drove + distance
+            if has_valid_vehicle_to_track_driving(player) then
+                player_data.distance_drove = player_data.distance_drove + distance
+            end
         else
             if jetpack_mod_active and is_jetpack_active_for_player(player) then
                 player_data.distance_jetpacked = player_data.distance_jetpacked + distance
