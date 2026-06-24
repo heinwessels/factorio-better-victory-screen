@@ -5,7 +5,7 @@ Date: 24.06.2026
     - Updated to Factorio 2.1.
   Bugfixes:
     - Fixed that riding rockets and cargo-pods would count as driving.
-  Localization:
+  Locale:
     - Update translations from Crowdin.
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.0
@@ -38,16 +38,15 @@ Date: 21.10.2024
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.1
 Date: 29.05.2024
-  Internal:
+  Changes:
     - No longer clear time spent on surface when surface is deleted.
 ---------------------------------------------------------------------------------------------------
 Version: 0.3.0
 Date: 27.05.2024
-  Internal:
-    - Keep track of how long players spend on each surface.
   Changes:
+    - Keep track of how long players spend on each surface.
     - Show total time spent on Luna when Lunar Landings is installed.
-  Localization:
+  Locale:
     - Update translations from Crowdin.
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.14
@@ -61,7 +60,7 @@ Date: 28.03.2024
     - Now shows "Distance jetpacked" in victory screen. (Was previously counted as "walking")
   Bugfixes:
     - Correctly handle rare case where mod disabling victory condition is removed (Thanks Nordblum!).
-  Localization:
+  Locale:
     - Update translations from Crowdin.
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.12
@@ -82,7 +81,7 @@ Date: 05.02.2024
   Compatibility:
     - Added soft compatibility with Satisfactorio.
     - Now compatible with the mod Ballistic Missile.
-  Localization:
+  Locale:
     - Update translations from Crowdin.
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.10
@@ -94,7 +93,7 @@ Date: 31.01.2024
     - Statistic entries can now define a custom statistic name to be displayed.
     - Statistic entries can now define a custom statistic tooltip to be displayed.
     - Statistic entries now need to explicitly define the existance of a tooltip.
-  Localization:
+  Locale:
     - Update translations from Crowdin.
 ---------------------------------------------------------------------------------------------------
 Version: 0.2.9
@@ -197,7 +196,7 @@ Date: 13.12.2023
   Features:
     - Add new statistic "Total Enemy Kills"
   Changes:
-    - (Internal) Add localization to all text so that it can be translated.
+    - (Internal) Add Locale to all text so that it can be translated.
 ---------------------------------------------------------------------------------------------------
 Version: 0.1.1
 Date: 10.12.2023
