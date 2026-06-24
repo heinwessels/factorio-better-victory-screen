@@ -5,6 +5,8 @@ Date: 24.06.2026
     - Updated to Factorio 2.1.
   Bugfixes:
     - Fixed that riding rockets and cargo-pods would count as driving.
+  Localization:
+    - Update translations from Crowdin.
 ---------------------------------------------------------------------------------------------------
 Version: 1.0.0
 Date: 22.01.2025
