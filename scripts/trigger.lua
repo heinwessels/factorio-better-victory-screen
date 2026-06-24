@@ -60,11 +60,11 @@ function trigger.set_ending_info()
     local profilers = nil
     if true then -- Keep this to false for releases
         profilers = {
-            gather          = game.create_profiler(true),
-            infrastructure  = game.create_profiler(true),
-            peak_power      = game.create_profiler(true),
-            chunk_counter   = game.create_profiler(true),
-            total           = game.create_profiler(false), -- Start this profiler
+            gather          = helpers.create_profiler(true),
+            infrastructure  = helpers.create_profiler(true),
+            peak_power      = helpers.create_profiler(true),
+            chunk_counter   = helpers.create_profiler(true),
+            total           = helpers.create_profiler(false), -- Start this profiler
         }
     end
 
