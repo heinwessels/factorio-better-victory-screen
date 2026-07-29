@@ -17,13 +17,14 @@ stats-message-player
 
 ## Adding custom entries to the victory GUI
 
-It's possible to add or remove any custom entries to the victory GUI. This is done by adding a remote interface to your mod that can supply the extra victory statistics. This is done by
+It's possible to add or remove any custom entries to the victory GUI. This is done by adding a remote interface to your mod that can supply the extra victory statistics. This is done by adding a remote interface with a custom function. This function will be called by Better Victory Screen just before the victory GUI is created to gather statistics. This interface can be added at any point before this happens, even in the main chunk.
 
 ```lua
 remote.add_interface("your-mod-name-but-doesn't-matter", {
     ---@param forces LuaForce[] list of one force
     ["better-victory-screen-statistics"] = function(forces)
-        return table_containing_custom_statistics -- Will explain this now
+        -- Create your statitics here based on the current game state.
+        return table_containing_custom_statistics -- Will explain this below
     end
 })
 ```
