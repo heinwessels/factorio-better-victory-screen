@@ -75,13 +75,14 @@ table_containing_custom_statistics = {
 
 There is a bit of information here, which is:
 - `value` (_required_): The raw value to be shown. Might be formatted when shown.
-- `unit` (_optional_): If this number is a unit. Supports:
+- `unit` (_optional_): If this value has a unit. Defaults to numbers. Supports:
     - `number` just a raw number.
     - `distance` in m.
     - `area` in km2
     - `time` in ticks
     - `power` in Watt
     - `percentage` as a value between 0 and 1.
+    - `localised-string` for a LocalisedString
 - `order` (_optional_): Order the categories/statistics. Defaults to `m`
 
 This localization for this is done using normal localization where the key-name is the the localization key. For the snippet above the `locale/en/en.cfg` might look like:

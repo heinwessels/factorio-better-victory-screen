@@ -12,7 +12,7 @@ function test_util.reset_surface()
     -- Clear the surface. Can't use surface.clear because that removes the chunks
     -- as well, which acts weird when placing entities on them now.
     for _, entity in pairs(surface.find_entities_filtered{}) do
-        if entity.type ~= "character" then
+        if entity.valid and entity.type ~= "character" then
             entity.destroy { raise_destroy = true }
         end
     end

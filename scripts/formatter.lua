@@ -115,12 +115,15 @@ local formatters = {
 
         return number .. " %"
     end,
+    ["localised-string"] = function(value)
+        return value
+    end,
 }
 
 ---Format a number
 ---@param number integer|float
 ---@param unit string Defaults to "number"
----@return string
+---@return LocalisedString
 function formatter.format(number, unit)
     if not unit then unit = "number" end
     local fn = formatters[unit]

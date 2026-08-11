@@ -25,6 +25,20 @@ function lib.table.ordered_keys(t)
     return sorted_keys
 end
 
+---@generic K, V
+---@param t table<K, V>
+---@return K
+function lib.table.key_at_max_value(t)
+    local max_value, max_key
+    for k, v in pairs(t) do
+        if not max_value or v > max_value then
+            max_value = v
+            max_key = k
+        end
+    end
+    return max_key
+end
+
 ---@param array any[]
 ---@param query any
 ---@return boolean

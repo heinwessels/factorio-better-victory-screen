@@ -1,6 +1,6 @@
 local lib = { }
 
-lib.debugger_active = script.active_mods["debugadapter"] ~= nil
+lib.debugger_active = not not debugadapter
 
 ---A assertion that will only be asserted while the debugger is active
 ---If the debugger isn't active it will only log the error as a warning 

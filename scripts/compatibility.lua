@@ -13,6 +13,7 @@ local module = { }
 local compatibilities = {
     require("scripts.compatibility.cargo-ships"),
     require("scripts.compatibility.lunar-landings"),
+    require("scripts.compatibility.space-age"),
 }
 
 function module.initialize(event_handler)

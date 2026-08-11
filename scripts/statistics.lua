@@ -572,6 +572,7 @@ statistics.on_nth_tick = {
         local players = storage.statistics.players
         local time_passed = event.nth_tick
         for _, player in pairs(game.connected_players) do
+            if player.controller_type ~= character_controller then goto continue end
             if blacklist.force(player.force.name) then goto continue end
             local surface_name = player.surface.name
             if blacklist.surface(surface_name) then goto continue end

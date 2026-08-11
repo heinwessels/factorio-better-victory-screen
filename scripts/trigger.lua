@@ -141,4 +141,17 @@ trigger.events = {
     [defines.events.on_pre_scenario_finished] = trigger.on_pre_scenario_finished,
 }
 
+if debugadapter then
+    function trigger.add_commands()
+        commands.add_command("bvs-win", nil, function(command)
+            game.reset_game_state()
+            game.set_game_state{
+                game_finished = true,
+                player_won = true,
+                can_continue = true,
+            }
+        end)
+    end
+end
+
 return trigger

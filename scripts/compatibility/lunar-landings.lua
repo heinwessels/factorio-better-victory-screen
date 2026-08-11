@@ -12,7 +12,7 @@ function module.gather(forces)
             if not player_data then goto continue end
             local luna_time = player_data and player_data.times_on_surfaces["luna"] or nil
 
-            stats.by_player[player.index] = {
+            stats.by_player[player.name] = {
                 ["player"] = { stats = {
                     ["ll-luna-time"] = { value = luna_time or 0, unit = "time", order = "a" }
                 }}

@@ -113,4 +113,8 @@ function tests.time()
     test_util.assert_string_equal(formatter.format(100 * 60 * 60 * 60 + 5 * 60 * 60, "time"), "100:05:00")
 end
 
+function tests.localised_string()
+    test_util.assert_table_equal(formatter.format({"hello", 5}, "localised-string"), {"hello", 5})
+end
+
 return formatting_tests
