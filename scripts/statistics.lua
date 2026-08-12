@@ -654,26 +654,23 @@ function statistics.setup_player(player)
 end
 
 local function cache_some_properties()
-
     -- Find all items that we consider are ores
-    if not has_quality then
-        ---@type string[]
-        local ore_names = { }
-        local items = prototypes.item
-        for _, resource_prototype in pairs(prototypes.get_entity_filtered({{filter = "type", type = "resource"}})) do
-            local mineable_properties = resource_prototype.mineable_properties
-            if mineable_properties.minable and mineable_properties.products then
-                for _, product in pairs(mineable_properties.products) do
-                    if product.type == "item" and items[product.name] and not lib.table.in_array(ore_names, product.name) then
-                        table.insert(ore_names, product.name)
-                    end
+    ---@type string[]
+    local ore_names = { }
+    local items = prototypes.item
+    for _, resource_prototype in pairs(prototypes.get_entity_filtered({{filter = "type", type = "resource"}})) do
+        local mineable_properties = resource_prototype.mineable_properties
+        if mineable_properties.minable and mineable_properties.products then
+            for _, product in pairs(mineable_properties.products) do
+                if product.type == "item" and items[product.name] and not lib.table.in_array(ore_names, product.name) then
+                    table.insert(ore_names, product.name)
                 end
             end
         end
-
-        storage.statistics.ore_names = ore_names
-        debug.debug_log("Ore names: "..serpent.line(ore_names))
     end
+
+    storage.statistics.ore_names = ore_names
+    debug.debug_log("Ore names: "..serpent.line(ore_names))
 end
 
 -- We will offload as much processing as possible to be done while the game loads

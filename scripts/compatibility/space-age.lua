@@ -5,9 +5,24 @@ local lib = require("scripts.lib")
 
 local module = { }
 
+---@class SpaceAgeForceStatistics
+---@field rockets_launched uint
+
 ---@class SpaceAgePlayerStatistics
 ---@field last_visited_name string? the planet name
 ---@field times_visited_planet table<string, number> number of times moved to this planet from another surface
+
+
+---@param force_name string
+---@return SpaceAgeForceStatistics
+local function get_make_force_data(force_name)
+    ---@type SpaceAgePlayerStatistics
+    local force_data = storage.space_age.forces[force_name] or { 
+        rockets_launched = 0.
+    }
+    storage.space_age.forces[force_name] = force_data
+    return force_data
+end
 
 ---@param players table<uint, SpaceAgePlayerStatistics>
 ---@param player_index uint
@@ -19,7 +34,16 @@ local function get_make_player_data(players, player_index)
     }
     players[player_index] = player_data
     return player_data
-end 
+end
+
+---@param event EventData.on_rocket_launched
+function module.on_rocket_launched(event)
+    local force_name = event.rocket.force.name
+    if not force_name then return end
+    if blacklist.force(force_name) then return end
+    local force_data = get_make_force_data(force_name)
+    force_data.rockets_launched = (force_data.rockets_launched or 0) + 1
+end
 
 local character_controller = defines.controllers.character
 module.on_nth_tick = {
@@ -86,6 +110,8 @@ end
 
 local function setup()
     storage.space_age = {
+        ---@type table<string, SpaceAgeForceStatistics>
+        forces = { },
 
         ---@type table<uint, SpaceAgePlayerStatistics>
         players = { },

@@ -15,6 +15,7 @@ local test_suites = {
     ["blacklist"]   = require("tests.blacklist"),
     ["formatting"]  = require("tests.formatting"),
     ["statistics"]  = require("tests.statistics"),
+    ["space-age"]   = require("tests.space-age"),
     ["migrations"]  = require("tests.migrations"),
 }
 

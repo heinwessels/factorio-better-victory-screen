@@ -10,7 +10,7 @@ local tests = statistics_tests.tests
 function tests.on_init_and_config_determine_ores()
     local backup = storage.statistics
 
-    storage.statistics = { } -- Reset
+    storage.statistics = nil -- Reset
     statistics.on_init({})
     test_util.assert_greater_than(#storage.statistics.ore_names, 0)
 
