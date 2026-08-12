@@ -76,8 +76,19 @@ end
 ---@param forces LuaForce[] to gather statistics from
 function module.gather(forces)
     local players = storage.space_age.players --[[@as table<uint, SpaceAgePlayerStatistics>]]
-    local stats = { by_player = { } }
+    local stats = { by_force = { }, by_player = { } }
     for _, force in pairs(forces) do
+
+        ---@type SpaceAgeForceStatistics
+        local force_data = storage.space_age.forces[force.name]
+        if force_data then
+            stats.by_force[force.name] = {
+                ["space-age"] = { order = "5", stats = {
+                    ["sa-rockets-launched"] = { value = force_data.rockets_launched or 0, order = "a" }
+                }}
+            }
+        end
+
         for _, player in pairs(force.connected_players) do
             local player_data = players[player.index]
             if not player_data then goto continue end
@@ -85,7 +96,7 @@ function module.gather(forces)
             local localised_planet_name = get_localised_most_visited_planet_name(player_data)
             if localised_planet_name then
                 stats.by_player[player.name] = {
-                    ["player"] = { stats = {
+                    ["space-age"] = { order = "5", stats = {
                         ["sa-most-visited-planet"] = { value = localised_planet_name, unit = "localised-string", order = "a" }
                     }}
                 }
@@ -110,5 +121,10 @@ end
 
 module.on_init = setup
 module.on_configuration_changed = setup
+
+module.events = {
+    [defines.events.on_rocket_launched] = module.on_rocket_launched,
+    [defines.events.on_player_changed_position] = module.on_player_changed_position,
+}
 
 return module
