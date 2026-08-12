@@ -24,15 +24,14 @@ local function get_make_force_data(force_name)
     return force_data
 end
 
----@param players table<uint, SpaceAgePlayerStatistics>
 ---@param player_index uint
 ---@return SpaceAgePlayerStatistics
-local function get_make_player_data(players, player_index)
+local function get_make_player_data(player_index)
     ---@type SpaceAgePlayerStatistics
-    local player_data = players[player_index] or { 
+    local player_data = storage.space_age.players[player_index] or { 
         times_visited_planet = { },
     }
-    players[player_index] = player_data
+    storage.space_age.players[player_index] = player_data
     return player_data
 end
 
@@ -46,30 +45,21 @@ function module.on_rocket_launched(event)
 end
 
 local character_controller = defines.controllers.character
-module.on_nth_tick = {
-    ---@param event NthTickEventData
-    [60] = function(event)
-        local players = storage.space_age.players --[[@as table<uint, SpaceAgePlayerStatistics>]]
-        for _, player in pairs(game.connected_players) do
-            if player.controller_type ~= character_controller then goto continue end
-            if blacklist.force(player.force.name) then goto continue end
-            local surface_name = player.surface.name
-            if blacklist.surface(surface_name) then goto continue end
-            
-            local player_data = get_make_player_data(players, player.index)
+---@param event EventData.on_player_changed_position
+function module.on_player_changed_position(event)
+    local player = game.get_player(event.player_index)
+    if not player then return end
+    if player.controller_type ~= character_controller then return end
 
-            local planet = player.surface.planet
-            local planet_name = planet and planet.name or nil
-            if planet_name and planet_name ~= player_data.last_visited_name then                
-                player_data.times_visited_planet[planet_name] = (player_data.times_visited_planet[planet_name] or 0) + 1
-            end
-            player_data.last_visited_name = planet_name
+    local player_data = get_make_player_data(player.index)
 
-            ::continue::
-        end
-    end,
-}
-
+    local planet = player.surface.planet
+    local planet_name = planet and planet.name or nil
+    if planet_name and planet_name ~= player_data.last_visited_name then                
+        player_data.times_visited_planet[planet_name] = (player_data.times_visited_planet[planet_name] or 0) + 1
+    end
+    player_data.last_visited_name = planet_name
+end
 
 ---@param player_data SpaceAgePlayerStatistics
 ---@return LocalisedString?

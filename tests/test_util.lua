@@ -48,7 +48,7 @@ function test_util.assert_nil(a)
 end
 
 function test_util.assert_equal(a, b)
-    if a ~= b then error(pre .. a .. " ~= " .. b) end
+    if a ~= b then error(pre .. (a or "(nil)") .. " ~= " .. (b or "nil")) end
 end
 
 function test_util.assert_near(a, b, epsilon)
