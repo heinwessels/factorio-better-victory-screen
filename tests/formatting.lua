@@ -115,6 +115,7 @@ end
 
 function tests.localised_string()
     test_util.assert_table_equal(formatter.format({"hello", 5}, "localised-string"), {"hello", 5})
+    test_util.assert_string_equal(formatter.format("fish-man", "localised-string"), "fish-man")
 end
 
 return formatting_tests

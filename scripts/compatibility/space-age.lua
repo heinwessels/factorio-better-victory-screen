@@ -16,7 +16,7 @@ local module = { }
 ---@param force_name string
 ---@return SpaceAgeForceStatistics
 local function get_make_force_data(force_name)
-    ---@type SpaceAgePlayerStatistics
+    ---@type SpaceAgeForceStatistics
     local force_data = storage.space_age.forces[force_name] or { 
         rockets_launched = 0.
     }
