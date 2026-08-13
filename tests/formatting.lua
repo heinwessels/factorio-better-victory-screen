@@ -118,4 +118,17 @@ function tests.localised_string()
     test_util.assert_string_equal(formatter.format("fish-man", "localised-string"), "fish-man")
 end
 
+function tests.bytes()
+    test_util.assert_string_equal(formatter.format(0, "bytes"), "0 bytes")
+    test_util.assert_string_equal(formatter.format(5, "bytes"), "5 bytes")
+    test_util.assert_string_equal(formatter.format(123, "bytes"), "123 bytes")
+    test_util.assert_string_equal(formatter.format(1023, "bytes"), "1023 bytes")
+    test_util.assert_string_equal(formatter.format(1024, "bytes"), "1 kB")
+    test_util.assert_string_equal(formatter.format(1024 + (1024/2), "bytes"), "1.5 kB")
+    test_util.assert_string_equal(formatter.format(1024 + (1024/10*2), "bytes"), "1.2 kB")
+    test_util.assert_string_equal(formatter.format(1024 + (1024/10*7), "bytes"), "1.7 kB")
+    test_util.assert_string_equal(formatter.format(3670016, "bytes"), "3.5 MB")
+    test_util.assert_string_equal(formatter.format(-2458, "bytes"), "2.4 kB")
+end
+
 return formatting_tests

@@ -31,6 +31,9 @@ local suffixes = {
     ["18"]  = "E",
 }
 
+---@type table<integer, string>
+local byte_suffixes = { "B", "kB", "MB", "GB", "TB", "PB", "EB" }
+
 ---Finds the suffix divider for a given number
 ---For example, 1234 to 1.2k
 ---@param number number
@@ -117,6 +120,19 @@ local formatters = {
     end,
     ["localised-string"] = function(value)
         return value
+    end,
+    ["bytes"] = function(number)
+        number = math.abs(number) -- Negative doesn't make sense
+        if number < 1024 then
+            return lib.math.round(number, 0) .. " bytes"
+        end
+
+        local suffix_index = 1
+        while number >= 1024 and suffix_index < #byte_suffixes do
+            number = number / 1024
+            suffix_index = suffix_index + 1
+        end
+        return lib.math.round(number, 1) .. " " .. byte_suffixes[suffix_index]
     end,
 }
 
