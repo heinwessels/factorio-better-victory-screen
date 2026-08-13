@@ -31,4 +31,22 @@ function tests.player_visited_planets()
     test_util.assert_equal(player_data.times_visited_planet["nauvis"], 1)
 end
 
+function tests.biters_hatched()
+    local player = game.player
+    if not player then error("BAD") end
+    
+    local surface = game.player.surface
+    storage.space_age.biter_eggs_hatched = 0
+    local expected = 5
+
+    for i=1,5 do
+        local entities = surface.spill_item_stack{ position = { 0, 0}, stack = {name = "biter-egg", count = 1 }}
+        test_util.assert_equal(#entities, 1)        
+        entities[1].stack.item.item_stack.spoil()
+    end
+
+    test_util.assert_equal(storage.space_age.biter_eggs_hatched, expected)
+    game.forces["enemy"].kill_all_units()
+end
+
 return space_age_tests

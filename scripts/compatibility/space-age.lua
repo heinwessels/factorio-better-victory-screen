@@ -76,6 +76,12 @@ local function get_localised_most_visited_planet_name(player_data)
     return prototype.localised_name
 end
 
+---@param event EventData.on_script_trigger_effect
+function module.biter_hatch(event)
+    -- items have no owner, so just add the stat to all forces
+    storage.space_age.biter_eggs_hatched = (storage.space_age.biter_eggs_hatched or 0) + 1
+end
+
 ---@param event EventData.on_tick
 function module.on_tick(event)
     for _, force in pairs(game.forces) do
@@ -100,6 +106,7 @@ function module.gather(forces)
     local stats = { by_force = { }, by_player = { } }
     for _, force in pairs(forces) do
 
+        
         ---@type SpaceAgeForceStatistics
         local force_data = storage.space_age.forces[force.name]
         if force_data then
@@ -108,7 +115,11 @@ function module.gather(forces)
                     ["sa-rockets-launched"] = { value = force_data.rockets_launched or 0, order = "a" },
                     ["sa-fastest-platform-speed"] = { value = force_data.fastest_platform_speed or 0, unit = "speed", order = "b" },
                 }}
-            }
+            }                
+
+            if storage.space_age.biter_eggs_hatched > 0 then
+                stats.by_force[force.name]["space-age"].stats["sa-biters-hatched"] = { value = storage.space_age.biter_eggs_hatched or 0, order = "c" }
+            end
         end
 
         for _, player in pairs(force.connected_players) do
@@ -133,6 +144,9 @@ end
 
 local function setup()
     storage.space_age = {
+        ---@type number
+        biter_eggs_hatched = 0,
+
         ---@type table<string, SpaceAgeForceStatistics>
         forces = { },
 
@@ -145,9 +159,10 @@ module.on_init = setup
 module.on_configuration_changed = setup
 
 module.events = {
+    [defines.events.on_tick] = module.on_tick,
     [defines.events.on_rocket_launched] = module.on_rocket_launched,
     [defines.events.on_player_changed_position] = module.on_player_changed_position,
-    [defines.events.on_tick] = module.on_tick,
+    ["bvs-biter-hatch"] = module.biter_hatch,
 }
 
 return module
