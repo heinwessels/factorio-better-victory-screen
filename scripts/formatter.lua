@@ -93,6 +93,14 @@ local formatters = {
             return lib.math.round(number) .. " km"
         end
     end,
+    ["speed"] = function(number)
+        number = math.abs(number) -- Negative doesn't make sense
+        if number < 10000 then
+            return lib.math.round(number, 2) .. " km/h"
+        else
+            return lib.math.round(number) .. " km/h"
+        end
+    end,
     ["area"] = function(number)
         number = math.abs(number) -- Negative doesn't make sense
         if number < 10 then

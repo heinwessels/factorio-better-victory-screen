@@ -7,6 +7,8 @@ local module = { }
 
 ---@class SpaceAgeForceStatistics
 ---@field rockets_launched uint
+---@field fastest_platform_speed double
+---@field fastest_platform_name string
 
 ---@class SpaceAgePlayerStatistics
 ---@field last_visited_name string? the planet name
@@ -18,7 +20,8 @@ local module = { }
 local function get_make_force_data(force_name)
     ---@type SpaceAgeForceStatistics
     local force_data = storage.space_age.forces[force_name] or { 
-        rockets_launched = 0.
+        rockets_launched = 0,
+        fastest_platform_speed = 0,
     }
     storage.space_age.forces[force_name] = force_data
     return force_data
@@ -73,6 +76,24 @@ local function get_localised_most_visited_planet_name(player_data)
     return prototype.localised_name
 end
 
+---@param event EventData.on_tick
+function module.on_tick(event)
+    for _, force in pairs(game.forces) do
+        if blacklist.force(force.name) then goto continue end
+        if (event.tick + force.index) % 60 ~= 0 then goto continue end
+        local force_data = get_make_force_data(force.name)
+
+        for _, platform in pairs(force.platforms) do
+            if platform.speed > (force_data.fastest_platform_speed or 0) then
+                force_data.fastest_platform_speed = platform.speed * 60 -- Convert to km/h
+                force_data.fastest_platform_name = platform.name
+            end
+        end
+
+        ::continue::
+    end
+end
+
 ---@param forces LuaForce[] to gather statistics from
 function module.gather(forces)
     local players = storage.space_age.players --[[@as table<uint, SpaceAgePlayerStatistics>]]
@@ -83,8 +104,9 @@ function module.gather(forces)
         local force_data = storage.space_age.forces[force.name]
         if force_data then
             stats.by_force[force.name] = {
-                ["space-age"] = { order = "5", stats = {
-                    ["sa-rockets-launched"] = { value = force_data.rockets_launched or 0, order = "a" }
+                ["space-age"] = { order = "9", stats = {
+                    ["sa-rockets-launched"] = { value = force_data.rockets_launched or 0, order = "a" },
+                    ["sa-fastest-platform-speed"] = { value = force_data.fastest_platform_speed or 0, unit = "speed", order = "b" },
                 }}
             }
         end
@@ -125,6 +147,7 @@ module.on_configuration_changed = setup
 module.events = {
     [defines.events.on_rocket_launched] = module.on_rocket_launched,
     [defines.events.on_player_changed_position] = module.on_player_changed_position,
+    [defines.events.on_tick] = module.on_tick,
 }
 
 return module

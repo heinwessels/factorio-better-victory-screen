@@ -79,10 +79,12 @@ There is a bit of information here, which is:
     - `number` just a raw number.
     - `distance` in m.
     - `area` in km2
+    - `speed` in km/h
     - `time` in ticks
     - `power` in Watt
     - `percentage` as a value between 0 and 1.
-    - `localised-string` for a LocalisedString
+    - `localised-string` for a LocalisedString.
+    - `bytes` for example `125 bytes` or `2.6kB`.
 - `order` (_optional_): Order the categories/statistics. Defaults to `m`
 
 This localization for this is done using normal localization where the key-name is the the localization key. For the snippet above the `locale/en/en.cfg` might look like:

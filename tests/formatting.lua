@@ -78,6 +78,16 @@ function tests.distance()
     test_util.assert_string_equal(formatter.format(1234999.99, "distance"), "1235 km")
 end
 
+function tests.speed()
+    test_util.assert_string_equal(formatter.format(0, "speed"), "0 km/h")
+    test_util.assert_string_equal(formatter.format(5, "speed"), "5 km/h")
+    test_util.assert_string_equal(formatter.format(123, "speed"), "123 km/h")
+    test_util.assert_string_equal(formatter.format(123.456, "speed"), "123.46 km/h")
+    test_util.assert_string_equal(formatter.format(9999.99, "speed"), "9999.99 km/h")
+    test_util.assert_string_equal(formatter.format(12343, "speed"), "12343 km/h")
+    test_util.assert_string_equal(formatter.format(-123.456, "speed"), "123.46 km/h")
+end
+
 function tests.area()
     test_util.assert_string_equal(formatter.format(0, "area"), "0 km2")
     test_util.assert_string_equal(formatter.format(0.004, "area"), "0.004 km2")

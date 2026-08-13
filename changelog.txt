@@ -4,7 +4,7 @@ Date: ??.??.2026
   Features:
     - Added Space Age specific statistics.
   Compatibility:
-    - Added formatting of numbers of bytes and LocalisedString.
+    - Added formatting of speed, bytes and LocalisedString for mods to use.
 ---------------------------------------------------------------------------------------------------
 Version: 2.0.0
 Date: 24.06.2026
