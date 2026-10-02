@@ -38,8 +38,13 @@ end
 
 -- These rails won't be taken into account for the total rail length
 local rail_blacklist = util.list_to_map{
-    "straight-water-way",
-    "curved-water-way",
+    -- Waterways from cargo ships, which are rail prototypes
+    "straight-waterway",
+    "half-diagonal-waterway",
+    "curved-waterway-a",
+    "curved-waterway-b",
+    "legacy-straight-waterway",
+    "legacy-curved-waterway",
 }
 
 local train_stop_blacklist = util.list_to_map{
