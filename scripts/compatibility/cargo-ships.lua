@@ -5,9 +5,23 @@ local tracker = require("scripts.tracker")
 
 local module = { }
 
+-- Cargo ships builds its waterways from rail prototypes, so the
+-- lengths match the ones used for rails in the total rail length.
+local waterway_lengths = {
+    ["straight-waterway"] = 2, -- This isn't really true for diagonal pieces but meh
+    ["half-diagonal-waterway"] = 4.47,
+    ["curved-waterway-a"] = 5.06,
+    ["curved-waterway-b"] = 5.06,
+    ["legacy-straight-waterway"] = 2,
+    ["legacy-curved-waterway"] = 8,
+}
+
 local function setup()
-    tracker.track_entity_count_by_name("straight-water-way")
-    tracker.track_entity_count_by_name("curved-water-way")
+    for name in pairs(waterway_lengths) do
+        if prototypes.entity[name] then
+            tracker.track_entity_count_by_name(name)
+        end
+    end
 end
 
 module.on_init = setup
@@ -21,16 +35,12 @@ function module.gather(forces)
         if tracked_force_names[force.name] then
 
             local distance = 0
-
-            -- Assume each belt has a distance of 2m.
-            -- This isn't really true for diagonal pieces but meh
-            local straight = tracker.get_entity_count_by_name(force.name --[[@as ForceName]], "straight-water-way")
-            distance = distance + (straight * 2)
-
-            -- Assume each curved rail has a length of 8m.
-            -- TODO This can be estimated better! 
-            local curved = tracker.get_entity_count_by_name(force.name --[[@as ForceName]], "curved-water-way")
-            distance = distance + (curved * 8)
+            for name, length in pairs(waterway_lengths) do
+                if prototypes.entity[name] then
+                    local count = tracker.get_entity_count_by_name(force.name --[[@as ForceName]], name)
+                    distance = distance + (count * length)
+                end
+            end
 
             stats.by_force[force.name] = {
                 ["infrastructure"] = { stats = {
