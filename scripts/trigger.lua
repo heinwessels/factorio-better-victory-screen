@@ -112,7 +112,8 @@ function trigger.set_ending_info()
         image_path = is_space_age and "__base__/script/freeplay/victory-space-age.png" or "__base__/script/freeplay/victory.png",
         title = {"gui-game-finished.victory"},
         message = builder.unflatten(builder.build( victory_message, all_statistics )),
-        final_message = {"victory-final-message"},
+        -- Only the freeplay scenario defines this key, so show nothing in other scenarios (e.g. sandbox)
+        final_message = {"?", {"victory-final-message"}, ""},
     }
 
     if profilers then
