@@ -6,7 +6,7 @@
   "author": "stringweasel",
   "factorio_version": "2.1",
   "dependencies": [ 
-    "base >= 2.1.6",
+    "base >= 2.1.20",
     "? space-age"
   ],
   "package":{
