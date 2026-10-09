@@ -1,6 +1,6 @@
 ---------------------------------------------------------------------------------------------------
 Version: 2.1.1
-Date: ??.??.2026
+Date: 09.10.2026
   Minor Features:
     - [Space-age] Added statistic for busiest Space Platform.
   Changes:
@@ -8,6 +8,8 @@ Date: ??.??.2026
   Bugfixes:
     - Fixed that Cargo Ships waterways were counted as rails and the waterways statistic was always zero.
     - Fixed "Unknown key: victory-final-message" on the victory screen outside of freeplay, e.g. in sandbox.
+  Locale:
+    - Update translations from Crowdin.
 ---------------------------------------------------------------------------------------------------
 Version: 2.1.0
 Date: 15.08.2026
