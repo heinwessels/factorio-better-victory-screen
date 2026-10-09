@@ -76,6 +76,20 @@ local function get_localised_most_visited_planet_name(player_data)
     return prototype.localised_name
 end
 
+---@param force LuaForce
+---@return LuaSpacePlatform? the visible platform with the most completed trips
+function module.get_busiest_platform(force)
+    local busiest_platform = nil
+    for _, platform in pairs(force.platforms) do
+        if platform.valid and not platform.hidden then
+            if not busiest_platform or platform.completed_trips > busiest_platform.completed_trips then
+                busiest_platform = platform
+            end
+        end
+    end
+    return busiest_platform
+end
+
 ---@param event EventData.on_script_trigger_effect
 function module.biter_hatch(event)
     -- items have no owner, so just add the stat to all forces
@@ -119,6 +133,12 @@ function module.gather(forces)
 
             if storage.space_age.biter_eggs_hatched > 0 then
                 stats.by_force[force.name]["space-age"].stats["sa-biters-hatched"] = { value = storage.space_age.biter_eggs_hatched or 0, order = "c" }
+            end
+
+            local busiest_platform = module.get_busiest_platform(force)
+            if busiest_platform and busiest_platform.completed_trips > 0 then
+                stats.by_force[force.name]["space-age"].stats["sa-busiest-platform"] = { value = busiest_platform.name, unit = "localised-string", order = "d" }
+                stats.by_force[force.name]["space-age"].stats["sa-busiest-platform-trips"] = { value = busiest_platform.completed_trips, order = "e" }
             end
         end
 
