@@ -6,7 +6,7 @@ Date: ??.??.2026
     - Fixed "Unknown key: victory-final-message" on the victory screen outside of freeplay, e.g. in sandbox.
 ---------------------------------------------------------------------------------------------------
 Version: 2.1.0
-Date: ??.??.2026
+Date: 15.08.2026
   Features:
     - Added Space Age specific statistics.
   Compatibility:
