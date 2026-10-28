@@ -55,6 +55,20 @@ local function decrease_last_recalculation_by_one_tick()
     end
 end
 
+---Asserts that no tracker is tracking or counting this filter anymore.
+---Like the function above it relies on the internals of the tracker.
+---@param filter string
+local function assert_not_tracked(filter)
+    ---@type table<TrackerType, TrackerClass>
+    local trackers = storage["_bvs_tracker_cache"].trackers
+    for _, tracker_to_check in pairs(trackers) do
+        test_util.assert_falsy(tracker_to_check.tracking[filter])
+        for _, force_counters in pairs(tracker_to_check.counters) do
+            test_util.assert_falsy(force_counters[filter])
+        end
+    end
+end
+
 ---Convenience function to assert the tracker count for a specific name
 ---@param force_name string
 ---@param name string of the entity (the filter)
@@ -744,6 +758,61 @@ function tests.merge_forces_destination_untracked()
     test_util.mock_release()    -- Or just return zero when it's a release
     test_util.assert_equal(tracker.get_entity_count_by_name(tracked, "iron-chest"), 0)
     test_util.assert_equal(tracker.get_entity_count_by_name(untracked, "iron-chest"), 0)
+end
+
+function tests.stale_filters_by_name_removed_on_configuration_changed()
+    local surface = test_util.get_surface()
+    get_force_with_name("other")
+
+    -- Mimick a save from 2.1.0 that still tracks the old Cargo Ships waterways.
+    -- Tracking entities that don't exist only logs a warning in release.
+    local stale_names = { "straight-water-way", "curved-water-way" }
+    test_util.mock_release()
+    tracker.track_entity_count_by_name(stale_names)
+    test_util.mock_release(false)
+
+    tracker.track_entity_count_by_name("iron-chest")
+
+    -- Create a chest silently, so it's only counted if the
+    -- valid filter is still recounted
+    local chest = surface.create_entity{
+        name = "iron-chest", position = {0, 0},
+        force="player", raise_built = false --[[ IMPORTANT ]],
+    }
+    test_util.assert_valid_entity(chest)
+
+    -- This used to recount the stale filters, which crashes while debugging
+    decrease_last_recalculation_by_one_tick()
+    tracker.on_configuration_changed()
+
+    for _, name in pairs(stale_names) do assert_not_tracked(name) end
+    assert_name_count("player", "iron-chest", 1)
+    assert_name_count("other", "iron-chest", 0)
+end
+
+function tests.stale_filters_by_type_removed_on_configuration_changed()
+    local surface = test_util.get_surface()
+
+    local stale_type = "bvs-test-removed-type"
+    test_util.mock_release()
+    tracker.track_entity_count_by_type(stale_type)
+    test_util.mock_release(false)
+
+    tracker.track_entity_count_by_type("container")
+
+    -- Create a chest silently, so it's only counted if the
+    -- valid filter is still recounted
+    local chest = surface.create_entity{
+        name = "iron-chest", position = {0, 0},
+        force="player", raise_built = false --[[ IMPORTANT ]],
+    }
+    test_util.assert_valid_entity(chest)
+
+    decrease_last_recalculation_by_one_tick()
+    tracker.on_configuration_changed()
+
+    assert_not_tracked(stale_type)
+    assert_type_count("player", "container", 1)
 end
 
 return tracker_tests

@@ -126,17 +126,20 @@ local function sanitize_tracker(tracker)
         function(force_name) return data.tracked_forces[force_name] ~= true end
     )
 
-    -- Then clean up old filters that no longer exist due to mod changes
+    -- Then stop tracking old filters that no longer exist due to mod changes,
+    -- otherwise `refresh_tracker` will keep trying to recount them
     local is_valid_filter = is_valid_filter_functions[tracker.type]
-    for force_name, _ in pairs(data.tracked_forces) do
-        if not tracker.counters[force_name] then
-            tracker.counters[force_name] = { }
-        else
-            lib.table.remove_keys_filtered(
-                tracker.counters[force_name],
-                function (filter) return not is_valid_filter(filter --[[@as Filter]]) end
-            )
-        end
+    lib.table.remove_keys_filtered(
+        tracker.tracking,
+        function (filter) return not is_valid_filter(filter --[[@as Filter]]) end
+    )
+
+    -- And finally remove the counters of filters that are no longer tracked
+    for _, force_counters in pairs(tracker.counters) do
+        lib.table.remove_keys_filtered(
+            force_counters,
+            function (filter) return not tracker.tracking[filter] end
+        )
     end
 end
 

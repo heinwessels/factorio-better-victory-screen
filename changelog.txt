@@ -2,6 +2,8 @@
 Version: 2.1.2
 Date: ????
   Changes:
+  Bugfixes:
+    - Fixed that entities which no longer exist, like the old Cargo Ships waterways, were still recounted after every mod change. This crashed the game on load when the debugger was attached.
 ---------------------------------------------------------------------------------------------------
 Version: 2.1.1
 Date: 09.10.2026
