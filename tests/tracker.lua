@@ -55,6 +55,34 @@ local function decrease_last_recalculation_by_one_tick()
     end
 end
 
+-- Mirrors the TrackerType enum in scripts/tracker.lua
+local TRACKER_TYPE = {
+    ENTITY_BY_NAME  = 0,
+    ENTITY_BY_TYPE  = 1,
+}
+
+---@param tracker_type integer from TRACKER_TYPE above
+---@return TrackerClass
+local function get_internal_tracker(tracker_type)
+    return storage["_bvs_tracker_cache"].trackers[tracker_type]
+end
+
+---Mimick an old save that still tracks a filter which no longer exists, for
+---example because a mod renamed the entity. Like the function above it relies
+---on the internals of the tracker.
+---@param tracker_type  integer from TRACKER_TYPE above
+---@param filter        string that doesn't exist (anymore)
+---@param force_names   string[] to also add a stale counter for
+local function inject_stale_filter(tracker_type, filter, force_names)
+    local tracker_to_corrupt = get_internal_tracker(tracker_type)
+    tracker_to_corrupt.tracking[filter] = true
+    for _, force_name in pairs(force_names) do
+        local force_counters = tracker_to_corrupt.counters[force_name] or { }
+        force_counters[filter] = { count = 7 }
+        tracker_to_corrupt.counters[force_name] = force_counters
+    end
+end
+
 ---Convenience function to assert the tracker count for a specific name
 ---@param force_name string
 ---@param name string of the entity (the filter)
@@ -744,6 +772,78 @@ function tests.merge_forces_destination_untracked()
     test_util.mock_release()    -- Or just return zero when it's a release
     test_util.assert_equal(tracker.get_entity_count_by_name(tracked, "iron-chest"), 0)
     test_util.assert_equal(tracker.get_entity_count_by_name(untracked, "iron-chest"), 0)
+end
+
+function tests.stale_filters_by_name_removed_on_configuration_changed()
+    local surface = test_util.get_surface()
+    local forces = { "player", get_force_with_name("other").name }
+
+    -- The old Cargo Ships waterways that saves from 2.1.0 still tracked
+    local stale_names = { "straight-water-way", "curved-water-way" }
+    for _, name in pairs(stale_names) do
+        test_util.assert_falsy(prototypes.entity[name]) -- Otherwise this test proves nothing
+    end
+
+    tracker.track_entity_count_by_name("iron-chest")
+    for _, name in pairs(stale_names) do
+        inject_stale_filter(TRACKER_TYPE.ENTITY_BY_NAME, name, forces)
+    end
+
+    -- Create a chest silently, so it's only counted if the
+    -- valid filter is still recounted
+    local chest = surface.create_entity{
+        name = "iron-chest", position = {0, 0},
+        force="player", raise_built = false --[[ IMPORTANT ]],
+    }
+    test_util.assert_valid_entity(chest)
+
+    -- This used to recount the stale filters, which crashes while debugging
+    decrease_last_recalculation_by_one_tick()
+    tracker.on_configuration_changed()
+
+    -- The stale filters should be gone completely
+    local name_tracker = get_internal_tracker(TRACKER_TYPE.ENTITY_BY_NAME)
+    for _, name in pairs(stale_names) do
+        test_util.assert_falsy(name_tracker.tracking[name])
+        for _, force_name in pairs(forces) do
+            test_util.assert_falsy(name_tracker.counters[force_name][name])
+        end
+    end
+
+    -- While the valid filter is still tracked and recounted
+    test_util.assert_true(name_tracker.tracking["iron-chest"])
+    assert_name_count("player", "iron-chest", 1)
+    assert_name_count("other", "iron-chest", 0)
+end
+
+function tests.stale_filters_by_type_removed_on_configuration_changed()
+    local surface = test_util.get_surface()
+
+    local stale_type = "bvs-test-removed-type"
+    test_util.assert_falsy(defines.prototypes["entity"][stale_type]) -- Otherwise this test proves nothing
+
+    tracker.track_entity_count_by_type("container")
+    inject_stale_filter(TRACKER_TYPE.ENTITY_BY_TYPE, stale_type, { "player" })
+
+    -- Create a chest silently, so it's only counted if the
+    -- valid filter is still recounted
+    local chest = surface.create_entity{
+        name = "iron-chest", position = {0, 0},
+        force="player", raise_built = false --[[ IMPORTANT ]],
+    }
+    test_util.assert_valid_entity(chest)
+
+    decrease_last_recalculation_by_one_tick()
+    tracker.on_configuration_changed()
+
+    -- The stale filter should be gone completely
+    local type_tracker = get_internal_tracker(TRACKER_TYPE.ENTITY_BY_TYPE)
+    test_util.assert_falsy(type_tracker.tracking[stale_type])
+    test_util.assert_falsy(type_tracker.counters["player"][stale_type])
+
+    -- While the valid filter is still tracked and recounted
+    test_util.assert_true(type_tracker.tracking["container"])
+    assert_type_count("player", "container", 1)
 end
 
 return tracker_tests
